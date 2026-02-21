@@ -29,95 +29,116 @@ function useCountdown(target: Date) {
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col items-center">
-      <span className="text-4xl font-bold tabular-nums text-white sm:text-5xl md:text-6xl">
+      <span className="font-data text-4xl font-medium tabular-nums text-white sm:text-5xl md:text-6xl">
         {String(value).padStart(2, "0")}
       </span>
-      <span className="mt-1 text-xs font-medium uppercase tracking-widest text-white/50 sm:text-sm">
+      <span className="font-body mt-1 text-xs font-medium uppercase tracking-widest text-white/50 sm:text-sm">
         {label}
       </span>
     </div>
   );
 }
 
-/* Floating decorative SVG elements — neurons, DNA, brain waves */
-function FloatingElements() {
+/* Animated DNA Double Helix SVG — right side */
+function DoubleHelixSVG() {
+  const steps = 28;
+  const height = 400;
+  const width = 120;
+  const cx = width / 2;
+  const amplitude = 40;
+
+  const strandA: { x: number; y: number }[] = [];
+  const strandB: { x: number; y: number }[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const y = t * height;
+    const phase = t * Math.PI * 4;
+    strandA.push({ x: cx + Math.sin(phase) * amplitude, y });
+    strandB.push({ x: cx - Math.sin(phase) * amplitude, y });
+  }
+
+  const toPath = (pts: { x: number; y: number }[]) => {
+    let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+    for (let i = 1; i < pts.length; i++) {
+      d += ` L${pts[i].x.toFixed(1)},${pts[i].y.toFixed(1)}`;
+    }
+    return d;
+  };
+
+  const rungIndices = [3, 6, 9, 12, 15, 18, 21, 24];
+
   return (
-    <>
-      {/* Neural network node cluster - top right */}
-      <svg
-        className="animate-float-slow absolute top-20 right-10 h-32 w-32 opacity-20 sm:h-48 sm:w-48"
-        viewBox="0 0 200 200"
-        fill="none"
-      >
-        <circle cx="100" cy="50" r="8" fill="#00e87b" />
-        <circle cx="50" cy="120" r="6" fill="#00e87b" />
-        <circle cx="150" cy="130" r="7" fill="#00e87b" />
-        <circle cx="80" cy="170" r="5" fill="#00e87b" />
-        <circle cx="160" cy="60" r="5" fill="#00e87b" />
-        <line x1="100" y1="50" x2="50" y2="120" stroke="#00e87b" strokeWidth="1" opacity="0.5" />
-        <line x1="100" y1="50" x2="150" y2="130" stroke="#00e87b" strokeWidth="1" opacity="0.5" />
-        <line x1="100" y1="50" x2="160" y2="60" stroke="#00e87b" strokeWidth="1" opacity="0.5" />
-        <line x1="50" y1="120" x2="80" y2="170" stroke="#00e87b" strokeWidth="1" opacity="0.5" />
-        <line x1="150" y1="130" x2="80" y2="170" stroke="#00e87b" strokeWidth="1" opacity="0.5" />
-      </svg>
-
-      {/* DNA helix strand - left side */}
-      <svg
-        className="animate-float-medium absolute top-1/3 left-6 h-40 w-16 opacity-15 sm:left-16 sm:h-56 sm:w-20"
-        viewBox="0 0 60 200"
-        fill="none"
-      >
-        <path d="M10 10 Q30 30 50 50 Q30 70 10 90 Q30 110 50 130 Q30 150 10 170" stroke="#00e87b" strokeWidth="2" fill="none" />
-        <path d="M50 10 Q30 30 10 50 Q30 70 50 90 Q30 110 10 130 Q30 150 50 170" stroke="#00e87b" strokeWidth="2" fill="none" />
-        <line x1="20" y1="30" x2="40" y2="30" stroke="#00e87b" strokeWidth="1" opacity="0.4" />
-        <line x1="15" y1="70" x2="45" y2="70" stroke="#00e87b" strokeWidth="1" opacity="0.4" />
-        <line x1="20" y1="110" x2="40" y2="110" stroke="#00e87b" strokeWidth="1" opacity="0.4" />
-        <line x1="15" y1="150" x2="45" y2="150" stroke="#00e87b" strokeWidth="1" opacity="0.4" />
-      </svg>
-
-      {/* Brain wave pulse - bottom right */}
-      <svg
-        className="animate-pulse-glow absolute bottom-32 right-8 h-16 w-48 opacity-20 sm:right-20 sm:h-20 sm:w-64"
-        viewBox="0 0 300 60"
-        fill="none"
-      >
-        <path
-          d="M0 30 L30 30 L45 10 L60 50 L75 10 L90 50 L105 30 L150 30 L165 15 L180 45 L195 15 L210 45 L225 30 L300 30"
-          stroke="#00e87b"
-          strokeWidth="2"
-          fill="none"
-        />
-      </svg>
-
-      {/* Floating orbs */}
-      <div className="animate-float-fast absolute top-1/4 right-1/4 h-3 w-3 rounded-full bg-[#00e87b] opacity-30 blur-[1px]" />
-      <div className="animate-drift absolute bottom-1/3 left-1/4 h-2 w-2 rounded-full bg-[#00e87b] opacity-25 blur-[1px]" />
-      <div className="animate-float-medium absolute top-2/3 right-1/3 h-4 w-4 rounded-full bg-[#00e87b] opacity-15 blur-[2px]" />
-    </>
+    <svg
+      className="absolute top-12 right-4 h-64 w-20 opacity-25 sm:right-10 sm:h-80 sm:w-24 lg:right-16 lg:h-[420px] lg:w-28"
+      viewBox={`0 0 ${width} ${height}`}
+      fill="none"
+    >
+      <path d={toPath(strandA)} stroke="#00e87b" strokeWidth="2.5" fill="none" strokeLinecap="round" className="svg-draw" />
+      <path d={toPath(strandB)} stroke="#00e87b" strokeWidth="2.5" fill="none" strokeLinecap="round" className="svg-draw svg-draw-delay-2" />
+      {rungIndices.map((idx, i) => (
+        <line key={`rung-${i}`} x1={strandA[idx].x} y1={strandA[idx].y} x2={strandB[idx].x} y2={strandB[idx].y}
+          stroke="#00e87b" strokeWidth="1.5" opacity="0.5" strokeLinecap="round" className="svg-draw"
+          style={{ animationDelay: `${1.2 + i * 0.15}s` }} />
+      ))}
+      {rungIndices.map((idx, i) => (
+        <g key={`nodes-${i}`}>
+          <circle cx={strandA[idx].x} cy={strandA[idx].y} r="3" fill="#00e87b" className="svg-node-pulse"
+            style={{ animationDelay: `${i * 0.25}s`, transformOrigin: `${strandA[idx].x}px ${strandA[idx].y}px` }} />
+          <circle cx={strandB[idx].x} cy={strandB[idx].y} r="3" fill="#00e87b" className="svg-node-pulse"
+            style={{ animationDelay: `${i * 0.25 + 0.12}s`, transformOrigin: `${strandB[idx].x}px ${strandB[idx].y}px` }} />
+        </g>
+      ))}
+      <circle r="2.5" fill="#00ff88" opacity="0.8">
+        <animateMotion dur="5s" repeatCount="indefinite" path={toPath(strandA)} />
+      </circle>
+      <circle r="2.5" fill="#00ff88" opacity="0.8">
+        <animateMotion dur="5s" repeatCount="indefinite" path={toPath(strandB)} begin="2.5s" />
+      </circle>
+    </svg>
   );
 }
 
-/* Tilted floating stat cards like TreeHacks */
-function StatCard({
-  value,
-  label,
-  rotate,
-  delay,
-}: {
-  value: string;
-  label: string;
-  rotate: string;
-  delay: string;
-}) {
+/* Animated DNA Helix SVG — left side */
+function DNAHelixSVG() {
   return (
-    <div
-      className="animate-float-medium rounded-2xl border border-white/10 bg-white/5 px-5 py-4 backdrop-blur-sm sm:px-6 sm:py-5"
-      style={{ transform: `rotate(${rotate})`, animationDelay: delay }}
+    <svg
+      className="absolute top-1/4 left-4 h-56 w-16 opacity-20 sm:left-12 sm:h-72 sm:w-20 lg:left-20"
+      viewBox="0 0 60 250"
+      fill="none"
     >
-      <p className="text-2xl font-bold text-[#00e87b] sm:text-3xl">{value}</p>
-      <p className="mt-1 text-xs font-medium uppercase tracking-wider text-white/60 sm:text-sm">
-        {label}
-      </p>
+      <path d="M10 10 Q30 35 50 60 Q30 85 10 110 Q30 135 50 160 Q30 185 10 210 Q30 235 50 250" stroke="#00e87b" strokeWidth="2" fill="none" className="svg-draw" />
+      <path d="M50 10 Q30 35 10 60 Q30 85 50 110 Q30 135 10 160 Q30 185 50 210 Q30 235 10 250" stroke="#00e87b" strokeWidth="2" fill="none" className="svg-draw svg-draw-delay-2" />
+      {[35, 85, 135, 185, 235].map((y, i) => (
+        <line key={`rung-${i}`} x1="18" y1={y} x2="42" y2={y} stroke="#00e87b" strokeWidth="1" opacity="0.4" className="svg-draw"
+          style={{ animationDelay: `${1 + i * 0.2}s` }} />
+      ))}
+    </svg>
+  );
+}
+
+/* Animated Brain Wave SVG */
+function BrainWaveSVG() {
+  return (
+    <svg
+      className="absolute bottom-28 left-1/2 h-12 w-64 -translate-x-1/2 opacity-15 sm:h-16 sm:w-96"
+      viewBox="0 0 400 60"
+      fill="none"
+      preserveAspectRatio="none"
+    >
+      <path
+        d="M0 30 L40 30 L55 8 L70 52 L85 8 L100 52 L115 30 L160 30 L175 12 L190 48 L205 12 L220 48 L235 30 L280 30 L295 15 L310 45 L325 15 L340 45 L355 30 L400 30"
+        stroke="#00e87b" strokeWidth="2" fill="none" className="animate-brain-wave"
+      />
+    </svg>
+  );
+}
+
+/* Stat row — inline, no floating cards */
+function StatItem({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="flex flex-col items-center px-4">
+      <p className="font-data text-2xl font-medium text-[#00e87b] sm:text-3xl">{value}</p>
+      <p className="font-body mt-1 text-xs font-medium uppercase tracking-wider text-white/50 sm:text-sm">{label}</p>
     </div>
   );
 }
@@ -127,8 +148,13 @@ export function Hero() {
 
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0a0f0d]">
-      {/* Background layers */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f0d] via-[#0d1a14] to-[#0a0f0d]" />
+      {/* Hero background image — low opacity for depth */}
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+        style={{ backgroundImage: "url(/generated/hero-bg.png)" }}
+      />
+      {/* Dark overlay gradient for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f0d]/70 via-[#0a0f0d]/50 to-[#0a0f0d]/95" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(0,232,123,0.08)_0%,_transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(0,98,65,0.12)_0%,_transparent_50%)]" />
 
@@ -142,18 +168,26 @@ export function Hero() {
         }}
       />
 
-      <FloatingElements />
+      {/* Animated SVG decorations */}
+      <DoubleHelixSVG />
+      <DNAHelixSVG />
+      <BrainWaveSVG />
+
+      {/* Floating orbs */}
+      <div className="animate-float-fast absolute top-1/4 right-1/4 h-3 w-3 rounded-full bg-[#00e87b] opacity-30 blur-[1px]" />
+      <div className="animate-drift absolute bottom-1/3 left-1/4 h-2 w-2 rounded-full bg-[#00e87b] opacity-25 blur-[1px]" />
+      <div className="animate-float-medium absolute top-2/3 right-1/3 h-4 w-4 rounded-full bg-[#00e87b] opacity-15 blur-[2px]" />
 
       {/* Main content */}
       <div className="relative z-10 mx-auto max-w-5xl px-6 py-32 text-center">
         {/* Date badge */}
-        <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#00e87b]/20 bg-[#00e87b]/10 px-5 py-2 text-sm font-semibold text-[#00e87b]">
+        <div className="font-data mb-8 inline-flex items-center gap-2 rounded-full border border-[#00e87b]/20 bg-[#00e87b]/10 px-5 py-2 text-sm font-medium text-[#00e87b]">
           <span className="h-2 w-2 rounded-full bg-[#00e87b] animate-pulse" />
           APRIL 11, 2026
         </div>
 
         {/* Heading */}
-        <h1 className="text-5xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl">
+        <h1 className="font-display text-5xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl">
           Generator
           <br />
           <span className="bg-gradient-to-r from-[#00e87b] via-[#00d4a0] to-[#00e87b] bg-clip-text text-transparent animate-gradient">
@@ -162,7 +196,7 @@ export function Hero() {
         </h1>
 
         {/* Theme */}
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-white/60 sm:text-xl">
+        <p className="font-body mx-auto mt-6 max-w-2xl text-lg text-white/60 sm:text-xl">
           A 12-hour hackathon at <span className="text-white/90 font-medium">Babson College</span> exploring
           the intersection of <span className="text-[#00e87b] font-semibold">AI</span>,{" "}
           <span className="text-[#00e87b] font-semibold">Body</span> &{" "}
@@ -172,17 +206,11 @@ export function Hero() {
         {/* Countdown */}
         <div className="mt-12 flex justify-center gap-5 sm:gap-8">
           <CountdownUnit value={countdown.days} label="Days" />
-          <span className="self-start pt-2 text-3xl font-light text-white/20 sm:text-4xl md:text-5xl">
-            :
-          </span>
+          <span className="font-data self-start pt-2 text-3xl font-light text-white/20 sm:text-4xl md:text-5xl">:</span>
           <CountdownUnit value={countdown.hours} label="Hours" />
-          <span className="self-start pt-2 text-3xl font-light text-white/20 sm:text-4xl md:text-5xl">
-            :
-          </span>
+          <span className="font-data self-start pt-2 text-3xl font-light text-white/20 sm:text-4xl md:text-5xl">:</span>
           <CountdownUnit value={countdown.minutes} label="Min" />
-          <span className="self-start pt-2 text-3xl font-light text-white/20 sm:text-4xl md:text-5xl">
-            :
-          </span>
+          <span className="font-data self-start pt-2 text-3xl font-light text-white/20 sm:text-4xl md:text-5xl">:</span>
           <CountdownUnit value={countdown.seconds} label="Sec" />
         </div>
 
@@ -190,25 +218,25 @@ export function Hero() {
         <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Link
             href="/register"
-            className="rounded-full bg-[#00e87b] px-10 py-4 text-base font-bold text-[#0a0f0d] shadow-lg shadow-[#00e87b]/20 transition-all hover:bg-[#00ff88] hover:shadow-xl hover:shadow-[#00e87b]/30"
+            className="shimmer-border rounded-full bg-[#00e87b] px-10 py-4 text-base font-bold text-[#0a0f0d] shadow-lg shadow-[#00e87b]/20 transition-all hover:bg-[#00ff88] hover:shadow-xl hover:shadow-[#00e87b]/30"
           >
             Register Now
           </Link>
           <a
             href="#about"
-            className="rounded-full border border-white/20 px-10 py-4 text-base font-semibold text-white transition-all hover:border-white/40 hover:bg-white/5"
+            className="glass-card rounded-full px-10 py-4 text-base font-semibold text-white transition-all hover:border-white/40"
           >
             Learn More
           </a>
         </div>
-      </div>
 
-      {/* Floating stat cards */}
-      <div className="relative z-10 mx-auto mb-20 hidden w-full max-w-4xl justify-center gap-6 px-6 md:flex">
-        <StatCard value="500" label="Hackers" rotate="-3deg" delay="0s" />
-        <StatCard value="12h" label="of Building" rotate="2deg" delay="0.5s" />
-        <StatCard value="3" label="Universities" rotate="-1deg" delay="1s" />
-        <StatCard value="5" label="Per Team" rotate="3deg" delay="1.5s" />
+        {/* Stats row */}
+        <div className="mt-16 flex justify-center divide-x divide-white/10">
+          <StatItem value="500" label="Hackers" />
+          <StatItem value="12h" label="of Building" />
+          <StatItem value="3" label="Universities" />
+          <StatItem value="5" label="Per Team" />
+        </div>
       </div>
     </section>
   );

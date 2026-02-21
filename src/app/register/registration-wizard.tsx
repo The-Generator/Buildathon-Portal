@@ -17,7 +17,6 @@ const INITIAL_FORM_DATA: RegistrationFormData = {
   school: "",
   school_other: "",
   year: "",
-  tshirt_size: "",
   dietary_restrictions: "",
   primary_role: "",
   specific_skills: [],

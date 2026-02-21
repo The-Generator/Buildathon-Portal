@@ -25,25 +25,33 @@ const scheduleItems = [
 
 export function Schedule() {
   return (
-    <section id="schedule" className="relative bg-[#0a0f0d] py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="schedule" className="relative bg-[#0a0f0d] py-24 sm:py-32 overflow-hidden">
+      {/* Subtle background image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-[0.04]"
+        style={{ backgroundImage: "url(/generated/schedule-bg.png)" }}
+      />
+
+      <div className="relative mx-auto max-w-7xl px-6">
         {/* Section header */}
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-[#00e87b]">
+          <p className="font-data text-sm font-medium uppercase tracking-widest text-[#00e87b]">
             Day-of Schedule
           </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
             Saturday, April 11
           </h2>
-          <p className="mt-4 text-white/50">
+          <p className="font-body mt-4 text-white/50">
             12 hours of building, learning, and competing at Knight Auditorium.
           </p>
         </div>
 
         {/* Timeline */}
         <div className="relative mx-auto mt-16 max-w-2xl">
-          {/* Vertical line */}
-          <div className="absolute left-[27px] top-0 bottom-0 w-px bg-gradient-to-b from-[#00e87b]/40 via-[#00e87b]/20 to-[#00e87b]/40 sm:left-[31px]" />
+          {/* Animated vertical line */}
+          <div className="absolute left-[27px] top-0 bottom-0 w-px sm:left-[31px]">
+            <div className="h-full w-full animate-timeline bg-gradient-to-b from-[#00e87b]/60 via-[#00e87b]/20 to-[#00e87b]/60" />
+          </div>
 
           <div className="space-y-1">
             {scheduleItems.map((item, i) => (
@@ -52,7 +60,7 @@ export function Schedule() {
                 <div
                   className={`relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 transition-all sm:h-16 sm:w-16 ${
                     item.accent
-                      ? "border-[#00e87b]/40 bg-[#00e87b]/10 text-[#00e87b]"
+                      ? "border-[#00e87b]/40 bg-[#00e87b]/10 text-[#00e87b] animate-pulse-glow"
                       : "border-white/10 bg-white/5 text-white/40 group-hover:border-[#00e87b]/30 group-hover:text-[#00e87b]"
                   }`}
                 >
@@ -61,10 +69,10 @@ export function Schedule() {
 
                 {/* Content */}
                 <div className="pt-3 sm:pt-4">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-[#00e87b]/70">
+                  <p className="font-data text-xs font-medium uppercase tracking-widest text-[#00e87b]/70">
                     {item.time}
                   </p>
-                  <h3 className="text-lg font-semibold text-white">
+                  <h3 className="font-body text-lg font-semibold text-white">
                     {item.title}
                   </h3>
                 </div>

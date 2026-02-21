@@ -19,27 +19,27 @@ export const PRIMARY_ROLES = [
   "Data Scientist / ML Engineer",
   "Project Manager",
   "Business / Strategy",
+  "Pitch / Presenting",
+  "Domain Expert (Health, Neuro, Wellness)",
 ] as const;
 
 export const SPECIFIC_SKILLS = [
   "React / Next.js",
   "Python",
-  "Node.js",
-  "TypeScript",
-  "SQL / Databases",
   "Machine Learning",
   "UI/UX Design (Figma)",
-  "Mobile Development",
-  "Cloud / DevOps",
   "Data Analysis",
-  "API Development",
-  "Blockchain / Web3",
-  "Game Development",
-  "Cybersecurity",
   "Public Speaking / Pitching",
   "Business Strategy",
   "Marketing / Growth",
-  "Hardware / IoT",
+  "Neuroscience / Brain-Computer Interfaces",
+  "Health & Fitness Tech",
+  "Mental Health / Wellness",
+  "Bioinformatics / Genomics",
+  "Wearables / Sensor Data",
+  "Nutrition / Dietetics",
+  "Psychology / Behavioral Science",
+  "Medical / Clinical Knowledge",
 ] as const;
 
 export const EXPERIENCE_LEVELS = [
@@ -63,7 +63,6 @@ export const YEARS = [
   "Graduate",
 ] as const;
 
-export const TSHIRT_SIZES = ["XS", "S", "M", "L", "XL", "XXL"] as const;
 
 export const TEAM_OPTIONS = [
   {
@@ -91,5 +90,4 @@ export type SpecificSkill = (typeof SPECIFIC_SKILLS)[number];
 export type ExperienceLevel = (typeof EXPERIENCE_LEVELS)[number];
 export type School = (typeof SCHOOLS)[number];
 export type Year = (typeof YEARS)[number];
-export type TshirtSize = (typeof TSHIRT_SIZES)[number];
 export type TeamOption = "full_team" | "partial_team" | "solo";

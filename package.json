@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google/genai": "^1.42.0",
     "@react-email/components": "^1.0.8",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",

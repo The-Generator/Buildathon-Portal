@@ -5,7 +5,6 @@ import {
   EXPERIENCE_LEVELS,
   SCHOOLS,
   YEARS,
-  TSHIRT_SIZES,
 } from "./constants";
 
 // Step 1: Personal Info
@@ -17,7 +16,6 @@ export const stepPersonalInfoSchema = z
     school: z.enum([...SCHOOLS]),
     school_other: z.string().optional(),
     year: z.enum([...YEARS]),
-    tshirt_size: z.enum([...TSHIRT_SIZES]),
     dietary_restrictions: z.string().optional(),
     primary_role: z.enum([...PRIMARY_ROLES]),
     specific_skills: z
@@ -86,7 +84,6 @@ export const fullRegistrationSchema = z
     school: z.enum([...SCHOOLS]),
     school_other: z.string().optional(),
     year: z.enum([...YEARS]),
-    tshirt_size: z.enum([...TSHIRT_SIZES]),
     dietary_restrictions: z.string().optional(),
     primary_role: z.enum([...PRIMARY_ROLES]),
     specific_skills: z

@@ -56,6 +56,25 @@ const faqs = [
   },
 ];
 
+/* Brain wave decoration for FAQ section */
+function BrainWaveDecoration() {
+  return (
+    <svg
+      className="absolute right-0 top-1/3 h-16 w-48 opacity-[0.06] sm:w-64"
+      viewBox="0 0 300 60"
+      fill="none"
+    >
+      <path
+        d="M0 30 L30 30 L45 10 L60 50 L75 10 L90 50 L105 30 L150 30 L165 15 L180 45 L195 15 L210 45 L225 30 L300 30"
+        stroke="#00e87b"
+        strokeWidth="2"
+        fill="none"
+        className="animate-brain-wave"
+      />
+    </svg>
+  );
+}
+
 function FaqItem({
   question,
   answer,
@@ -66,17 +85,17 @@ function FaqItem({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-white/10">
+    <div className="glass-card rounded-xl mb-3 overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between py-5 text-left transition-colors hover:text-[#00e87b]"
+        className="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-white/[0.02]"
       >
-        <span className="pr-4 text-base font-semibold text-white sm:text-lg">
+        <span className="font-body pr-4 text-base font-semibold text-white sm:text-lg">
           {question}
         </span>
         <ChevronDown
-          className={`h-5 w-5 shrink-0 text-white/30 transition-transform duration-200 ${
-            open ? "rotate-180 text-[#00e87b]" : ""
+          className={`h-5 w-5 shrink-0 transition-all duration-200 ${
+            open ? "rotate-180 text-[#00e87b] drop-shadow-[0_0_6px_rgba(0,232,123,0.5)]" : "text-white/30"
           }`}
         />
       </button>
@@ -85,7 +104,7 @@ function FaqItem({
           open ? "max-h-96 pb-5" : "max-h-0"
         }`}
       >
-        <p className="text-sm leading-relaxed text-white/50 sm:text-base">
+        <p className="font-body px-6 text-sm leading-relaxed text-white/50 sm:text-base">
           {answer}
         </p>
       </div>
@@ -95,14 +114,16 @@ function FaqItem({
 
 export function FAQ() {
   return (
-    <section id="faq" className="relative bg-[#0a0f0d] py-24 sm:py-32">
-      <div className="mx-auto max-w-3xl px-6">
+    <section id="faq" className="relative bg-[#0a0f0d] py-24 sm:py-32 overflow-hidden">
+      <BrainWaveDecoration />
+
+      <div className="relative mx-auto max-w-3xl px-6">
         {/* Section header */}
         <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-[#00e87b]">
+          <p className="font-data text-sm font-medium uppercase tracking-widest text-[#00e87b]">
             FAQ
           </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
             Frequently Asked Questions
           </h2>
         </div>
@@ -114,7 +135,7 @@ export function FAQ() {
           ))}
         </div>
 
-        <p className="mt-10 text-center text-sm text-white/40">
+        <p className="font-body mt-10 text-center text-sm text-white/40">
           Have more questions?{" "}
           <a
             href="mailto:generator@babson.edu"

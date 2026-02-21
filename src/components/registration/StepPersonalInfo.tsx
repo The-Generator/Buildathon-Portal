@@ -12,7 +12,6 @@ import {
   EXPERIENCE_LEVELS,
   SCHOOLS,
   YEARS,
-  TSHIRT_SIZES,
 } from "@/lib/constants";
 import { stepPersonalInfoSchema } from "@/lib/validations";
 import type { RegistrationFormData } from "@/types";
@@ -38,7 +37,6 @@ export function StepPersonalInfo({
       school: data.school,
       school_other: data.school_other,
       year: data.year,
-      tshirt_size: data.tshirt_size,
       dietary_restrictions: data.dietary_restrictions,
       primary_role: data.primary_role,
       specific_skills: data.specific_skills,
@@ -137,17 +135,8 @@ export function StepPersonalInfo({
         />
       </div>
 
-      {/* T-shirt + Dietary */}
+      {/* Dietary */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Select
-          id="tshirt_size"
-          label="T-Shirt Size *"
-          placeholder="Select size"
-          value={data.tshirt_size}
-          onChange={(e) => onChange({ tshirt_size: e.target.value })}
-          options={TSHIRT_SIZES.map((s) => ({ value: s, label: s }))}
-          error={errors.tshirt_size}
-        />
         <Input
           id="dietary_restrictions"
           label="Dietary Restrictions"

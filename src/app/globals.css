@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@property --border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -16,8 +22,9 @@
   --color-brand: var(--brand-green);
   --color-brand-dark: var(--brand-green-dark);
   --color-brand-light: var(--brand-green-light);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-syne);
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 body {
@@ -26,7 +33,182 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
-/* Floating animations inspired by TreeHacks */
+/* ============================================
+   Font utility classes
+   ============================================ */
+.font-display {
+  font-family: var(--font-display), sans-serif;
+}
+.font-body {
+  font-family: var(--font-sans), sans-serif;
+}
+.font-data {
+  font-family: var(--font-mono), monospace;
+}
+
+/* ============================================
+   Liquid Glass Cards
+   ============================================ */
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.02),
+    0 4px 24px -4px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(0, 232, 123, 0.2);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.03),
+    0 8px 32px -4px rgba(0, 232, 123, 0.12);
+}
+
+.glass-card-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.glass-card-shimmer::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle, rgba(0, 232, 123, 0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: orb-float 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.glass-card-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.03) 50%, transparent 100%);
+  animation: sweep 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes orb-float {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(200%, 150%); }
+  50% { transform: translate(350%, 50%); }
+  75% { transform: translate(100%, 250%); }
+}
+
+@keyframes sweep {
+  0%, 100% { left: -100%; }
+  50% { left: 100%; }
+}
+
+/* ============================================
+   Shimmer Border (animated gradient glow)
+   ============================================ */
+.shimmer-border {
+  position: relative;
+}
+.shimmer-border::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  background: conic-gradient(
+    from var(--border-angle),
+    transparent 30%,
+    rgba(0, 232, 123, 0.4) 50%,
+    transparent 70%
+  ) border-box;
+  -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0) border-box;
+  -webkit-mask-composite: destination-out;
+  mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0) border-box;
+  mask-composite: exclude;
+  animation: border-spin 4s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes border-spin {
+  to { --border-angle: 360deg; }
+}
+
+/* ============================================
+   Morphing Background Blobs
+   ============================================ */
+.blob {
+  border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
+  animation: blob-morph 12s ease-in-out infinite;
+}
+
+@keyframes blob-morph {
+  0%, 100% {
+    border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%;
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    border-radius: 60% 40% 30% 70% / 50% 60% 40% 50%;
+    transform: translate(15px, -20px) scale(1.05);
+  }
+  66% {
+    border-radius: 30% 70% 50% 50% / 40% 50% 60% 60%;
+    transform: translate(-10px, 10px) scale(0.95);
+  }
+}
+
+/* ============================================
+   SVG Animation Classes
+   ============================================ */
+.svg-draw {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw-line 3s ease-out forwards;
+}
+.svg-draw-delay-1 { animation-delay: 0.3s; }
+.svg-draw-delay-2 { animation-delay: 0.6s; }
+.svg-draw-delay-3 { animation-delay: 0.9s; }
+.svg-draw-delay-4 { animation-delay: 1.2s; }
+
+@keyframes draw-line {
+  to { stroke-dashoffset: 0; }
+}
+
+.svg-node-pulse {
+  animation: node-pulse 2s ease-in-out infinite;
+}
+
+@keyframes node-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+.svg-traveling-dot {
+  animation: traveling-dot 4s linear infinite;
+}
+
+@keyframes traveling-dot {
+  0% { offset-distance: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+/* ============================================
+   Floating animations
+   ============================================ */
 @keyframes float-slow {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   50% { transform: translateY(-20px) rotate(2deg); }
@@ -63,6 +245,18 @@ body {
   50% { background-position: 100% 50%; }
 }
 
+@keyframes timeline-gradient {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 0% 100%; }
+}
+
+@keyframes brain-wave-draw {
+  0% { stroke-dashoffset: 600; }
+  50% { stroke-dashoffset: 0; }
+  51% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: -600; opacity: 0.3; }
+}
+
 .animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
 .animate-float-medium { animation: float-medium 5s ease-in-out infinite; }
 .animate-float-fast { animation: float-fast 3s ease-in-out infinite; }
@@ -72,6 +266,42 @@ body {
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient-shift 6s ease infinite;
+}
+.animate-timeline {
+  background-size: 100% 200%;
+  animation: timeline-gradient 4s linear infinite;
+}
+.animate-brain-wave {
+  stroke-dasharray: 600;
+  stroke-dashoffset: 600;
+  animation: brain-wave-draw 6s ease-in-out infinite;
+}
+
+/* ============================================
+   Reduced motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float-slow,
+  .animate-float-medium,
+  .animate-float-fast,
+  .animate-pulse-glow,
+  .animate-drift,
+  .animate-spin-slow,
+  .animate-gradient,
+  .animate-timeline,
+  .animate-brain-wave,
+  .svg-draw,
+  .svg-node-pulse,
+  .svg-traveling-dot,
+  .blob,
+  .glass-card-shimmer::before,
+  .glass-card-shimmer::after,
+  .shimmer-border::before {
+    animation: none !important;
+  }
+  .svg-draw {
+    stroke-dashoffset: 0 !important;
+  }
 }
 
 @layer utilities {

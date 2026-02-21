@@ -33,7 +33,7 @@ export function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link
           href="/"
-          className="text-xl font-bold tracking-tight text-white"
+          className="font-display text-xl font-bold tracking-tight text-white"
         >
           Generator
         </Link>
@@ -43,14 +43,14 @@ export function Header() {
             <a
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+              className="font-body text-sm font-medium text-white/70 transition-colors hover:text-white"
             >
               {link.label}
             </a>
           ))}
           <Link
             href="/register"
-            className="rounded-full bg-[#00e87b] px-6 py-2.5 text-sm font-bold text-[#0a0f0d] transition-all hover:bg-[#00ff88] hover:shadow-lg hover:shadow-[#00e87b]/25"
+            className="shimmer-border rounded-full bg-[#00e87b] px-6 py-2.5 text-sm font-bold text-[#0a0f0d] transition-all hover:bg-[#00ff88] hover:shadow-lg hover:shadow-[#00e87b]/25"
           >
             Register Now
           </Link>
@@ -73,7 +73,7 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="text-sm font-medium text-white/70 transition-colors hover:text-white"
+                className="font-body text-sm font-medium text-white/70 transition-colors hover:text-white"
               >
                 {link.label}
               </a>

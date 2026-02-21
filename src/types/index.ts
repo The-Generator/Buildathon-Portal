@@ -6,7 +6,6 @@ export interface Participant {
   school: string;
   school_other?: string | null;
   year: string;
-  tshirt_size: string;
   dietary_restrictions?: string | null;
   primary_role: string;
   specific_skills: string[];
@@ -72,7 +71,6 @@ export interface RegistrationFormData {
   school: string;
   school_other?: string;
   year: string;
-  tshirt_size: string;
   dietary_restrictions?: string;
   primary_role: string;
   specific_skills: string[];

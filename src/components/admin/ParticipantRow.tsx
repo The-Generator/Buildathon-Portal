@@ -76,12 +76,6 @@ export function ParticipantRow({ participant }: ParticipantRowProps) {
               </div>
               <div>
                 <p className="text-gray-400 text-xs uppercase font-medium mb-1">
-                  T-Shirt Size
-                </p>
-                <p className="text-gray-700">{participant.tshirt_size}</p>
-              </div>
-              <div>
-                <p className="text-gray-400 text-xs uppercase font-medium mb-1">
                   Experience Level
                 </p>
                 <p className="text-gray-700">{participant.experience_level}</p>

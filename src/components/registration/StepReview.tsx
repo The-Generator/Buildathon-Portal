@@ -118,7 +118,6 @@ export function StepReview({ data, onBack, onSubmit }: StepReviewProps) {
           <Field label="Phone" value={data.phone} />
           <Field label="School" value={schoolDisplay} />
           <Field label="Year" value={data.year} />
-          <Field label="T-Shirt Size" value={data.tshirt_size} />
           <Field
             label="Dietary Restrictions"
             value={data.dietary_restrictions || "None"}
