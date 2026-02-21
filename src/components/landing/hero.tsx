@@ -7,15 +7,12 @@ import { EVENT_CONFIG } from "@/lib/constants";
 const TARGET_DATE = new Date(EVENT_CONFIG.startTime);
 
 function useCountdown(target: Date) {
-  const [now, setNow] = useState<Date | null>(null);
+  const [now, setNow] = useState<Date>(() => new Date());
 
   useEffect(() => {
-    setNow(new Date());
     const id = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(id);
   }, []);
-
-  if (!now) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
 
   const diff = Math.max(0, target.getTime() - now.getTime());
   return {

@@ -30,16 +30,13 @@ export default function AdminLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
+  const isLoginPage = pathname === "/admin/login";
+  const [loading, setLoading] = useState(() => !isLoginPage);
   const [adminName, setAdminName] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Skip auth guard on login page
-  const isLoginPage = pathname === "/admin/login";
-
   useEffect(() => {
     if (isLoginPage) {
-      setLoading(false);
       return;
     }
 

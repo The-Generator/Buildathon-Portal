@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MatchingPreview } from "@/components/admin/MatchingPreview";
 import {
@@ -22,9 +21,11 @@ export default function TeamsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterOption>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [adminToken, setAdminToken] = useState<string | null>(null);
+  const [adminToken] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : sessionStorage.getItem("admin_token")
+  );
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (): Promise<TeamWithMembers[] | null> => {
     const supabase = createClient();
 
     const { data: teamData, error: tError } = await supabase
@@ -34,8 +35,7 @@ export default function TeamsPage() {
 
     if (tError) {
       console.error("Failed to fetch teams:", tError);
-      setLoading(false);
-      return;
+      return null;
     }
 
     const { data: pData } = await supabase
@@ -51,29 +51,45 @@ export default function TeamsPage() {
       }
     }
 
-    const teamsWithMembers: TeamWithMembers[] = (teamData ?? []).map((t) => ({
+    return (teamData ?? []).map((t) => ({
       ...t,
       members: participantsByTeam.get(t.id) ?? [],
     }));
-
-    setTeams(teamsWithMembers);
-    setLoading(false);
   }, []);
 
   useEffect(() => {
-    fetchData();
+    let cancelled = false;
 
-    // Get admin token from session storage (set by admin login)
-    const token = sessionStorage.getItem("admin_token");
-    setAdminToken(token);
+    const load = async () => {
+      const data = await fetchData();
+      if (cancelled) return;
+      if (data) {
+        setTeams(data);
+      }
+      setLoading(false);
+    };
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [fetchData]);
 
   const hasIncompleteTeams = teams.some((t) => !t.is_complete);
   const hasUnmatchedPotential = hasIncompleteTeams || teams.length === 0;
 
   const handleMatchingConfirmed = useCallback(() => {
-    // Refresh team data after matching is confirmed
-    fetchData();
+    const refresh = async () => {
+      setLoading(true);
+      const data = await fetchData();
+      if (data) {
+        setTeams(data);
+      }
+      setLoading(false);
+    };
+
+    void refresh();
   }, [fetchData]);
 
   const filtered = teams.filter((t) => {

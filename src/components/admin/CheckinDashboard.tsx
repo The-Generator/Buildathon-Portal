@@ -17,6 +17,13 @@ interface SchoolBreakdown {
   [school: string]: { total: number; checkedIn: number };
 }
 
+interface CheckinStats {
+  totalRegistered: number;
+  totalCheckedIn: number;
+  schoolBreakdown: SchoolBreakdown;
+  recentCheckins: RecentCheckin[];
+}
+
 const SCHOOL_LABELS: Record<string, string> = {
   babson: "Babson",
   bentley: "Bentley",
@@ -47,7 +54,7 @@ export function CheckinDashboard() {
     toastTimeout.current = setTimeout(() => setToast(null), 3000);
   }, []);
 
-  const fetchStats = useCallback(async () => {
+  const fetchStats = useCallback(async (): Promise<CheckinStats | null> => {
     const supabase = createClient();
 
     // Fetch all participants with relevant fields
@@ -55,7 +62,7 @@ export function CheckinDashboard() {
       .from("participants")
       .select("id, full_name, school, school_other, checked_in, checked_in_at");
 
-    if (!participants) return;
+    if (!participants) return null;
 
     const total = participants.length;
     const checkedIn = participants.filter((p) => p.checked_in).length;
@@ -87,15 +94,32 @@ export function CheckinDashboard() {
         checked_in_at: p.checked_in_at!,
       }));
 
-    setTotalRegistered(total);
-    setTotalCheckedIn(checkedIn);
-    setSchoolBreakdown(breakdown);
-    setRecentCheckins(recent);
-    setLoading(false);
+    return {
+      totalRegistered: total,
+      totalCheckedIn: checkedIn,
+      schoolBreakdown: breakdown,
+      recentCheckins: recent,
+    };
   }, []);
 
   useEffect(() => {
-    fetchStats();
+    let cancelled = false;
+
+    const load = async () => {
+      const stats = await fetchStats();
+      if (!stats || cancelled) {
+        if (!cancelled) setLoading(false);
+        return;
+      }
+
+      setTotalRegistered(stats.totalRegistered);
+      setTotalCheckedIn(stats.totalCheckedIn);
+      setSchoolBreakdown(stats.schoolBreakdown);
+      setRecentCheckins(stats.recentCheckins);
+      setLoading(false);
+    };
+
+    void load();
 
     // Subscribe to realtime changes on participants table
     const supabase = createClient();
@@ -153,6 +177,7 @@ export function CheckinDashboard() {
       .subscribe();
 
     return () => {
+      cancelled = true;
       supabase.removeChannel(channel);
       if (toastTimeout.current) clearTimeout(toastTimeout.current);
     };

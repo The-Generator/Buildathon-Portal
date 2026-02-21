@@ -1,0 +1,1841 @@
+{
+  "source_zip": "Generator Buildathon Registration Fall 2025.zip",
+  "source_html": "The_Generator_Buildathon_Registration_-_Fall_2025.html",
+  "fields": [
+    {
+      "qid": "33",
+      "data_type": "control_text",
+      "classes": [
+        "form-line"
+      ],
+      "required_class_present": false,
+      "label": "",
+      "input_names": [],
+      "inputs": [],
+      "options": []
+    },
+    {
+      "qid": "2",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required"
+      ],
+      "required_class_present": false,
+      "label": "Full Name *",
+      "input_names": [
+        "q2_textbox_2"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q2_textbox_2",
+          "value": "",
+          "id": "input_2"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "3",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required"
+      ],
+      "required_class_present": false,
+      "label": "Email Address (please use your college's .edu email) *",
+      "input_names": [
+        "q3_textbox_3"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q3_textbox_3",
+          "value": "",
+          "id": "input_3"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "4",
+      "data_type": "control_radio",
+      "classes": [
+        "form-line",
+        "jf-required"
+      ],
+      "required_class_present": false,
+      "label": "College *",
+      "input_names": [
+        "q4_radio_4",
+        "q4_radio_4[other]"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q4_radio_4",
+          "value": "Babson",
+          "id": "input_4_0"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q4_radio_4",
+          "value": "Olin",
+          "id": "input_4_1"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q4_radio_4",
+          "value": "Wellesley",
+          "id": "input_4_2"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q4_radio_4",
+          "value": "MIT",
+          "id": "input_4_3"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q4_radio_4",
+          "value": "Harvard",
+          "id": "input_4_4"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q4_radio_4",
+          "value": "Stanford",
+          "id": "input_4_5"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q4_radio_4",
+          "value": "Northeastern",
+          "id": "input_4_6"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q4_radio_4",
+          "value": "Brandeis",
+          "id": "input_4_7"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q4_radio_4",
+          "value": "other",
+          "id": "other_4"
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q4_radio_4[other]",
+          "value": "",
+          "id": "input_4"
+        }
+      ],
+      "options": [
+        {
+          "value": "Babson",
+          "label": "Babson"
+        },
+        {
+          "value": "Olin",
+          "label": "Olin"
+        },
+        {
+          "value": "Wellesley",
+          "label": "Wellesley"
+        },
+        {
+          "value": "MIT",
+          "label": "MIT"
+        },
+        {
+          "value": "Harvard",
+          "label": "Harvard"
+        },
+        {
+          "value": "Stanford",
+          "label": "Stanford"
+        },
+        {
+          "value": "Northeastern",
+          "label": "Northeastern"
+        },
+        {
+          "value": "Brandeis",
+          "label": "Brandeis"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "qid": "5",
+      "data_type": "control_radio",
+      "classes": [
+        "form-line",
+        "jf-required"
+      ],
+      "required_class_present": false,
+      "label": "Year of Study *",
+      "input_names": [
+        "q5_radio_5",
+        "q5_radio_5[other]"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q5_radio_5",
+          "value": "Freshman",
+          "id": "input_5_0"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q5_radio_5",
+          "value": "Sophomore",
+          "id": "input_5_1"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q5_radio_5",
+          "value": "Junior",
+          "id": "input_5_2"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q5_radio_5",
+          "value": "Senior",
+          "id": "input_5_3"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q5_radio_5",
+          "value": "Graduate Student",
+          "id": "input_5_4"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q5_radio_5",
+          "value": "other",
+          "id": "other_5"
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q5_radio_5[other]",
+          "value": "",
+          "id": "input_5"
+        }
+      ],
+      "options": [
+        {
+          "value": "Freshman",
+          "label": "Freshman"
+        },
+        {
+          "value": "Sophomore",
+          "label": "Sophomore"
+        },
+        {
+          "value": "Junior",
+          "label": "Junior"
+        },
+        {
+          "value": "Senior",
+          "label": "Senior"
+        },
+        {
+          "value": "Graduate Student",
+          "label": "Graduate Student"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "qid": "6",
+      "data_type": "control_radio",
+      "classes": [
+        "form-line",
+        "jf-required"
+      ],
+      "required_class_present": false,
+      "label": "Are you registering as an individual or as a team? *",
+      "input_names": [
+        "q6_radio_6"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q6_radio_6",
+          "value": "I am registering as an individual (I'll be matched with others)",
+          "id": "input_6_0"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q6_radio_6",
+          "value": "I am registering as a team (I'm signing up my entire team 4-5 people) - you can edit this form even after submission if your team changes.",
+          "id": "input_6_1"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q6_radio_6",
+          "value": "I am registering as a partial team (i'm signing up 2-3 people, but an incomplete team)",
+          "id": "input_6_2"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q6_radio_6",
+          "value": "SPECTATOR (FOR FACULTY, SPONSORS, JUDGES, PARENTS, ETC)",
+          "id": "input_6_3"
+        }
+      ],
+      "options": [
+        {
+          "value": "I am registering as an individual (I'll be matched with others)",
+          "label": "I am registering as an individual (I'll be matched with others)"
+        },
+        {
+          "value": "I am registering as a team (I'm signing up my entire team 4-5 people) - you can edit this form even after submission if your team changes.",
+          "label": "I am registering as a team (I'm signing up my entire team 4-5 people) - you can edit this form even after submission if your team changes."
+        },
+        {
+          "value": "I am registering as a partial team (i'm signing up 2-3 people, but an incomplete team)",
+          "label": "I am registering as a partial team (i'm signing up 2-3 people, but an incomplete team)"
+        },
+        {
+          "value": "SPECTATOR (FOR FACULTY, SPONSORS, JUDGES, PARENTS, ETC)",
+          "label": "SPECTATOR (FOR FACULTY, SPONSORS, JUDGES, PARENTS, ETC)"
+        }
+      ]
+    },
+    {
+      "qid": "41",
+      "data_type": "control_radio",
+      "classes": [
+        "form-line",
+        "always-hidden",
+        "jf-required"
+      ],
+      "required_class_present": false,
+      "label": "Are you registering as an individual or as a team? *",
+      "input_names": [
+        "q41_areYou"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q41_areYou",
+          "value": "I am registering as an individual (I'll be matched with others)",
+          "id": "input_41_0"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q41_areYou",
+          "value": "I am registering as a team (I'm signing up my entire team 4-5 people) - you can edit this form even after submission if your team changes.",
+          "id": "input_41_1"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q41_areYou",
+          "value": "I am registering as a partial team (i'm signing up 2-3 people, but an incomplete team)",
+          "id": "input_41_2"
+        }
+      ],
+      "options": [
+        {
+          "value": "I am registering as an individual (I'll be matched with others)",
+          "label": "I am registering as an individual (I'll be matched with others)"
+        },
+        {
+          "value": "I am registering as a team (I'm signing up my entire team 4-5 people) - you can edit this form even after submission if your team changes.",
+          "label": "I am registering as a team (I'm signing up my entire team 4-5 people) - you can edit this form even after submission if your team changes."
+        },
+        {
+          "value": "I am registering as a partial team (i'm signing up 2-3 people, but an incomplete team)",
+          "label": "I am registering as a partial team (i'm signing up 2-3 people, but an incomplete team)"
+        }
+      ]
+    },
+    {
+      "qid": "9",
+      "data_type": "control_radio",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "AI Experience Level *",
+      "input_names": [
+        "q9_radio_9"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q9_radio_9",
+          "value": "Beginner (I've used ChatGPT or similar tools)",
+          "id": "input_9_0"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q9_radio_9",
+          "value": "Intermediate (I've used AI tools for projects)",
+          "id": "input_9_1"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q9_radio_9",
+          "value": "Advanced (I've built or modified AI models)",
+          "id": "input_9_2"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q9_radio_9",
+          "value": "Expert (I've developed custom AI solutions)",
+          "id": "input_9_3"
+        }
+      ],
+      "options": [
+        {
+          "value": "Beginner (I've used ChatGPT or similar tools)",
+          "label": "Beginner (I've used ChatGPT or similar tools)"
+        },
+        {
+          "value": "Intermediate (I've used AI tools for projects)",
+          "label": "Intermediate (I've used AI tools for projects)"
+        },
+        {
+          "value": "Advanced (I've built or modified AI models)",
+          "label": "Advanced (I've built or modified AI models)"
+        },
+        {
+          "value": "Expert (I've developed custom AI solutions)",
+          "label": "Expert (I've developed custom AI solutions)"
+        }
+      ]
+    },
+    {
+      "qid": "10",
+      "data_type": "control_checkbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Which AI tools or platforms are you familiar with? (Select all that apply) *",
+      "input_names": [
+        "q10_checkbox_10[]",
+        "q10_checkbox_10[other]"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "v0.dev (Coding & Development)",
+          "id": "input_10_0"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Lovable (Coding & Development)",
+          "id": "input_10_1"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Bolt (Coding & Development)",
+          "id": "input_10_2"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Gemini Command Line Coding Tool",
+          "id": "input_10_3"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Cursor (Coding & Development)",
+          "id": "input_10_4"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Claude Code",
+          "id": "input_10_5"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Chat GPT Codex",
+          "id": "input_10_6"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Windsurf (Coding & Development)",
+          "id": "input_10_7"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Replit Agent (Coding & Development)",
+          "id": "input_10_8"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Rork (Coding & Development)",
+          "id": "input_10_9"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "n8n (Coding & Development)",
+          "id": "input_10_10"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other coding tools (Coding & Development)",
+          "id": "input_10_11"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Supabase (Hosting & Infrastructure)",
+          "id": "input_10_12"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Vercel (Hosting & Infrastructure)",
+          "id": "input_10_13"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other hosting platforms (Hosting & Infrastructure)",
+          "id": "input_10_14"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Krea.ai (Image Generation & Design)",
+          "id": "input_10_15"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Midjourney (Image Generation & Design)",
+          "id": "input_10_16"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Vizcom (Image Generation & Design)",
+          "id": "input_10_17"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "DALL-E (Image Generation & Design)",
+          "id": "input_10_18"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Stable Diffusion (Image Generation & Design)",
+          "id": "input_10_19"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other image tools (Image Generation & Design)",
+          "id": "input_10_20"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Google Veo 2 (Video Creation)",
+          "id": "input_10_21"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "InVideo (Video Creation)",
+          "id": "input_10_22"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Minimax (Video Creation)",
+          "id": "input_10_23"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Kling (Video Creation)",
+          "id": "input_10_24"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other video tools (Video Creation)",
+          "id": "input_10_25"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Eleven Labs (Audio & Speech)",
+          "id": "input_10_26"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "ElevenLabs Text to Speech (Audio & Speech)",
+          "id": "input_10_27"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "ElevenLabs Scribe (Audio & Speech)",
+          "id": "input_10_28"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Superwhisperer (Audio & Speech)",
+          "id": "input_10_29"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other audio tools (Audio & Speech)",
+          "id": "input_10_30"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Suno (Music Generation)",
+          "id": "input_10_31"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Lemonaide AI (Music Generation)",
+          "id": "input_10_32"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other music tools (Music Generation)",
+          "id": "input_10_33"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Meshy (3D Modeling)",
+          "id": "input_10_34"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other 3D tools (3D Modeling)",
+          "id": "input_10_35"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Superhuman (Productivity & Organization)",
+          "id": "input_10_36"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Motion (Productivity & Organization)",
+          "id": "input_10_37"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Granola (Productivity & Organization)",
+          "id": "input_10_38"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Rewind (Productivity & Organization)",
+          "id": "input_10_39"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Gamma (Productivity & Organization)",
+          "id": "input_10_40"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other productivity tools (Productivity & Organization)",
+          "id": "input_10_41"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Deep Research (Research & Search)",
+          "id": "input_10_42"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Exa (Research & Search)",
+          "id": "input_10_43"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Firecrawl (Research & Search)",
+          "id": "input_10_44"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other research tools (Research & Search)",
+          "id": "input_10_45"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Naya (Product Development)",
+          "id": "input_10_46"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Flora (Product Development)",
+          "id": "input_10_47"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other product tools (Product Development)",
+          "id": "input_10_48"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Intercom (Customer Service)",
+          "id": "input_10_49"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other customer service tools (Customer Service)",
+          "id": "input_10_50"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Agno (Agent Frameworks)",
+          "id": "input_10_51"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "OpenAI Agents (Agent Frameworks)",
+          "id": "input_10_52"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Agents Marketplace (Agent Frameworks)",
+          "id": "input_10_53"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "LangChain (Agent Frameworks)",
+          "id": "input_10_54"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other agent frameworks (Agent Frameworks)",
+          "id": "input_10_55"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "ChatGPT (Large Language Models)",
+          "id": "input_10_56"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Claude (Large Language Models)",
+          "id": "input_10_57"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Gemini (Large Language Models)",
+          "id": "input_10_58"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Llama (Large Language Models)",
+          "id": "input_10_59"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other LLMs (Large Language Models)",
+          "id": "input_10_60"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Limitless (Hardware)",
+          "id": "input_10_61"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Other AI hardware (Hardware)",
+          "id": "input_10_62"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "I have no experience with AI tools (That's OK!)",
+          "id": "input_10_63"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "Perplexity's Comet Agentic Browser",
+          "id": "input_10_64"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "OpenAi's Atlas Agentic Browser",
+          "id": "input_10_65"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "TheBrowserCompany's Dia Agentic Browser",
+          "id": "input_10_66"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[]",
+          "value": "OpenSource Agentic browsers (locally built + hosted)",
+          "id": "input_10_67"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q10_checkbox_10[other]",
+          "value": "other",
+          "id": "other_10"
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q10_checkbox_10[other]",
+          "value": "",
+          "id": "input_10"
+        }
+      ],
+      "options": [
+        {
+          "value": "v0.dev (Coding & Development)",
+          "label": "v0.dev (Coding & Development)"
+        },
+        {
+          "value": "Lovable (Coding & Development)",
+          "label": "Lovable (Coding & Development)"
+        },
+        {
+          "value": "Bolt (Coding & Development)",
+          "label": "Bolt (Coding & Development)"
+        },
+        {
+          "value": "Gemini Command Line Coding Tool",
+          "label": "Gemini Command Line Coding Tool"
+        },
+        {
+          "value": "Cursor (Coding & Development)",
+          "label": "Cursor (Coding & Development)"
+        },
+        {
+          "value": "Claude Code",
+          "label": "Claude Code"
+        },
+        {
+          "value": "Chat GPT Codex",
+          "label": "Chat GPT Codex"
+        },
+        {
+          "value": "Windsurf (Coding & Development)",
+          "label": "Windsurf (Coding & Development)"
+        },
+        {
+          "value": "Replit Agent (Coding & Development)",
+          "label": "Replit Agent (Coding & Development)"
+        },
+        {
+          "value": "Rork (Coding & Development)",
+          "label": "Rork (Coding & Development)"
+        },
+        {
+          "value": "n8n (Coding & Development)",
+          "label": "n8n (Coding & Development)"
+        },
+        {
+          "value": "Other coding tools (Coding & Development)",
+          "label": "Other coding tools (Coding & Development)"
+        },
+        {
+          "value": "Supabase (Hosting & Infrastructure)",
+          "label": "Supabase (Hosting & Infrastructure)"
+        },
+        {
+          "value": "Vercel (Hosting & Infrastructure)",
+          "label": "Vercel (Hosting & Infrastructure)"
+        },
+        {
+          "value": "Other hosting platforms (Hosting & Infrastructure)",
+          "label": "Other hosting platforms (Hosting & Infrastructure)"
+        },
+        {
+          "value": "Krea.ai (Image Generation & Design)",
+          "label": "Krea.ai (Image Generation & Design)"
+        },
+        {
+          "value": "Midjourney (Image Generation & Design)",
+          "label": "Midjourney (Image Generation & Design)"
+        },
+        {
+          "value": "Vizcom (Image Generation & Design)",
+          "label": "Vizcom (Image Generation & Design)"
+        },
+        {
+          "value": "DALL-E (Image Generation & Design)",
+          "label": "DALL-E (Image Generation & Design)"
+        },
+        {
+          "value": "Stable Diffusion (Image Generation & Design)",
+          "label": "Stable Diffusion (Image Generation & Design)"
+        },
+        {
+          "value": "Other image tools (Image Generation & Design)",
+          "label": "Other image tools (Image Generation & Design)"
+        },
+        {
+          "value": "Google Veo 2 (Video Creation)",
+          "label": "Google Veo 2 (Video Creation)"
+        },
+        {
+          "value": "InVideo (Video Creation)",
+          "label": "InVideo (Video Creation)"
+        },
+        {
+          "value": "Minimax (Video Creation)",
+          "label": "Minimax (Video Creation)"
+        },
+        {
+          "value": "Kling (Video Creation)",
+          "label": "Kling (Video Creation)"
+        },
+        {
+          "value": "Other video tools (Video Creation)",
+          "label": "Other video tools (Video Creation)"
+        },
+        {
+          "value": "Eleven Labs (Audio & Speech)",
+          "label": "Eleven Labs (Audio & Speech)"
+        },
+        {
+          "value": "ElevenLabs Text to Speech (Audio & Speech)",
+          "label": "ElevenLabs Text to Speech (Audio & Speech)"
+        },
+        {
+          "value": "ElevenLabs Scribe (Audio & Speech)",
+          "label": "ElevenLabs Scribe (Audio & Speech)"
+        },
+        {
+          "value": "Superwhisperer (Audio & Speech)",
+          "label": "Superwhisperer (Audio & Speech)"
+        },
+        {
+          "value": "Other audio tools (Audio & Speech)",
+          "label": "Other audio tools (Audio & Speech)"
+        },
+        {
+          "value": "Suno (Music Generation)",
+          "label": "Suno (Music Generation)"
+        },
+        {
+          "value": "Lemonaide AI (Music Generation)",
+          "label": "Lemonaide AI (Music Generation)"
+        },
+        {
+          "value": "Other music tools (Music Generation)",
+          "label": "Other music tools (Music Generation)"
+        },
+        {
+          "value": "Meshy (3D Modeling)",
+          "label": "Meshy (3D Modeling)"
+        },
+        {
+          "value": "Other 3D tools (3D Modeling)",
+          "label": "Other 3D tools (3D Modeling)"
+        },
+        {
+          "value": "Superhuman (Productivity & Organization)",
+          "label": "Superhuman (Productivity & Organization)"
+        },
+        {
+          "value": "Motion (Productivity & Organization)",
+          "label": "Motion (Productivity & Organization)"
+        },
+        {
+          "value": "Granola (Productivity & Organization)",
+          "label": "Granola (Productivity & Organization)"
+        },
+        {
+          "value": "Rewind (Productivity & Organization)",
+          "label": "Rewind (Productivity & Organization)"
+        },
+        {
+          "value": "Gamma (Productivity & Organization)",
+          "label": "Gamma (Productivity & Organization)"
+        },
+        {
+          "value": "Other productivity tools (Productivity & Organization)",
+          "label": "Other productivity tools (Productivity & Organization)"
+        },
+        {
+          "value": "Deep Research (Research & Search)",
+          "label": "Deep Research (Research & Search)"
+        },
+        {
+          "value": "Exa (Research & Search)",
+          "label": "Exa (Research & Search)"
+        },
+        {
+          "value": "Firecrawl (Research & Search)",
+          "label": "Firecrawl (Research & Search)"
+        },
+        {
+          "value": "Other research tools (Research & Search)",
+          "label": "Other research tools (Research & Search)"
+        },
+        {
+          "value": "Naya (Product Development)",
+          "label": "Naya (Product Development)"
+        },
+        {
+          "value": "Flora (Product Development)",
+          "label": "Flora (Product Development)"
+        },
+        {
+          "value": "Other product tools (Product Development)",
+          "label": "Other product tools (Product Development)"
+        },
+        {
+          "value": "Intercom (Customer Service)",
+          "label": "Intercom (Customer Service)"
+        },
+        {
+          "value": "Other customer service tools (Customer Service)",
+          "label": "Other customer service tools (Customer Service)"
+        },
+        {
+          "value": "Agno (Agent Frameworks)",
+          "label": "Agno (Agent Frameworks)"
+        },
+        {
+          "value": "OpenAI Agents (Agent Frameworks)",
+          "label": "OpenAI Agents (Agent Frameworks)"
+        },
+        {
+          "value": "Agents Marketplace (Agent Frameworks)",
+          "label": "Agents Marketplace (Agent Frameworks)"
+        },
+        {
+          "value": "LangChain (Agent Frameworks)",
+          "label": "LangChain (Agent Frameworks)"
+        },
+        {
+          "value": "Other agent frameworks (Agent Frameworks)",
+          "label": "Other agent frameworks (Agent Frameworks)"
+        },
+        {
+          "value": "ChatGPT (Large Language Models)",
+          "label": "ChatGPT (Large Language Models)"
+        },
+        {
+          "value": "Claude (Large Language Models)",
+          "label": "Claude (Large Language Models)"
+        },
+        {
+          "value": "Gemini (Large Language Models)",
+          "label": "Gemini (Large Language Models)"
+        },
+        {
+          "value": "Llama (Large Language Models)",
+          "label": "Llama (Large Language Models)"
+        },
+        {
+          "value": "Other LLMs (Large Language Models)",
+          "label": "Other LLMs (Large Language Models)"
+        },
+        {
+          "value": "Limitless (Hardware)",
+          "label": "Limitless (Hardware)"
+        },
+        {
+          "value": "Other AI hardware (Hardware)",
+          "label": "Other AI hardware (Hardware)"
+        },
+        {
+          "value": "I have no experience with AI tools (That's OK!)",
+          "label": "I have no experience with AI tools (That's OK!)"
+        },
+        {
+          "value": "Perplexity's Comet Agentic Browser",
+          "label": "Perplexity's Comet Agentic Browser"
+        },
+        {
+          "value": "OpenAi's Atlas Agentic Browser",
+          "label": "OpenAi's Atlas Agentic Browser"
+        },
+        {
+          "value": "TheBrowserCompany's Dia Agentic Browser",
+          "label": "TheBrowserCompany's Dia Agentic Browser"
+        },
+        {
+          "value": "OpenSource Agentic browsers (locally built + hosted)",
+          "label": "OpenSource Agentic browsers (locally built + hosted)"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "qid": "11",
+      "data_type": "control_radio",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Which theme are you most interested in? (We'll use this for team matching) *",
+      "input_names": [
+        "q11_radio_11"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q11_radio_11",
+          "value": "Applied Biotech Solutions:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Practical Tools for Health & SustainabilityCreate practical biotechnology tools and solutions that address real-world problems in health, sustainability, and quality of life with immediate applications.",
+          "id": "input_11_0"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q11_radio_11",
+          "value": "Biotech DiscoveryResearch-Driven Innovation:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Develop research-driven ideas that push the boundaries of biotechnology, focusing on breakthrough innovations in healthcare, agriculture, environment, and global health equity.\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Focus Areas:Healthcare innovations and novel therapeutic approaches.\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Agricultural and environmental biotechnology solutions\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Global access & equity in health technologies\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0AI-powered drug discovery and development\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Example Projects with Real Data:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Skin cancer detection using iPhone camera images\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Gait analysis via phone accelerometer for neurological disorders\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Plant disease identification through real-time image captureVoice biomarkers for respiratory conditions using microphone data",
+          "id": "input_11_1"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q11_radio_11",
+          "value": "Entrepreneurial AI for Unseen Markets: Innovating in Untapped Spaces",
+          "id": "input_11_2"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q11_radio_11",
+          "value": "Open to any theme",
+          "id": "input_11_3"
+        }
+      ],
+      "options": [
+        {
+          "value": "Applied Biotech Solutions:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Practical Tools for Health & SustainabilityCreate practical biotechnology tools and solutions that address real-world problems in health, sustainability, and quality of life with immediate applications.",
+          "label": "Applied Biotech Solutions: Practical Tools for Health & SustainabilityCreate practical biotechnology tools and solutions that address real-world problems in health, sustainability, and quality of life with immediate applications."
+        },
+        {
+          "value": "Biotech DiscoveryResearch-Driven Innovation:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Develop research-driven ideas that push the boundaries of biotechnology, focusing on breakthrough innovations in healthcare, agriculture, environment, and global health equity.\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Focus Areas:Healthcare innovations and novel therapeutic approaches.\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Agricultural and environmental biotechnology solutions\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Global access & equity in health technologies\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0AI-powered drug discovery and development\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Example Projects with Real Data:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Skin cancer detection using iPhone camera images\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Gait analysis via phone accelerometer for neurological disorders\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Plant disease identification through real-time image captureVoice biomarkers for respiratory conditions using microphone data",
+          "label": "Biotech DiscoveryResearch-Driven Innovation: Develop research-driven ideas that push the boundaries of biotechnology, focusing on breakthrough innovations in healthcare, agriculture, environment, and global health equity. Focus Areas:Healthcare innovations and novel therapeutic approaches. Agricultural and environmental biotechnology solutions Global access & equity in health technologies AI-powered drug discovery and development Example Projects with Real Data: Skin cancer detection using iPhone camera images Gait analysis via phone accelerometer for neurological disorders Plant disease identification through real-time image captureVoice biomarkers for respiratory conditions using microphone data"
+        },
+        {
+          "value": "Entrepreneurial AI for Unseen Markets: Innovating in Untapped Spaces",
+          "label": "Entrepreneurial AI for Unseen Markets: Innovating in Untapped Spaces"
+        },
+        {
+          "value": "Open to any theme",
+          "label": "Open to any theme"
+        }
+      ]
+    },
+    {
+      "qid": "12",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Any specific project ideas or interests you'd like potential teammates to know about?",
+      "input_names": [
+        "q12_textbox_12"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q12_textbox_12",
+          "value": "",
+          "id": "input_12"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "15",
+      "data_type": "control_radio",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "How many additional team members do you have? (not including yourself) - *Reminder, teams are restricted to 5 members maximum. Make sure you enter the additional members information in the following questions. If you do not, they will not be placed on your team. *",
+      "input_names": [
+        "q15_radio_15"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q15_radio_15",
+          "value": "1",
+          "id": "input_15_0"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q15_radio_15",
+          "value": "2",
+          "id": "input_15_1"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q15_radio_15",
+          "value": "3",
+          "id": "input_15_2"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q15_radio_15",
+          "value": "4",
+          "id": "input_15_3"
+        }
+      ],
+      "options": [
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
+      ]
+    },
+    {
+      "qid": "16",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Full Name - Additional Team Member 1 *",
+      "input_names": [
+        "q16_textbox_16"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q16_textbox_16",
+          "value": "",
+          "id": "input_16"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "17",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Email - Additional Team Member 1 (please use their college .edu email) *",
+      "input_names": [
+        "q17_textbox_17"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q17_textbox_17",
+          "value": "",
+          "id": "input_17"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "18",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Full Name - Additional Team Member 2 *",
+      "input_names": [
+        "q18_textbox_18"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q18_textbox_18",
+          "value": "",
+          "id": "input_18"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "19",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Email - Additional Team Member 2 (please use their college .edu email) *",
+      "input_names": [
+        "q19_textbox_19"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q19_textbox_19",
+          "value": "",
+          "id": "input_19"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "20",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Full Name - Additional Team Member 3 *",
+      "input_names": [
+        "q20_textbox_20"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q20_textbox_20",
+          "value": "",
+          "id": "input_20"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "21",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Email - Additional Team Member 3 (please use their college .edu email) *",
+      "input_names": [
+        "q21_textbox_21"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q21_textbox_21",
+          "value": "",
+          "id": "input_21"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "22",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Full Name - Additional Team Member 4 *",
+      "input_names": [
+        "q22_textbox_22"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q22_textbox_22",
+          "value": "",
+          "id": "input_22"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "23",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Email - Additional Team Member 4 (please use their college .edu email) *",
+      "input_names": [
+        "q23_textbox_23"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q23_textbox_23",
+          "value": "",
+          "id": "input_23"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "24",
+      "data_type": "control_checkbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "What is your team's collective experience with AI? (Select all that apply) *",
+      "input_names": [
+        "q24_checkbox_24[]",
+        "q24_checkbox_24[other]"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q24_checkbox_24[]",
+          "value": "Using AI tools (ChatGPT, Claude, etc.)",
+          "id": "input_24_0"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q24_checkbox_24[]",
+          "value": "Implementing AI solutions",
+          "id": "input_24_1"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q24_checkbox_24[]",
+          "value": "Building/modifying AI models",
+          "id": "input_24_2"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q24_checkbox_24[]",
+          "value": "Business applications of AI",
+          "id": "input_24_3"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q24_checkbox_24[]",
+          "value": "No prior AI experience (That's OK!)",
+          "id": "input_24_4"
+        },
+        {
+          "tag": "input",
+          "type": "checkbox",
+          "name": "q24_checkbox_24[other]",
+          "value": "other",
+          "id": "other_24"
+        },
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q24_checkbox_24[other]",
+          "value": "",
+          "id": "input_24"
+        }
+      ],
+      "options": [
+        {
+          "value": "Using AI tools (ChatGPT, Claude, etc.)",
+          "label": "Using AI tools (ChatGPT, Claude, etc.)"
+        },
+        {
+          "value": "Implementing AI solutions",
+          "label": "Implementing AI solutions"
+        },
+        {
+          "value": "Building/modifying AI models",
+          "label": "Building/modifying AI models"
+        },
+        {
+          "value": "Business applications of AI",
+          "label": "Business applications of AI"
+        },
+        {
+          "value": "No prior AI experience (That's OK!)",
+          "label": "No prior AI experience (That's OK!)"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ]
+    },
+    {
+      "qid": "40",
+      "data_type": "control_radio",
+      "classes": [
+        "form-line",
+        "jf-required"
+      ],
+      "required_class_present": false,
+      "label": "Which theme(s) is your team interested in?? (We'll use this for room judge balancing + matching) *",
+      "input_names": [
+        "q40_whichThemes"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q40_whichThemes",
+          "value": "Applied Biotech Solutions:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Practical Tools for Health & SustainabilityCreate practical biotechnology tools and solutions that address real-world problems in health, sustainability, and quality of life with immediate applications.",
+          "id": "input_40_0"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q40_whichThemes",
+          "value": "Biotech DiscoveryResearch-Driven Innovation:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Develop research-driven ideas that push the boundaries of biotechnology, focusing on breakthrough innovations in healthcare, agriculture, environment, and global health equity.\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0Focus Areas:Healthcare innovations and novel therapeutic approaches.\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Agricultural and environmental biotechnology solutions",
+          "id": "input_40_1"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q40_whichThemes",
+          "value": "Global access & equity in health technologies\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0AI-powered drug discovery and development\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Example Projects with Real Data:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Skin cancer detection using iPhone camera images\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Gait analysis via phone accelerometer for neurological disorders\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Plant disease identification through real-time image capture\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Voice biomarkers for respiratory conditions using microphone data",
+          "id": "input_40_2"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q40_whichThemes",
+          "value": "Open to any theme",
+          "id": "input_40_3"
+        }
+      ],
+      "options": [
+        {
+          "value": "Applied Biotech Solutions:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Practical Tools for Health & SustainabilityCreate practical biotechnology tools and solutions that address real-world problems in health, sustainability, and quality of life with immediate applications.",
+          "label": "Applied Biotech Solutions: Practical Tools for Health & SustainabilityCreate practical biotechnology tools and solutions that address real-world problems in health, sustainability, and quality of life with immediate applications."
+        },
+        {
+          "value": "Biotech DiscoveryResearch-Driven Innovation:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Develop research-driven ideas that push the boundaries of biotechnology, focusing on breakthrough innovations in healthcare, agriculture, environment, and global health equity.\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0Focus Areas:Healthcare innovations and novel therapeutic approaches.\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Agricultural and environmental biotechnology solutions",
+          "label": "Biotech DiscoveryResearch-Driven Innovation: Develop research-driven ideas that push the boundaries of biotechnology, focusing on breakthrough innovations in healthcare, agriculture, environment, and global health equity. Focus Areas:Healthcare innovations and novel therapeutic approaches. Agricultural and environmental biotechnology solutions"
+        },
+        {
+          "value": "Global access & equity in health technologies\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0AI-powered drug discovery and development\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Example Projects with Real Data:\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Skin cancer detection using iPhone camera images\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Gait analysis via phone accelerometer for neurological disorders\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Plant disease identification through real-time image capture\u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 \u00a0 Voice biomarkers for respiratory conditions using microphone data",
+          "label": "Global access & equity in health technologies AI-powered drug discovery and development Example Projects with Real Data: Skin cancer detection using iPhone camera images Gait analysis via phone accelerometer for neurological disorders Plant disease identification through real-time image capture Voice biomarkers for respiratory conditions using microphone data"
+        },
+        {
+          "value": "Open to any theme",
+          "label": "Open to any theme"
+        }
+      ]
+    },
+    {
+      "qid": "26",
+      "data_type": "control_radio",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Does your team need any additional members? *",
+      "input_names": [
+        "q26_radio_26"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q26_radio_26",
+          "value": "No, our team is complete",
+          "id": "input_26_0"
+        },
+        {
+          "tag": "input",
+          "type": "radio",
+          "name": "q26_radio_26",
+          "value": "Yes, we could use more members",
+          "id": "input_26_1"
+        }
+      ],
+      "options": [
+        {
+          "value": "No, our team is complete",
+          "label": "No, our team is complete"
+        },
+        {
+          "value": "Yes, we could use more members",
+          "label": "Yes, we could use more members"
+        }
+      ]
+    },
+    {
+      "qid": "27",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "jf-required",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "How many more team members do you want to be matched with? *",
+      "input_names": [
+        "q27_textbox_27"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q27_textbox_27",
+          "value": "",
+          "id": "input_27"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "28",
+      "data_type": "control_textbox",
+      "classes": [
+        "form-line",
+        "form-field-hidden"
+      ],
+      "required_class_present": false,
+      "label": "Any additional information, questions, or special requirements we need to know?",
+      "input_names": [
+        "q28_textbox_28"
+      ],
+      "inputs": [
+        {
+          "tag": "input",
+          "type": "text",
+          "name": "q28_textbox_28",
+          "value": "",
+          "id": "input_28"
+        }
+      ],
+      "options": []
+    },
+    {
+      "qid": "32",
+      "data_type": "control_text",
+      "classes": [
+        "form-line"
+      ],
+      "required_class_present": false,
+      "label": "",
+      "input_names": [],
+      "inputs": [],
+      "options": []
+    },
+    {
+      "qid": "29",
+      "data_type": "control_button",
+      "classes": [
+        "form-line"
+      ],
+      "required_class_present": false,
+      "label": "",
+      "input_names": [],
+      "inputs": [],
+      "options": []
+    }
+  ]
+}

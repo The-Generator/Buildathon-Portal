@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { RegistrationFormData } from "@/types";
 
@@ -80,12 +81,12 @@ export function StepReview({ data, onBack, onSubmit }: StepReviewProps) {
           See you at the Build-a-thon!
         </p>
         <div className="pt-4">
-          <a
+          <Link
             href="/"
             className="inline-flex items-center justify-center rounded-lg font-medium px-6 py-3 text-base bg-[#006241] text-white hover:bg-[#004d33] transition-colors"
           >
             Back to Home
-          </a>
+          </Link>
         </div>
       </div>
     );

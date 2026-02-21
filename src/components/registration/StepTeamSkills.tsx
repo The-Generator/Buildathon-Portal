@@ -48,15 +48,6 @@ export function StepTeamSkills({
     ...new Set([...data.specific_skills, ...data.tagged_team_skills]),
   ];
 
-  const handleSkillsChange = (skills: string[]) => {
-    // Remove the user's own skills from the selection — those stay locked
-    // Keep only skills the user actively chose as desired team skills
-    const teamSkills = skills.filter(
-      (s) => !data.specific_skills.includes(s) || data.tagged_team_skills.includes(s)
-    );
-    onChange({ tagged_team_skills: teamSkills });
-  };
-
   return (
     <div className="space-y-8">
       <div>

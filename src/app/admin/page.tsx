@@ -28,11 +28,6 @@ async function getStats() {
     return null;
   }
 
-  // Fetch registration groups for formation type breakdown
-  const { data: groups, error: gError } = await supabase
-    .from("registration_groups")
-    .select("id, group_size");
-
   const allParticipants = participants ?? [];
   const allTeams = teams ?? [];
 

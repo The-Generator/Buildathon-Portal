@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { RegistrationWizard } from "./registration-wizard";
 import { EVENT_CONFIG } from "@/lib/constants";
+import Link from "next/link";
 
 export const metadata = {
   title: `Register | ${EVENT_CONFIG.shortName}`,
@@ -35,12 +36,12 @@ export default async function RegisterPage() {
             for {EVENT_CONFIG.name}. Please check back later in case spots open
             up.
           </p>
-          <a
+          <Link
             href="/"
             className="inline-block mt-4 px-6 py-3 rounded-lg bg-[#006241] text-white font-medium hover:bg-[#004d33] transition-colors"
           >
             Back to Home
-          </a>
+          </Link>
         </div>
       </div>
     );

@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ParticipantRow } from "@/components/admin/ParticipantRow";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
@@ -124,11 +123,6 @@ export default function ParticipantsPage() {
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
-  // Reset page when filters change
-  useEffect(() => {
-    setPage(0);
-  }, [search, schoolFilter, roleFilter, teamStatusFilter]);
-
   const handleSort = (field: SortField) => {
     if (sortField === field) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -171,13 +165,19 @@ export default function ParticipantsPage() {
               type="text"
               placeholder="Search by name or email..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(0);
+              }}
               className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241] focus:border-[#006241]"
             />
           </div>
           <select
             value={schoolFilter}
-            onChange={(e) => setSchoolFilter(e.target.value)}
+            onChange={(e) => {
+              setSchoolFilter(e.target.value);
+              setPage(0);
+            }}
             className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241]"
           >
             {SCHOOL_OPTIONS.map((s) => (
@@ -188,7 +188,10 @@ export default function ParticipantsPage() {
           </select>
           <select
             value={roleFilter}
-            onChange={(e) => setRoleFilter(e.target.value)}
+            onChange={(e) => {
+              setRoleFilter(e.target.value);
+              setPage(0);
+            }}
             className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241]"
           >
             {ROLE_OPTIONS.map((r) => (
@@ -199,7 +202,10 @@ export default function ParticipantsPage() {
           </select>
           <select
             value={teamStatusFilter}
-            onChange={(e) => setTeamStatusFilter(e.target.value)}
+            onChange={(e) => {
+              setTeamStatusFilter(e.target.value);
+              setPage(0);
+            }}
             className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241]"
           >
             {TEAM_STATUS_OPTIONS.map((t) => (
