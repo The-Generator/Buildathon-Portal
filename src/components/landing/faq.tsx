@@ -12,7 +12,7 @@ const faqs = [
   {
     question: "Who can participate?",
     answer:
-      "Any currently enrolled undergraduate or graduate student is welcome to participate. You don't need to be from Babson, Bentley, or Bryant -- students from all universities are encouraged to register.",
+      "Any currently enrolled undergraduate or graduate student is welcome to participate. You don't need to be from Babson, Bentley, or Bryant — students from all universities are encouraged to register.",
   },
   {
     question: "Do I need coding experience?",
@@ -32,7 +32,7 @@ const faqs = [
   {
     question: "Will food be provided?",
     answer:
-      "Yes! Breakfast, lunch, dinner, and snacks will be provided throughout the day at no cost. We accommodate common dietary restrictions -- you can specify yours during registration.",
+      "Yes! Breakfast, lunch, dinner, and snacks will be provided throughout the day at no cost. We accommodate common dietary restrictions — you can specify yours during registration.",
   },
   {
     question: "What are the prizes?",
@@ -40,7 +40,7 @@ const faqs = [
       "Prizes will be awarded across multiple categories including each competition track, as well as special awards for best design, most innovative use of AI, and best pitch. Specific prize details will be announced closer to the event.",
   },
   {
-    question: 'What does the "AI x Body & Mind" theme mean?',
+    question: 'What does "AI x Body & Mind" mean?',
     answer:
       "Our theme challenges you to build AI-powered solutions that improve physical health, mental wellness, or the connection between body and mind. Specific tracks within this theme will be revealed on April 10th, the day before the event.",
   },
@@ -66,17 +66,17 @@ function FaqItem({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-gray-200">
+    <div className="border-b border-white/10">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between py-5 text-left transition-colors hover:text-[#006241]"
+        className="flex w-full items-center justify-between py-5 text-left transition-colors hover:text-[#00e87b]"
       >
-        <span className="pr-4 text-base font-semibold text-gray-900 sm:text-lg">
+        <span className="pr-4 text-base font-semibold text-white sm:text-lg">
           {question}
         </span>
         <ChevronDown
-          className={`h-5 w-5 shrink-0 text-gray-400 transition-transform duration-200 ${
-            open ? "rotate-180 text-[#006241]" : ""
+          className={`h-5 w-5 shrink-0 text-white/30 transition-transform duration-200 ${
+            open ? "rotate-180 text-[#00e87b]" : ""
           }`}
         />
       </button>
@@ -85,7 +85,7 @@ function FaqItem({
           open ? "max-h-96 pb-5" : "max-h-0"
         }`}
       >
-        <p className="text-sm leading-relaxed text-gray-600 sm:text-base">
+        <p className="text-sm leading-relaxed text-white/50 sm:text-base">
           {answer}
         </p>
       </div>
@@ -95,14 +95,14 @@ function FaqItem({
 
 export function FAQ() {
   return (
-    <section id="faq" className="bg-white py-24 sm:py-32">
+    <section id="faq" className="relative bg-[#0a0f0d] py-24 sm:py-32">
       <div className="mx-auto max-w-3xl px-6">
         {/* Section header */}
         <div className="text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-[#006241]">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#00e87b]">
             FAQ
           </p>
-          <h2 className="mt-3 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          <h2 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
             Frequently Asked Questions
           </h2>
         </div>
@@ -114,11 +114,11 @@ export function FAQ() {
           ))}
         </div>
 
-        <p className="mt-10 text-center text-sm text-gray-500">
+        <p className="mt-10 text-center text-sm text-white/40">
           Have more questions?{" "}
           <a
             href="mailto:generator@babson.edu"
-            className="font-medium text-[#006241] underline underline-offset-4 hover:text-[#004d33]"
+            className="font-medium text-[#00e87b] underline underline-offset-4 transition-colors hover:text-[#00ff88]"
           >
             Email us
           </a>
