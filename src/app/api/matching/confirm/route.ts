@@ -1,32 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { headers } from "next/headers";
+import { verifyAdmin } from "@/lib/admin-auth";
 import { z } from "zod";
 import { generateInviteCode } from "@/lib/utils";
-
-async function verifyAdmin() {
-  const headersList = await headers();
-  const authHeader = headersList.get("authorization");
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return null;
-  }
-
-  const token = authHeader.split(" ")[1];
-  const supabase = createAdminClient();
-
-  const { data: admin, error } = await supabase
-    .from("admins")
-    .select("*")
-    .eq("email", token)
-    .single();
-
-  if (error || !admin) {
-    return null;
-  }
-
-  return admin;
-}
 
 const confirmMatchesSchema = z.object({
   matches: z.array(

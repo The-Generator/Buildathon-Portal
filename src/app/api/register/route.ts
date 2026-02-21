@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Create participant records for each teammate
+    // 5. Create participant records for each teammate (placeholder profiles -- they complete their own later)
     const teammateRecords = [];
     for (const teammate of data.teammates) {
       const { data: teammateRecord, error: teammateError } = await supabase
@@ -107,11 +107,11 @@ export async function POST(request: NextRequest) {
           full_name: teammate.full_name,
           email: teammate.email,
           phone: "",
-          school: "Other",
-          year: "Freshman",
-          primary_role: "Full-Stack Developer",
+          school: data.school,
+          year: data.year,
+          primary_role: data.primary_role,
           specific_skills: [],
-          experience_level: "Beginner (0-1 hackathons)",
+          experience_level: data.experience_level,
           is_self_registered: false,
           registered_by: registrant.id,
         })
@@ -119,7 +119,6 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (teammateError || !teammateRecord) {
-        // Best effort: log but continue (teammate can update their info later)
         console.error("Failed to create teammate:", teammateError?.message);
         continue;
       }

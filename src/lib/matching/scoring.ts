@@ -40,8 +40,8 @@ function experienceBalanceScore(members: MatchInput[]): number {
   const uniqueLevels = levelCounts.size;
   const totalLevels = EXPERIENCE_LEVELS.length; // 3
 
-  // Base score from diversity: having all 3 levels = 1.0, 2 = 0.6, 1 = 0.2
-  const diversityBase = uniqueLevels === totalLevels ? 1.0 : uniqueLevels === 2 ? 0.6 : 0.2;
+  // Base score from diversity scaled to total available levels
+  const diversityBase = Math.min(uniqueLevels / totalLevels + 0.1, 1.0);
 
   // Entropy bonus: more even distribution = higher score
   const n = members.length;

@@ -7,7 +7,7 @@ CREATE TABLE participants (
   school TEXT NOT NULL,
   school_other TEXT,
   year TEXT NOT NULL,
-  tshirt_size TEXT NOT NULL,
+  tshirt_size TEXT,
   dietary_restrictions TEXT,
   primary_role TEXT NOT NULL,
   specific_skills TEXT[] NOT NULL DEFAULT '{}',

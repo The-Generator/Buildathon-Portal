@@ -1,35 +1,10 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { headers } from "next/headers";
+import { verifyAdmin } from "@/lib/admin-auth";
 import { runMatching } from "@/lib/matching/algorithm";
 import { serializeMatchOutput } from "@/lib/matching/types";
 import type { MatchInput } from "@/lib/matching/types";
 import type { Participant, RegistrationGroup } from "@/types";
-
-async function verifyAdmin() {
-  const headersList = await headers();
-  const authHeader = headersList.get("authorization");
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return null;
-  }
-
-  const token = authHeader.split(" ")[1];
-  const supabase = createAdminClient();
-
-  // Verify the token corresponds to an admin
-  const { data: admin, error } = await supabase
-    .from("admins")
-    .select("*")
-    .eq("email", token)
-    .single();
-
-  if (error || !admin) {
-    return null;
-  }
-
-  return admin;
-}
 
 export async function POST() {
   try {

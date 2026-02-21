@@ -43,15 +43,21 @@ export const SPECIFIC_SKILLS = [
 ] as const;
 
 export const EXPERIENCE_LEVELS = [
-  "Beginner (0-1 hackathons)",
-  "Intermediate (2-4 hackathons)",
-  "Advanced (5+ hackathons)",
+  "Beginner (I've used ChatGPT or similar tools)",
+  "Intermediate (I've used AI tools for projects)",
+  "Advanced (I've built or modified AI models)",
+  "Expert (I've developed custom AI solutions)",
 ] as const;
 
 export const SCHOOLS = [
-  "Babson College",
-  "Bentley University",
-  "Bryant University",
+  "Babson",
+  "Olin",
+  "Wellesley",
+  "MIT",
+  "Harvard",
+  "Stanford",
+  "Northeastern",
+  "Brandeis",
   "Other",
 ] as const;
 
@@ -60,7 +66,7 @@ export const YEARS = [
   "Sophomore",
   "Junior",
   "Senior",
-  "Graduate",
+  "Graduate Student",
 ] as const;
 
 
