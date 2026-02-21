@@ -1,0 +1,25 @@
+import { Header } from "@/components/landing/header";
+import { Hero } from "@/components/landing/hero";
+import { About } from "@/components/landing/about";
+import { Tracks } from "@/components/landing/tracks";
+import { Schedule } from "@/components/landing/schedule";
+import { Sponsors } from "@/components/landing/sponsors";
+import { FAQ } from "@/components/landing/faq";
+import { Footer } from "@/components/landing/footer";
+
+export default function Home() {
+  return (
+    <>
+      <Header />
+      <main>
+        <Hero />
+        <About />
+        <Tracks />
+        <Schedule />
+        <Sponsors />
+        <FAQ />
+      </main>
+      <Footer />
+    </>
+  );
+}
