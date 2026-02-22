@@ -123,21 +123,21 @@ export function StepTeamSetup({
               className={cn(
                 "flex flex-col items-center gap-3 p-6 rounded-xl border-2 transition-all duration-200 text-center",
                 isSelected
-                  ? "border-[#006241] bg-[#006241]/5 shadow-md"
-                  : "border-gray-200 bg-white hover:border-[#006241]/40 hover:shadow-sm"
+                  ? "border-emerald-700 bg-emerald-50 shadow-md"
+                  : "border-gray-200 bg-white hover:border-emerald-300 hover:shadow-sm"
               )}
             >
               <Icon
                 className={cn(
                   "h-8 w-8",
-                  isSelected ? "text-[#006241]" : "text-gray-400"
+                  isSelected ? "text-emerald-700" : "text-gray-400"
                 )}
               />
               <div>
                 <p
                   className={cn(
                     "font-semibold text-base",
-                    isSelected ? "text-[#006241]" : "text-gray-800"
+                    isSelected ? "text-emerald-700" : "text-gray-800"
                   )}
                 >
                   {option.label}
@@ -241,7 +241,7 @@ export function StepTeamSetup({
             <button
               type="button"
               onClick={addTeammate}
-              className="flex items-center gap-2 text-sm font-medium text-[#006241] hover:text-[#004d33] transition-colors"
+              className="flex items-center gap-2 text-sm font-medium text-emerald-700 hover:text-emerald-900 transition-colors"
             >
               <Plus className="h-4 w-4" />
               Add another teammate
@@ -322,8 +322,8 @@ export function StepTeamSetup({
       )}
 
       {data.team_option === "solo" && (
-        <div className="p-6 bg-[#006241]/5 rounded-xl border border-[#006241]/20 text-center">
-          <p className="text-[#006241] font-medium">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-6 text-center">
+          <p className="font-medium text-emerald-700">
             No worries -- we will match you with a great team!
           </p>
           <p className="text-sm text-gray-500 mt-1">
