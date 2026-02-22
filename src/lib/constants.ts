@@ -97,3 +97,222 @@ export type ExperienceLevel = (typeof EXPERIENCE_LEVELS)[number];
 export type School = (typeof SCHOOLS)[number];
 export type Year = (typeof YEARS)[number];
 export type TeamOption = "full_team" | "partial_team" | "solo";
+
+export const PARTICIPANT_TYPES = [
+  "solo",
+  "partial_team",
+  "full_team",
+  "spectator",
+  "walk_in",
+] as const;
+
+export type ParticipantType = (typeof PARTICIPANT_TYPES)[number];
+
+export const AI_TOOLS = [
+  // Coding & Development
+  "v0.dev (Coding & Development)",
+  "Lovable (Coding & Development)",
+  "Bolt (Coding & Development)",
+  "Gemini Command Line Coding Tool",
+  "Cursor (Coding & Development)",
+  "Claude Code",
+  "Chat GPT Codex",
+  "Windsurf (Coding & Development)",
+  "Replit Agent (Coding & Development)",
+  "Rork (Coding & Development)",
+  "n8n (Coding & Development)",
+  "Other coding tools (Coding & Development)",
+  // Hosting & Infrastructure
+  "Supabase (Hosting & Infrastructure)",
+  "Vercel (Hosting & Infrastructure)",
+  "Other hosting platforms (Hosting & Infrastructure)",
+  // Image Generation & Design
+  "Krea.ai (Image Generation & Design)",
+  "Midjourney (Image Generation & Design)",
+  "Vizcom (Image Generation & Design)",
+  "DALL-E (Image Generation & Design)",
+  "Stable Diffusion (Image Generation & Design)",
+  "Other image tools (Image Generation & Design)",
+  // Video Creation
+  "Google Veo 2 (Video Creation)",
+  "InVideo (Video Creation)",
+  "Minimax (Video Creation)",
+  "Kling (Video Creation)",
+  "Other video tools (Video Creation)",
+  // Audio & Speech
+  "Eleven Labs (Audio & Speech)",
+  "ElevenLabs Text to Speech (Audio & Speech)",
+  "ElevenLabs Scribe (Audio & Speech)",
+  "Superwhisperer (Audio & Speech)",
+  "Other audio tools (Audio & Speech)",
+  // Music Generation
+  "Suno (Music Generation)",
+  "Lemonaide AI (Music Generation)",
+  "Other music tools (Music Generation)",
+  // 3D Modeling
+  "Meshy (3D Modeling)",
+  "Other 3D tools (3D Modeling)",
+  // Productivity & Organization
+  "Superhuman (Productivity & Organization)",
+  "Motion (Productivity & Organization)",
+  "Granola (Productivity & Organization)",
+  "Rewind (Productivity & Organization)",
+  "Gamma (Productivity & Organization)",
+  "Other productivity tools (Productivity & Organization)",
+  // Research & Search
+  "Deep Research (Research & Search)",
+  "Exa (Research & Search)",
+  "Firecrawl (Research & Search)",
+  "Other research tools (Research & Search)",
+  // Product Development
+  "Naya (Product Development)",
+  "Flora (Product Development)",
+  "Other product tools (Product Development)",
+  // Customer Service
+  "Intercom (Customer Service)",
+  "Other customer service tools (Customer Service)",
+  // Agent Frameworks
+  "Agno (Agent Frameworks)",
+  "OpenAI Agents (Agent Frameworks)",
+  "Agents Marketplace (Agent Frameworks)",
+  "LangChain (Agent Frameworks)",
+  "Other agent frameworks (Agent Frameworks)",
+  // Large Language Models
+  "ChatGPT (Large Language Models)",
+  "Claude (Large Language Models)",
+  "Gemini (Large Language Models)",
+  "Llama (Large Language Models)",
+  "Other LLMs (Large Language Models)",
+  // Hardware
+  "Limitless (Hardware)",
+  "Other AI hardware (Hardware)",
+  // Agentic Browsers
+  "Perplexity's Comet Agentic Browser",
+  "OpenAi's Atlas Agentic Browser",
+  "TheBrowserCompany's Dia Agentic Browser",
+  "OpenSource Agentic browsers (locally built + hosted)",
+  // No Experience
+  "I have no experience with AI tools (That's OK!)",
+] as const;
+
+export type AiTool = (typeof AI_TOOLS)[number];
+
+export const AI_TOOL_CATEGORIES = [
+  "Coding & Development",
+  "Hosting & Infrastructure",
+  "Image Generation & Design",
+  "Video Creation",
+  "Audio & Speech",
+  "Music Generation",
+  "3D Modeling",
+  "Productivity & Organization",
+  "Research & Search",
+  "Product Development",
+  "Customer Service",
+  "Agent Frameworks",
+  "Large Language Models",
+  "Hardware",
+  "Agentic Browsers",
+] as const;
+
+export type AiToolCategory = (typeof AI_TOOL_CATEGORIES)[number];
+
+export const AI_TOOLS_BY_CATEGORY: Record<AiToolCategory, readonly AiTool[]> = {
+  "Coding & Development": [
+    "v0.dev (Coding & Development)",
+    "Lovable (Coding & Development)",
+    "Bolt (Coding & Development)",
+    "Gemini Command Line Coding Tool",
+    "Cursor (Coding & Development)",
+    "Claude Code",
+    "Chat GPT Codex",
+    "Windsurf (Coding & Development)",
+    "Replit Agent (Coding & Development)",
+    "Rork (Coding & Development)",
+    "n8n (Coding & Development)",
+    "Other coding tools (Coding & Development)",
+  ],
+  "Hosting & Infrastructure": [
+    "Supabase (Hosting & Infrastructure)",
+    "Vercel (Hosting & Infrastructure)",
+    "Other hosting platforms (Hosting & Infrastructure)",
+  ],
+  "Image Generation & Design": [
+    "Krea.ai (Image Generation & Design)",
+    "Midjourney (Image Generation & Design)",
+    "Vizcom (Image Generation & Design)",
+    "DALL-E (Image Generation & Design)",
+    "Stable Diffusion (Image Generation & Design)",
+    "Other image tools (Image Generation & Design)",
+  ],
+  "Video Creation": [
+    "Google Veo 2 (Video Creation)",
+    "InVideo (Video Creation)",
+    "Minimax (Video Creation)",
+    "Kling (Video Creation)",
+    "Other video tools (Video Creation)",
+  ],
+  "Audio & Speech": [
+    "Eleven Labs (Audio & Speech)",
+    "ElevenLabs Text to Speech (Audio & Speech)",
+    "ElevenLabs Scribe (Audio & Speech)",
+    "Superwhisperer (Audio & Speech)",
+    "Other audio tools (Audio & Speech)",
+  ],
+  "Music Generation": [
+    "Suno (Music Generation)",
+    "Lemonaide AI (Music Generation)",
+    "Other music tools (Music Generation)",
+  ],
+  "3D Modeling": [
+    "Meshy (3D Modeling)",
+    "Other 3D tools (3D Modeling)",
+  ],
+  "Productivity & Organization": [
+    "Superhuman (Productivity & Organization)",
+    "Motion (Productivity & Organization)",
+    "Granola (Productivity & Organization)",
+    "Rewind (Productivity & Organization)",
+    "Gamma (Productivity & Organization)",
+    "Other productivity tools (Productivity & Organization)",
+  ],
+  "Research & Search": [
+    "Deep Research (Research & Search)",
+    "Exa (Research & Search)",
+    "Firecrawl (Research & Search)",
+    "Other research tools (Research & Search)",
+  ],
+  "Product Development": [
+    "Naya (Product Development)",
+    "Flora (Product Development)",
+    "Other product tools (Product Development)",
+  ],
+  "Customer Service": [
+    "Intercom (Customer Service)",
+    "Other customer service tools (Customer Service)",
+  ],
+  "Agent Frameworks": [
+    "Agno (Agent Frameworks)",
+    "OpenAI Agents (Agent Frameworks)",
+    "Agents Marketplace (Agent Frameworks)",
+    "LangChain (Agent Frameworks)",
+    "Other agent frameworks (Agent Frameworks)",
+  ],
+  "Large Language Models": [
+    "ChatGPT (Large Language Models)",
+    "Claude (Large Language Models)",
+    "Gemini (Large Language Models)",
+    "Llama (Large Language Models)",
+    "Other LLMs (Large Language Models)",
+  ],
+  "Hardware": [
+    "Limitless (Hardware)",
+    "Other AI hardware (Hardware)",
+  ],
+  "Agentic Browsers": [
+    "Perplexity's Comet Agentic Browser",
+    "OpenAi's Atlas Agentic Browser",
+    "TheBrowserCompany's Dia Agentic Browser",
+    "OpenSource Agentic browsers (locally built + hosted)",
+  ],
+};
