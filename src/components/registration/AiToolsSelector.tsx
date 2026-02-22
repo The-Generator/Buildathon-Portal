@@ -53,7 +53,7 @@ export function AiToolsSelector({
 
         return (
           <div key={category}>
-            <h4 className="text-sm font-semibold text-white/80 mb-2">
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">
               {category}
             </h4>
             <SkillChips
@@ -67,7 +67,7 @@ export function AiToolsSelector({
       })}
 
       <div>
-        <h4 className="text-sm font-semibold text-white/80 mb-2">
+        <h4 className="text-sm font-semibold text-gray-700 mb-2">
           No Experience
         </h4>
         <button
