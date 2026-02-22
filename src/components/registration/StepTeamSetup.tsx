@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { TEAM_OPTIONS } from "@/lib/constants";
+import { TEAM_OPTIONS, EVENT_CONFIG } from "@/lib/constants";
 import { stepTeamSetupSchema } from "@/lib/validations";
 import { cn } from "@/lib/utils";
 import { Users, UserPlus, User, Eye, Plus, Trash2 } from "lucide-react";
@@ -41,7 +41,7 @@ export function StepTeamSetup({
     } else if (option === "partial_team") {
       teammates = [{ full_name: "", email: "" }];
     }
-    onChange({ team_option: option, teammates });
+    onChange({ team_option: option, teammates, needs_more_members: "", members_requested: null });
     setErrors({});
   };
 
@@ -76,6 +76,8 @@ export function StepTeamSetup({
     const result = stepTeamSetupSchema.safeParse({
       team_option: data.team_option,
       teammates: noTeammates ? [] : data.teammates,
+      needs_more_members: data.needs_more_members ?? "",
+      members_requested: data.members_requested ?? null,
     });
 
     if (!result.success) {
@@ -245,6 +247,77 @@ export function StepTeamSetup({
               Add another teammate
             </button>
           )}
+
+          {/* Need more members? (Jotform Q26 / Q27, conditions #2 / #3) */}
+          <div className="mt-6 p-5 bg-white rounded-xl border border-gray-200 space-y-4">
+            <p className="text-sm font-semibold text-gray-800">
+              Does your team need additional members?
+            </p>
+            <div className="flex gap-3">
+              {(["yes", "no"] as const).map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => {
+                    onChange({
+                      needs_more_members: val,
+                      members_requested: val === "no" ? null : data.members_requested,
+                    });
+                  }}
+                  className={cn(
+                    "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
+                    data.needs_more_members === val
+                      ? "border-[#006241] bg-[#006241]/5 text-[#006241]"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-[#006241]/40"
+                  )}
+                >
+                  {val === "yes" ? "Yes, we could use more members" : "No, our team is complete"}
+                </button>
+              ))}
+            </div>
+
+            {/* Q27: How many more? -- only shown when "yes" (conditions #2/#3 hide when "no" or empty) */}
+            {data.needs_more_members === "yes" && (() => {
+              const groupSize = 1 + data.teammates.length;
+              const maxRequestable = EVENT_CONFIG.teamSize - groupSize;
+              return (
+                <div className="space-y-2">
+                  <label
+                    htmlFor="members-requested"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    How many more team members do you want to be matched with?
+                  </label>
+                  <select
+                    id="members-requested"
+                    value={data.members_requested ?? ""}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      onChange({
+                        members_requested: val ? Number(val) : null,
+                      });
+                    }}
+                    className="block w-full max-w-[120px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-[#006241] focus:ring-1 focus:ring-[#006241] transition-colors"
+                  >
+                    <option value="">Select</option>
+                    {Array.from({ length: maxRequestable }, (_, i) => i + 1).map(
+                      (n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      )
+                    )}
+                  </select>
+                  <p className="text-xs text-gray-500">
+                    Your group has {groupSize} {groupSize === 1 ? "person" : "people"} (including you). Teams are {EVENT_CONFIG.teamSize} max.
+                  </p>
+                  {errors.members_requested && (
+                    <p className="text-sm text-red-600">{errors.members_requested}</p>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
         </div>
       )}
 

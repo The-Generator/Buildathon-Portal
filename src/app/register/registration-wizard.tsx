@@ -24,6 +24,8 @@ const INITIAL_FORM_DATA: RegistrationFormData = {
   ai_tools: [],
   team_option: "solo",
   teammates: [],
+  needs_more_members: "",
+  members_requested: null,
   tagged_team_skills: [],
 };
 

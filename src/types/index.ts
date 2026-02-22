@@ -95,6 +95,10 @@ export interface RegistrationFormData {
   // AI Tools
   ai_tools: string[];
 
+  // Partial team: need more members?
+  needs_more_members?: "yes" | "no" | "";
+  members_requested?: number | null;
+
   // Step 3: Team Skills
   tagged_team_skills: string[];
 }

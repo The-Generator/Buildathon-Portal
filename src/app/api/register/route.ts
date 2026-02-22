@@ -214,11 +214,18 @@ export async function POST(request: NextRequest) {
     }
 
     // 9. Create registration_group record
+    // Compute members_requested: only for partial_team with "yes" answer
+    const membersRequested =
+      data.team_option === "partial_team" && data.needs_more_members === "yes"
+        ? data.members_requested ?? null
+        : null;
+
     const { error: groupError } = await supabase
       .from("registration_groups")
       .insert({
         registrant_id: registrant.id,
         group_size: incomingGroupSize,
+        members_requested: membersRequested,
         team_id: team.id,
         tagged_team_skills: data.tagged_team_skills,
       });
