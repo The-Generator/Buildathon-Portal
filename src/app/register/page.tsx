@@ -15,7 +15,8 @@ export default async function RegisterPage() {
 
   const { count, error } = await supabase
     .from("participants")
-    .select("*", { count: "exact", head: true });
+    .select("*", { count: "exact", head: true })
+    .neq("participant_type", "spectator");
 
   if (error) {
     console.error("Failed to fetch participant count:", error);
