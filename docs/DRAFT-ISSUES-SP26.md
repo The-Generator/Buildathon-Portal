@@ -158,34 +158,59 @@ A grouped AI tools multi-select for Step 1 of registration. Uses SkillChips comp
 
 ---
 
-### Issue 6: Wire AI tools into registration flow + API
+### Issue 6a: Wire AI tools selector into registration form UI
 
 **Context:**
-Existing: `src/components/registration/StepPersonalInfo.tsx`, `src/app/api/register/route.ts`
+Existing: `src/components/registration/StepPersonalInfo.tsx`, `src/components/registration/StepReview.tsx`
 Depends on: Issue 5 (AiToolsSelector component), Issue 2 (types)
 
 **What to Build:**
-Add the AiToolsSelector to StepPersonalInfo below the skills section. Add `ai_tools` field to RegistrationFormData, Zod step 1 schema, and full registration schema. Wire through to StepReview display. Update registration API to persist ai_tools to participant record.
+Add the AiToolsSelector to StepPersonalInfo below the skills section. Add `ai_tools` field to RegistrationFormData type. Wire selected tools through to StepReview display section. This is UI-only -- no validation or API changes.
 
 **Read Before Implementing:**
 1. `src/components/registration/StepPersonalInfo.tsx` -- where to add the selector
-2. `src/lib/validations.ts` -- step 1 schema to extend
-3. `src/app/api/register/route.ts` -- participant insert to extend
-4. `src/components/registration/StepReview.tsx` -- review display
+2. `src/components/registration/StepReview.tsx` -- review display pattern
+3. `src/types/index.ts` -- RegistrationFormData shape
 
 **Files:**
 - MODIFY `src/components/registration/StepPersonalInfo.tsx` (add AiToolsSelector)
-- MODIFY `src/lib/validations.ts` (add ai_tools to schemas)
-- MODIFY `src/app/api/register/route.ts` (persist ai_tools)
 - MODIFY `src/components/registration/StepReview.tsx` (display ai_tools)
+- MODIFY `src/types/index.ts` (add ai_tools to RegistrationFormData if not already there)
 
 **Depends On:** Issue 5 (component), Issue 2 (types/constants)
 
 **Acceptance Criteria:**
 - [ ] AI tools selector visible in Step 1 below skills
 - [ ] Selected tools appear in Review step
-- [ ] ai_tools persisted to participants table
+- [ ] Form state carries ai_tools through wizard steps
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+### Issue 6b: AI tools validation schema + API persistence
+
+**Context:**
+Existing: `src/lib/validations.ts`, `src/app/api/register/route.ts`
+Depends on: Issue 6a (UI sends ai_tools in form data)
+
+**What to Build:**
+Add `ai_tools` field to Zod step 1 schema and full registration schema in validations.ts (optional string array, defaults to empty). Update registration API to read ai_tools from validated data and persist to participant record insert.
+
+**Read Before Implementing:**
+1. `src/lib/validations.ts` -- step 1 schema and full schema patterns
+2. `src/app/api/register/route.ts` -- participant insert statement
+
+**Files:**
+- MODIFY `src/lib/validations.ts` (add ai_tools to step 1 + full schema)
+- MODIFY `src/app/api/register/route.ts` (persist ai_tools in participant insert)
+
+**Depends On:** Issue 6a (UI sends ai_tools), Issue 1 (ai_tools column exists)
+
+**Acceptance Criteria:**
 - [ ] Validation allows empty array (optional field)
+- [ ] Validation rejects non-string values in array
+- [ ] ai_tools persisted to participants table on registration
 - [ ] Build passes (`npm run build`)
 - [ ] No TypeScript errors
 
@@ -851,6 +876,96 @@ Discord as primary community CTA. Add DISCORD_URL and WHATSAPP_URL to constants.
 
 ---
 
+### Issue 31: Generator logo banner
+
+**Context:**
+Transcript: `transcripts/granola2_21_organized.md` Section 4b
+Old repo: `https://github.com/skarnz/buildathon_fall_25.git` -- check `public/` for existing Generator branding assets
+
+**What to Build:**
+Add proper Generator branding banner to top of landing page, above or integrated into the hero section. Pull any existing logo assets from the Fall '25 repo. If no suitable asset exists, create a clean text-based banner using Tailwind typography. Should feel like official Generator branding, not generic.
+
+**Read Before Implementing:**
+1. `src/components/landing/Hero.tsx` -- where banner integrates
+2. `public/` -- existing assets in current repo
+3. Fall '25 repo `public/` -- existing Generator logo/branding assets
+
+**Files:**
+- CREATE `src/components/landing/GeneratorBanner.tsx`
+- MODIFY `src/app/page.tsx` (add banner above hero or integrate into hero)
+
+**Depends On:** Nothing -- independent
+
+**Acceptance Criteria:**
+- [ ] Generator branding visible at top of landing page
+- [ ] Uses existing logo asset from Fall '25 repo if available
+- [ ] Mobile responsive
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+### Issue 32: Registration info display section
+
+**Context:**
+Transcript: `transcripts/granola2_21_organized.md` Section 4c
+Old repo: `https://github.com/skarnz/buildathon_fall_25.git` -- check for registration info content
+
+**What to Build:**
+Landing page section displaying key registration information: dates, requirements, what to bring, who can participate, team size limits. Clean readable layout -- NOT a card grid. Anchor-linked from nav or placed near the Register CTA so participants see it before registering.
+
+**Read Before Implementing:**
+1. `src/components/landing/` -- existing section patterns
+2. `docs/DESIGN-CONSTRAINTS.md` -- styling rules
+3. `src/lib/constants.ts` -- event config values to reference
+
+**Files:**
+- CREATE `src/components/landing/RegistrationInfo.tsx`
+- MODIFY `src/app/page.tsx` (add registration info section)
+
+**Depends On:** Nothing -- independent
+
+**Acceptance Criteria:**
+- [ ] Displays dates, requirements, eligibility, team size info
+- [ ] Placed near Register CTA for visibility
+- [ ] NO card grid layout
+- [ ] Mobile responsive
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+### Issue 33: Port photos from Fall '25
+
+**Context:**
+Transcript: `transcripts/granola2_21_organized.md` Section 3e
+Old repo: `https://github.com/skarnz/buildathon_fall_25.git` -- `public/` contains: `hero-background.jpg`, `buildathon-team-photo.jpg`, `buildathon-judges-photo.jpg`, `b-thon_full_group_spring25.jpeg`
+
+**What to Build:**
+Copy photo assets from Fall '25 repo into `public/photos/`. Update hero section to use real event photos instead of AI-generated backgrounds. Add team/judges/group photos to an appropriate section (about or a photo gallery area). Ensure images are optimized with Next.js `<Image>` component.
+
+**Read Before Implementing:**
+1. Fall '25 repo `public/` -- identify all usable photo assets
+2. `src/components/landing/Hero.tsx` -- current background image usage
+3. `public/generated/` -- current AI-generated section backgrounds to potentially replace
+
+**Files:**
+- CREATE `public/photos/` (directory with copied assets)
+- MODIFY `src/components/landing/Hero.tsx` (use real photo background)
+- MODIFY `src/app/page.tsx` (add photos where appropriate)
+
+**Depends On:** Nothing -- independent
+
+**Acceptance Criteria:**
+- [ ] Fall '25 photos copied to `public/photos/`
+- [ ] Hero uses real event photo background
+- [ ] Photos rendered with Next.js `<Image>` for optimization
+- [ ] Mobile responsive
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
 ## Phase 7: Validation
 
 ### Issue 30: Simulation seed + validation scripts
@@ -891,7 +1006,8 @@ Issue 1 (Migration) ── foundational
         ├── Issue 3 (Spectator UI)
         │     └── Issue 4 (Spectator API)
         ├── Issue 5 (AI tools component)
-        │     └── Issue 6 (Wire AI tools)
+        │     └── Issue 6a (Wire AI tools UI)
+        │           └── Issue 6b (AI tools validation + API)
         ├── Issue 7 (Partial team UI)
         │     └── Issue 8 (Persist members_requested)
         └── Issue 13 (AI tools scoring)
@@ -904,7 +1020,7 @@ Issue 17 (Team actions) → Issue 18 (Audit log) → Issue 19 (Move modal)
 Issue 1 → Issue 20 (Check-in metrics) → Issue 21 (Realtime feed)
 
 Issue 22 (Nav) → Issues 26, 28 (sidebar targets)
-Issues 23-25, 27, 29 -- independent frontend
+Issues 23-25, 27, 29, 31-33 -- independent frontend
 Issue 30 (Simulation) -- last
 ```
 
@@ -912,7 +1028,7 @@ Issue 30 (Simulation) -- last
 
 **Backend (sequential chains):**
 1. Issue 1 → 2 (schema + types)
-2. Issues 3→4, 5→6, 7→8 (registration paths -- 3 parallel chains)
+2. Issues 3→4, 5→6a→6b, 7→8 (registration paths -- 3 parallel chains)
 3. Issue 9→10, 11→12 (track gating + walk-in -- parallel)
 4. Issue 13→14 (matching upgrades)
 5. Issues 15→16, 17→18→19, 20→21 (admin -- 3 parallel chains)
@@ -920,5 +1036,5 @@ Issue 30 (Simulation) -- last
 
 **Frontend (parallel with backend):**
 1. Issues 22, 23 (nav + hero -- parallel)
-2. Issues 24, 25, 27, 29 (sections -- parallel)
+2. Issues 24, 25, 27, 29, 31, 32, 33 (sections -- all parallel, independent)
 3. Issues 26, 28 (depend on sidebar from 22)
