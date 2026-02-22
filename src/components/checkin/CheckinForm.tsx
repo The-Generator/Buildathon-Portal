@@ -119,9 +119,9 @@ export function CheckinForm() {
   if (state === "checked_in_success") {
     return (
       <div className="text-center py-6 animate-in fade-in">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#006241]/10 mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mb-4">
           <svg
-            className="w-8 h-8 text-[#006241]"
+            className="w-8 h-8 text-emerald-800"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -134,7 +134,7 @@ export function CheckinForm() {
             />
           </svg>
         </div>
-        <h3 className="text-xl font-bold text-[#006241] mb-1">
+        <h3 className="text-xl font-bold text-emerald-800 mb-1">
           You&apos;re checked in!
         </h3>
         <p className="text-gray-500 text-sm">
@@ -148,9 +148,9 @@ export function CheckinForm() {
   if (state === "found_checked_in" && participant) {
     return (
       <div className="text-center py-4">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-[#006241]/10 mb-3">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-100 mb-3">
           <svg
-            className="w-7 h-7 text-[#006241]"
+            className="w-7 h-7 text-emerald-800"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -179,7 +179,7 @@ export function CheckinForm() {
         </p>
         <button
           onClick={reset}
-          className="mt-4 text-sm text-[#006241] font-medium hover:underline"
+          className="mt-4 text-sm text-emerald-800 font-medium hover:underline"
         >
           Check in someone else
         </button>
@@ -255,7 +255,7 @@ export function CheckinForm() {
         <button
           onClick={handleCheckin}
           disabled={state === "checking_in"}
-          className="w-full rounded-xl font-semibold text-lg px-6 py-4 bg-[#006241] text-white hover:bg-[#004d33] transition-colors disabled:opacity-50"
+          className="w-full rounded-xl font-semibold text-lg px-6 py-4 bg-emerald-800 text-white hover:bg-emerald-900 transition-colors disabled:opacity-50"
         >
           {state === "checking_in" ? (
             <span className="inline-flex items-center gap-2">
@@ -308,7 +308,7 @@ export function CheckinForm() {
           onKeyDown={handleKeyDown}
           placeholder="Email or phone number"
           disabled={state === "loading"}
-          className="w-full rounded-xl border border-gray-300 px-4 py-4 text-base transition-colors focus:outline-none focus:ring-2 focus:ring-[#006241] focus:border-[#006241] disabled:opacity-50 placeholder:text-gray-400"
+          className="w-full rounded-xl border border-gray-300 px-4 py-4 text-base transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-800 focus:border-emerald-800 disabled:opacity-50 placeholder:text-gray-400"
           autoComplete="email"
         />
       </div>
@@ -320,7 +320,7 @@ export function CheckinForm() {
       <button
         onClick={handleLookup}
         disabled={!identifier.trim() || state === "loading"}
-        className="w-full rounded-xl font-semibold text-lg px-6 py-4 bg-[#006241] text-white hover:bg-[#004d33] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full rounded-xl font-semibold text-lg px-6 py-4 bg-emerald-800 text-white hover:bg-emerald-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {state === "loading" ? (
           <span className="inline-flex items-center gap-2">
