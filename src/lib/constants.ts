@@ -99,9 +99,7 @@ export type Year = (typeof YEARS)[number];
 export type TeamOption = "full_team" | "partial_team" | "solo";
 
 export const PARTICIPANT_TYPES = [
-  "solo",
-  "partial_team",
-  "full_team",
+  "participant",
   "spectator",
   "walk_in",
 ] as const;
