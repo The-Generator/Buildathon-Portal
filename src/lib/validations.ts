@@ -96,9 +96,7 @@ export const fullRegistrationSchema = z
     teammates: z.array(teammateSchema),
 
     // Step 3: Team Skills
-    tagged_team_skills: z
-      .array(z.enum([...SPECIFIC_SKILLS]))
-      .min(1, "Select at least one team skill"),
+    tagged_team_skills: z.array(z.enum([...SPECIFIC_SKILLS])),
   })
   .refine(
     (data) => {
@@ -129,6 +127,17 @@ export const fullRegistrationSchema = z
       message:
         "Invalid number of teammates for the selected team option. Full team requires exactly 4 teammates, partial team requires 1-3, solo/spectator requires 0.",
       path: ["teammates"],
+    }
+  )
+  .refine(
+    (data) =>
+      data.team_option === "spectator"
+        ? data.tagged_team_skills.length === 0
+        : data.tagged_team_skills.length >= 1,
+    {
+      message:
+        "Select at least one team skill for team registrations. Spectator registrations should not include team skills.",
+      path: ["tagged_team_skills"],
     }
   );
 
