@@ -35,13 +35,23 @@ export function RegistrationWizard() {
     setFormData((prev) => ({ ...prev, ...partial }));
   };
 
+  const isSpectator = formData.team_option === "spectator";
+
   const goNext = () => {
-    setCurrentStep((prev) => Math.min(prev + 1, STEPS.length - 1));
+    setCurrentStep((prev) => {
+      // Spectator on Team Setup (step 1) -> skip Team Skills (step 2) -> go to Review (step 3)
+      if (isSpectator && prev === 1) return 3;
+      return Math.min(prev + 1, STEPS.length - 1);
+    });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const goBack = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 0));
+    setCurrentStep((prev) => {
+      // Spectator on Review (step 3) -> skip Team Skills (step 2) -> go to Team Setup (step 1)
+      if (isSpectator && prev === 3) return 1;
+      return Math.max(prev - 1, 0);
+    });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

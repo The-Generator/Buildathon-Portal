@@ -95,10 +95,13 @@ export function StepReview({ data, onBack, onSubmit }: StepReviewProps) {
   const schoolDisplay =
     data.school === "Other" ? data.school_other || "Other" : data.school;
 
+  const isSpectator = data.team_option === "spectator";
+
   const teamOptionLabels: Record<string, string> = {
     full_team: "Full Team (5 people)",
     partial_team: "Partial Team (2-4 people)",
     solo: "Solo (looking for a team)",
+    spectator: "Spectator",
   };
 
   return (
@@ -132,47 +135,62 @@ export function StepReview({ data, onBack, onSubmit }: StepReviewProps) {
         </div>
       </div>
 
-      {/* Team Setup */}
-      <div className="p-5 bg-gray-50 rounded-xl space-y-3">
-        <SectionLabel>Team Setup</SectionLabel>
-        <Field
-          label="Team Option"
-          value={teamOptionLabels[data.team_option]}
-        />
-        {data.teammates.length > 0 && (
-          <div>
-            <dt className="text-sm text-gray-500 mb-2">Teammates</dt>
-            <div className="space-y-2">
-              {data.teammates.map((t, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-3 px-3 py-2 bg-white rounded-lg border border-gray-200"
-                >
-                  <div className="h-7 w-7 rounded-full bg-[#006241]/10 flex items-center justify-center text-xs font-semibold text-[#006241]">
-                    {i + 1}
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">
-                      {t.full_name}
-                    </p>
-                    <p className="text-xs text-gray-500">{t.email}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Registration Type (spectator) */}
+      {isSpectator && (
+        <div className="p-5 bg-amber-50 rounded-xl space-y-3">
+          <SectionLabel>Registration Type</SectionLabel>
+          <Field label="Type" value="Spectator" />
+          <p className="text-sm text-gray-500">
+            You are registering as a spectator. You will not be placed on a team.
+          </p>
+        </div>
+      )}
 
-      {/* Skills Summary */}
-      <div className="p-5 bg-gray-50 rounded-xl space-y-3">
-        <SectionLabel>Desired Team Skills</SectionLabel>
-        {data.tagged_team_skills.length > 0 ? (
-          <Chips items={data.tagged_team_skills} />
-        ) : (
-          <p className="text-sm text-gray-500">No additional team skills selected</p>
-        )}
-      </div>
+      {/* Team Setup (hidden for spectator) */}
+      {!isSpectator && (
+        <div className="p-5 bg-gray-50 rounded-xl space-y-3">
+          <SectionLabel>Team Setup</SectionLabel>
+          <Field
+            label="Team Option"
+            value={teamOptionLabels[data.team_option]}
+          />
+          {data.teammates.length > 0 && (
+            <div>
+              <dt className="text-sm text-gray-500 mb-2">Teammates</dt>
+              <div className="space-y-2">
+                {data.teammates.map((t, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 px-3 py-2 bg-white rounded-lg border border-gray-200"
+                  >
+                    <div className="h-7 w-7 rounded-full bg-[#006241]/10 flex items-center justify-center text-xs font-semibold text-[#006241]">
+                      {i + 1}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {t.full_name}
+                      </p>
+                      <p className="text-xs text-gray-500">{t.email}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Skills Summary (hidden for spectator) */}
+      {!isSpectator && (
+        <div className="p-5 bg-gray-50 rounded-xl space-y-3">
+          <SectionLabel>Desired Team Skills</SectionLabel>
+          {data.tagged_team_skills.length > 0 ? (
+            <Chips items={data.tagged_team_skills} />
+          ) : (
+            <p className="text-sm text-gray-500">No additional team skills selected</p>
+          )}
+        </div>
+      )}
 
       {/* Error Display */}
       {error && (

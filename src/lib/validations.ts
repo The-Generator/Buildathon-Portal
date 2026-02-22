@@ -44,7 +44,7 @@ const teammateSchema = z.object({
 
 export const stepTeamSetupSchema = z
   .object({
-    team_option: z.enum(["full_team", "partial_team", "solo"]),
+    team_option: z.enum(["full_team", "partial_team", "solo", "spectator"]),
     teammates: z.array(teammateSchema),
   })
   .refine(
@@ -55,14 +55,14 @@ export const stepTeamSetupSchema = z
       if (data.team_option === "partial_team") {
         return data.teammates.length >= 1 && data.teammates.length <= 3;
       }
-      if (data.team_option === "solo") {
+      if (data.team_option === "solo" || data.team_option === "spectator") {
         return data.teammates.length === 0;
       }
       return true;
     },
     {
       message:
-        "Invalid number of teammates for the selected team option. Full team requires exactly 4 teammates, partial team requires 1-3, solo requires 0.",
+        "Invalid number of teammates for the selected team option. Full team requires exactly 4 teammates, partial team requires 1-3, solo/spectator requires 0.",
       path: ["teammates"],
     }
   );
@@ -92,7 +92,7 @@ export const fullRegistrationSchema = z
     experience_level: z.enum([...EXPERIENCE_LEVELS]),
 
     // Step 2: Team Setup
-    team_option: z.enum(["full_team", "partial_team", "solo"]),
+    team_option: z.enum(["full_team", "partial_team", "solo", "spectator"]),
     teammates: z.array(teammateSchema),
 
     // Step 3: Team Skills
@@ -120,14 +120,14 @@ export const fullRegistrationSchema = z
       if (data.team_option === "partial_team") {
         return data.teammates.length >= 1 && data.teammates.length <= 3;
       }
-      if (data.team_option === "solo") {
+      if (data.team_option === "solo" || data.team_option === "spectator") {
         return data.teammates.length === 0;
       }
       return true;
     },
     {
       message:
-        "Invalid number of teammates for the selected team option. Full team requires exactly 4 teammates, partial team requires 1-3, solo requires 0.",
+        "Invalid number of teammates for the selected team option. Full team requires exactly 4 teammates, partial team requires 1-3, solo/spectator requires 0.",
       path: ["teammates"],
     }
   );

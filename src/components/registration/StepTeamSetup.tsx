@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { TEAM_OPTIONS } from "@/lib/constants";
 import { stepTeamSetupSchema } from "@/lib/validations";
 import { cn } from "@/lib/utils";
-import { Users, UserPlus, User, Plus, Trash2 } from "lucide-react";
+import { Users, UserPlus, User, Eye, Plus, Trash2 } from "lucide-react";
 import type { RegistrationFormData } from "@/types";
 
 const TEAM_ICONS: Record<string, React.ElementType> = {
   full_team: Users,
   partial_team: UserPlus,
   solo: User,
+  spectator: Eye,
 };
 
 interface StepTeamSetupProps {
@@ -71,9 +72,10 @@ export function StepTeamSetup({
   };
 
   const handleNext = () => {
+    const noTeammates = data.team_option === "solo" || data.team_option === "spectator";
     const result = stepTeamSetupSchema.safeParse({
       team_option: data.team_option,
-      teammates: data.team_option === "solo" ? [] : data.teammates,
+      teammates: noTeammates ? [] : data.teammates,
     });
 
     if (!result.success) {
@@ -88,7 +90,7 @@ export function StepTeamSetup({
       return;
     }
 
-    if (data.team_option === "solo") {
+    if (noTeammates) {
       onChange({ teammates: [] });
     }
 
@@ -106,7 +108,7 @@ export function StepTeamSetup({
       </div>
 
       {/* Team Option Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
         {TEAM_OPTIONS.map((option) => {
           const isSelected = data.team_option === option.value;
           const Icon = TEAM_ICONS[option.value] || User;
@@ -253,6 +255,17 @@ export function StepTeamSetup({
           </p>
           <p className="text-sm text-gray-500 mt-1">
             Our matching algorithm considers your skills and preferences.
+          </p>
+        </div>
+      )}
+
+      {data.team_option === "spectator" && (
+        <div className="p-6 bg-amber-50 rounded-xl border border-amber-200 text-center">
+          <p className="text-amber-800 font-medium">
+            You are registering as a spectator.
+          </p>
+          <p className="text-sm text-gray-500 mt-1">
+            Spectators will not be placed on a team. You can still attend workshops and ceremonies.
           </p>
         </div>
       )}

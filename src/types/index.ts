@@ -88,7 +88,7 @@ export interface RegistrationFormData {
   experience_level: string;
 
   // Step 2: Team Setup
-  team_option: "full_team" | "partial_team" | "solo";
+  team_option: "full_team" | "partial_team" | "solo" | "spectator";
   teammates: { full_name: string; email: string }[];
 
   // Step 3: Team Skills

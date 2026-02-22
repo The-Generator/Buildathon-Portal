@@ -89,6 +89,12 @@ export const TEAM_OPTIONS = [
     description: "Match me with a team!",
     teammateCount: 0,
   },
+  {
+    value: "spectator" as const,
+    label: "Spectator",
+    description: "For faculty, sponsors, judges, parents, etc.",
+    teammateCount: 0,
+  },
 ] as const;
 
 export type PrimaryRole = (typeof PRIMARY_ROLES)[number];
@@ -96,7 +102,7 @@ export type SpecificSkill = (typeof SPECIFIC_SKILLS)[number];
 export type ExperienceLevel = (typeof EXPERIENCE_LEVELS)[number];
 export type School = (typeof SCHOOLS)[number];
 export type Year = (typeof YEARS)[number];
-export type TeamOption = "full_team" | "partial_team" | "solo";
+export type TeamOption = "full_team" | "partial_team" | "solo" | "spectator";
 
 export const PARTICIPANT_TYPES = [
   "participant",
