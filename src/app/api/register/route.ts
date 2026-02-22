@@ -19,11 +19,70 @@ export async function POST(request: NextRequest) {
 
     const data = result.data;
     const supabase = createAdminClient();
+    const isSpectator = data.team_option === "spectator";
 
-    // 2. Check total participant count against capacity
+    // 2. Check for duplicate email (registrant)
+    const { data: existingParticipant } = await supabase
+      .from("participants")
+      .select("id")
+      .eq("email", data.email)
+      .single();
+
+    if (existingParticipant) {
+      return NextResponse.json(
+        { error: "A participant with this email is already registered." },
+        { status: 400 }
+      );
+    }
+
+    // --- Spectator branch: no capacity check, no team, no registration_group ---
+    if (isSpectator) {
+      const { data: spectator, error: spectatorError } = await supabase
+        .from("participants")
+        .insert({
+          full_name: data.full_name,
+          email: data.email,
+          phone: data.phone,
+          school: data.school,
+          school_other: data.school === "Other" ? data.school_other : null,
+          year: data.year,
+          dietary_restrictions: data.dietary_restrictions || null,
+          primary_role: data.primary_role || null,
+          specific_skills: data.specific_skills ?? [],
+          experience_level: data.experience_level || null,
+          participant_type: "spectator",
+          is_self_registered: true,
+        })
+        .select()
+        .single();
+
+      if (spectatorError || !spectator) {
+        return NextResponse.json(
+          { error: "Failed to create registration", details: spectatorError?.message },
+          { status: 500 }
+        );
+      }
+
+      return NextResponse.json(
+        {
+          message: "Spectator registration successful!",
+          registrant: {
+            id: spectator.id,
+            full_name: spectator.full_name,
+            email: spectator.email,
+          },
+        },
+        { status: 201 }
+      );
+    }
+
+    // --- Participant branch (solo, partial_team, full_team) ---
+
+    // 3. Check total participant count against capacity (spectators excluded)
     const { count: participantCount, error: countError } = await supabase
       .from("participants")
-      .select("*", { count: "exact", head: true });
+      .select("*", { count: "exact", head: true })
+      .neq("participant_type", "spectator");
 
     if (countError) {
       return NextResponse.json(
@@ -40,21 +99,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Check for duplicate email (registrant)
-    const { data: existingParticipant } = await supabase
-      .from("participants")
-      .select("id")
-      .eq("email", data.email)
-      .single();
-
-    if (existingParticipant) {
-      return NextResponse.json(
-        { error: "A participant with this email is already registered." },
-        { status: 400 }
-      );
-    }
-
-    // Also check teammate emails for duplicates
+    // Check teammate emails for duplicates
     for (const teammate of data.teammates) {
       const { data: existingTeammate } = await supabase
         .from("participants")
@@ -86,6 +131,7 @@ export async function POST(request: NextRequest) {
         primary_role: data.primary_role,
         specific_skills: data.specific_skills,
         experience_level: data.experience_level,
+        participant_type: "participant",
         is_self_registered: true,
       })
       .select()
@@ -112,6 +158,7 @@ export async function POST(request: NextRequest) {
           primary_role: data.primary_role,
           specific_skills: [],
           experience_level: data.experience_level,
+          participant_type: "participant",
           is_self_registered: false,
           registered_by: registrant.id,
         })

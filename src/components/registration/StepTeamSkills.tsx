@@ -45,7 +45,7 @@ export function StepTeamSkills({
 
   // Combine user's own skills with their additional selections for display
   const allSelected = [
-    ...new Set([...data.specific_skills, ...data.tagged_team_skills]),
+    ...new Set([...(data.specific_skills ?? []), ...data.tagged_team_skills]),
   ];
 
   return (
@@ -78,17 +78,17 @@ export function StepTeamSkills({
             // The user's own skills are disabled so they won't be toggled off.
             // Any new toggle is a team skill.
             const teamSkills = skills.filter(
-              (s) => !data.specific_skills.includes(s)
+              (s) => !(data.specific_skills ?? []).includes(s)
             );
             // Also keep any of the user's own skills that are in tagged_team_skills
             const ownSkillsInTeam = data.tagged_team_skills.filter((s) =>
-              data.specific_skills.includes(s)
+              (data.specific_skills ?? []).includes(s)
             );
             onChange({
               tagged_team_skills: [...new Set([...ownSkillsInTeam, ...teamSkills])],
             });
           }}
-          disabledSkills={data.specific_skills}
+          disabledSkills={data.specific_skills ?? []}
         />
         {errors.tagged_team_skills && (
           <p className="mt-2 text-sm text-red-600">

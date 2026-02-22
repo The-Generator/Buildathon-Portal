@@ -131,7 +131,7 @@ export function StepReview({ data, onBack, onSubmit }: StepReviewProps) {
         </dl>
         <div className="pt-1">
           <dt className="text-sm text-gray-500 mb-1.5">Your Skills</dt>
-          <Chips items={data.specific_skills} />
+          <Chips items={data.specific_skills ?? []} />
         </div>
       </div>
 

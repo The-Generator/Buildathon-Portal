@@ -83,9 +83,10 @@ export interface RegistrationFormData {
   school_other?: string;
   year: string;
   dietary_restrictions?: string;
-  primary_role: string;
-  specific_skills: string[];
-  experience_level: string;
+  // Optional for spectators (Jotform condition #1 disables these)
+  primary_role?: string;
+  specific_skills?: string[];
+  experience_level?: string;
 
   // Step 2: Team Setup
   team_option: "full_team" | "partial_team" | "solo" | "spectator";

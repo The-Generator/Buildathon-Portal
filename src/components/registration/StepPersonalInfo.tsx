@@ -153,7 +153,7 @@ export function StepPersonalInfo({
         </label>
         <RoleSelector
           roles={PRIMARY_ROLES}
-          selectedRole={data.primary_role}
+          selectedRole={data.primary_role ?? ""}
           onChange={(role) => onChange({ primary_role: role })}
         />
         {errors.primary_role && (
@@ -168,7 +168,7 @@ export function StepPersonalInfo({
         </label>
         <SkillChips
           skills={SPECIFIC_SKILLS}
-          selectedSkills={data.specific_skills}
+          selectedSkills={data.specific_skills ?? []}
           onChange={(skills) => onChange({ specific_skills: skills })}
         />
         {errors.specific_skills && (

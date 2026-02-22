@@ -75,6 +75,7 @@ export const stepTeamSkillsSchema = z.object({
 });
 
 // Full Registration Schema (merge of all steps)
+// Spectators skip team skills and don't require role/skills/experience (Jotform condition #1)
 export const fullRegistrationSchema = z
   .object({
     // Step 1: Personal Info
@@ -85,11 +86,10 @@ export const fullRegistrationSchema = z
     school_other: z.string().optional(),
     year: z.enum([...YEARS]),
     dietary_restrictions: z.string().optional(),
-    primary_role: z.enum([...PRIMARY_ROLES]),
-    specific_skills: z
-      .array(z.enum([...SPECIFIC_SKILLS]))
-      .min(1, "Select at least one skill"),
-    experience_level: z.enum([...EXPERIENCE_LEVELS]),
+    // Optional for spectators (Jotform condition #1 disables these)
+    primary_role: z.enum([...PRIMARY_ROLES]).optional(),
+    specific_skills: z.array(z.enum([...SPECIFIC_SKILLS])).optional().default([]),
+    experience_level: z.enum([...EXPERIENCE_LEVELS]).optional(),
 
     // Step 2: Team Setup
     team_option: z.enum(["full_team", "partial_team", "solo", "spectator"]),
@@ -108,6 +108,36 @@ export const fullRegistrationSchema = z
     {
       message: "Please specify your school",
       path: ["school_other"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.team_option === "spectator") return true;
+      return !!data.primary_role;
+    },
+    {
+      message: "Primary role is required for participants",
+      path: ["primary_role"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.team_option === "spectator") return true;
+      return data.specific_skills && data.specific_skills.length >= 1;
+    },
+    {
+      message: "Select at least one skill",
+      path: ["specific_skills"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (data.team_option === "spectator") return true;
+      return !!data.experience_level;
+    },
+    {
+      message: "Experience level is required for participants",
+      path: ["experience_level"],
     }
   )
   .refine(
