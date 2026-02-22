@@ -6,6 +6,7 @@ export interface Participant {
   school: string;
   school_other?: string | null;
   year: string;
+  tshirt_size?: string | null;
   dietary_restrictions?: string | null;
   primary_role: string;
   specific_skills: string[];
