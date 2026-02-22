@@ -73,10 +73,11 @@ export function AiToolsSelector({
         <button
           type="button"
           onClick={handleNoExperience}
+          aria-pressed={noExpSelected}
           className={
             noExpSelected
-              ? "px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 bg-[#006241] text-white border-[#006241] shadow-sm"
-              : "px-3 py-1.5 rounded-full text-sm font-medium border transition-all duration-200 bg-white text-gray-700 border-gray-300 hover:border-[#006241] hover:text-[#006241] cursor-pointer"
+              ? "min-h-11 px-4 py-2 rounded-full text-sm font-medium border transition-colors duration-200 bg-emerald-700 text-white border-emerald-700 hover:bg-emerald-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40"
+              : "min-h-11 px-4 py-2 rounded-full text-sm font-medium border transition-colors duration-200 bg-white text-gray-700 border-gray-300 hover:border-emerald-600 hover:text-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/40 cursor-pointer"
           }
         >
           {NO_EXPERIENCE_OPTION}
