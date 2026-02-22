@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useRef, useEffect, useCallback } from "react";
 
 type CheckinState =
@@ -211,14 +212,22 @@ export function CheckinForm() {
         <p className="text-sm text-gray-500 mb-4">
           No registration found for &quot;{identifier}&quot;.
           <br />
-          Please see an organizer for help.
+          Walk-in arrivals can use the fast intake form.
         </p>
-        <button
-          onClick={reset}
-          className="inline-flex items-center justify-center rounded-lg font-medium text-sm px-6 py-3 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
-        >
-          Try again
-        </button>
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={reset}
+            className="inline-flex items-center justify-center rounded-lg font-medium text-sm px-6 py-3 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+          >
+            Try again
+          </button>
+          <Link
+            href="/walkin"
+            className="inline-flex items-center justify-center rounded-lg font-medium text-sm px-6 py-3 bg-emerald-800 text-white hover:bg-emerald-900 transition-colors"
+          >
+            Open walk-in intake
+          </Link>
+        </div>
       </div>
     );
   }

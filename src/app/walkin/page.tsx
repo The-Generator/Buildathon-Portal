@@ -130,15 +130,15 @@ export default function WalkinPage() {
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8">
         <div className="w-full max-w-md mx-auto">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#006241] text-white font-bold text-xl mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-800 text-white font-bold text-xl mb-4">
               G
             </div>
           </div>
 
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#006241]/10 mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mb-4">
               <svg
-                className="w-8 h-8 text-[#006241]"
+                className="w-8 h-8 text-emerald-800"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -151,7 +151,7 @@ export default function WalkinPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-[#006241] mb-1">
+            <h3 className="text-xl font-bold text-emerald-800 mb-1">
               Welcome, {result.full_name}!
             </h3>
             <p className="text-gray-500 text-sm mb-6">
@@ -175,7 +175,7 @@ export default function WalkinPage() {
       <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-8">
         <div className="w-full max-w-md mx-auto">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#006241] text-white font-bold text-xl mb-4">
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-800 text-white font-bold text-xl mb-4">
               G
             </div>
           </div>
@@ -202,7 +202,7 @@ export default function WalkinPage() {
             <p className="text-sm text-gray-600 mb-1">{result.full_name}</p>
             <p className="text-xs text-gray-400 mb-4">{result.email}</p>
             {result.checked_in ? (
-              <p className="text-sm text-[#006241] font-medium mb-4">
+              <p className="text-sm text-emerald-800 font-medium mb-4">
                 Already checked in
                 {result.checked_in_at && (
                   <span className="text-gray-400 font-normal">
@@ -239,7 +239,7 @@ export default function WalkinPage() {
       <div className="w-full max-w-md mx-auto">
         {/* Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#006241] text-white font-bold text-xl mb-4">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-800 text-white font-bold text-xl mb-4">
             G
           </div>
           <h1 className="text-2xl font-bold text-gray-900">Walk-In Registration</h1>
@@ -272,10 +272,10 @@ export default function WalkinPage() {
                 onChange={(e) => setFullName(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Jane Smith"
-                className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+                className={`w-full rounded-lg border px-3 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 ${
                   errors.full_name
                     ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-[#006241] focus:border-[#006241]"
+                    : "border-gray-300 focus:ring-emerald-700 focus:border-emerald-700"
                 }`}
                 autoComplete="name"
               />
@@ -297,10 +297,10 @@ export default function WalkinPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="jane@babson.edu"
-                className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+                className={`w-full rounded-lg border px-3 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 ${
                   errors.email
                     ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-[#006241] focus:border-[#006241]"
+                    : "border-gray-300 focus:ring-emerald-700 focus:border-emerald-700"
                 }`}
                 autoComplete="email"
               />
@@ -322,10 +322,10 @@ export default function WalkinPage() {
                 onChange={(e) => setPhone(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="(555) 123-4567"
-                className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+                className={`w-full rounded-lg border px-3 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 ${
                   errors.phone
                     ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-[#006241] focus:border-[#006241]"
+                    : "border-gray-300 focus:ring-emerald-700 focus:border-emerald-700"
                 }`}
                 autoComplete="tel"
               />
@@ -343,10 +343,10 @@ export default function WalkinPage() {
                 id="walkin-school"
                 value={school}
                 onChange={(e) => setSchool(e.target.value)}
-                className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 bg-white ${
+                className={`w-full rounded-lg border px-3 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 bg-white ${
                   errors.school
                     ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-[#006241] focus:border-[#006241]"
+                    : "border-gray-300 focus:ring-emerald-700 focus:border-emerald-700"
                 }`}
               >
                 <option value="" disabled>
@@ -376,10 +376,10 @@ export default function WalkinPage() {
                   onChange={(e) => setSchoolOther(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="University name"
-                  className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 ${
+                  className={`w-full rounded-lg border px-3 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 ${
                     errors.school_other
                       ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-[#006241] focus:border-[#006241]"
+                      : "border-gray-300 focus:ring-emerald-700 focus:border-emerald-700"
                   }`}
                 />
                 {errors.school_other && (
@@ -397,10 +397,10 @@ export default function WalkinPage() {
                 id="walkin-year"
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
-                className={`w-full rounded-lg border px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 bg-white ${
+                className={`w-full rounded-lg border px-3 py-3 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 bg-white ${
                   errors.year
                     ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-[#006241] focus:border-[#006241]"
+                    : "border-gray-300 focus:ring-emerald-700 focus:border-emerald-700"
                 }`}
               >
                 <option value="" disabled>
@@ -422,7 +422,7 @@ export default function WalkinPage() {
           <button
             onClick={handleSubmit}
             disabled={state === "submitting"}
-            className="w-full mt-6 rounded-xl font-semibold text-lg px-6 py-4 bg-[#006241] text-white hover:bg-[#004d33] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full mt-6 rounded-xl font-semibold text-lg px-6 py-4 bg-emerald-800 text-white hover:bg-emerald-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {state === "submitting" ? (
               <span className="inline-flex items-center gap-2">
@@ -455,7 +455,7 @@ export default function WalkinPage() {
 
         <p className="text-xs text-gray-400 text-center mt-6">
           For event-day walk-ins only. Already registered? Use the{" "}
-          <a href="/checkin" className="text-[#006241] hover:underline">
+          <a href="/checkin" className="text-emerald-800 hover:underline">
             check-in page
           </a>
           .

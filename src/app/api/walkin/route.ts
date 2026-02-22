@@ -2,6 +2,27 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { walkinSchema } from "@/lib/validations-walkin";
 
+const WALKIN_PARTICIPANT_SELECT = "id, full_name, email, checked_in, checked_in_at";
+
+type WalkinParticipant = {
+  id: string;
+  full_name: string;
+  email: string;
+  checked_in: boolean;
+  checked_in_at: string | null;
+};
+
+function existingParticipantResponse(participant: WalkinParticipant) {
+  return NextResponse.json(
+    {
+      message: "Participant already registered.",
+      existing: true,
+      participant,
+    },
+    { status: 200 }
+  );
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -17,29 +38,29 @@ export async function POST(request: NextRequest) {
 
     const data = result.data;
     const supabase = createAdminClient();
+    const normalizedEmail = data.email.trim().toLowerCase();
+    const trimmedPhone = data.phone.trim();
+
+    const findExistingParticipant = async (): Promise<WalkinParticipant | null> => {
+      const { data: existingParticipant, error: lookupError } = await supabase
+        .from("participants")
+        .select(WALKIN_PARTICIPANT_SELECT)
+        .ilike("email", normalizedEmail)
+        .limit(1)
+        .maybeSingle();
+
+      if (lookupError) {
+        throw lookupError;
+      }
+
+      return existingParticipant;
+    };
 
     // 2. Check for duplicate email -- return existing record if found
-    const { data: existingParticipant } = await supabase
-      .from("participants")
-      .select("id, full_name, email, checked_in, checked_in_at")
-      .eq("email", data.email)
-      .single();
+    const existingParticipant = await findExistingParticipant();
 
     if (existingParticipant) {
-      return NextResponse.json(
-        {
-          message: "Participant already registered.",
-          existing: true,
-          participant: {
-            id: existingParticipant.id,
-            full_name: existingParticipant.full_name,
-            email: existingParticipant.email,
-            checked_in: existingParticipant.checked_in,
-            checked_in_at: existingParticipant.checked_in_at,
-          },
-        },
-        { status: 200 }
-      );
+      return existingParticipantResponse(existingParticipant);
     }
 
     // 3. Create walk-in participant (auto checked in)
@@ -47,8 +68,8 @@ export async function POST(request: NextRequest) {
       .from("participants")
       .insert({
         full_name: data.full_name,
-        email: data.email,
-        phone: data.phone,
+        email: normalizedEmail,
+        phone: trimmedPhone,
         school: data.school,
         school_other: data.school === "Other" ? data.school_other : null,
         year: data.year,
@@ -64,9 +85,26 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (insertError || !participant) {
+    if (insertError) {
+      if (insertError.code === "23505") {
+        const duplicateParticipant = await findExistingParticipant();
+        if (duplicateParticipant) {
+          return existingParticipantResponse(duplicateParticipant);
+        }
+      }
+
       return NextResponse.json(
-        { error: "Failed to create walk-in participant", details: insertError?.message },
+        {
+          error: "Failed to create walk-in participant",
+          details: insertError.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    if (!participant) {
+      return NextResponse.json(
+        { error: "Failed to create walk-in participant" },
         { status: 500 }
       );
     }
