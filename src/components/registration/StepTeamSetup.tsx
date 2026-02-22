@@ -253,7 +253,7 @@ export function StepTeamSetup({
             <p className="text-sm font-semibold text-gray-800">
               Does your team need additional members?
             </p>
-            <div className="flex gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {(["yes", "no"] as const).map((val) => (
                 <button
                   key={val}
@@ -265,10 +265,10 @@ export function StepTeamSetup({
                     });
                   }}
                   className={cn(
-                    "px-4 py-2 rounded-lg border text-sm font-medium transition-all",
+                    "min-h-11 w-full rounded-lg border px-4 py-2.5 text-left text-sm font-medium leading-snug transition-all sm:text-center",
                     data.needs_more_members === val
-                      ? "border-[#006241] bg-[#006241]/5 text-[#006241]"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-[#006241]/40"
+                      ? "border-emerald-700 bg-emerald-50 text-emerald-800"
+                      : "border-gray-200 bg-white text-gray-600 hover:border-emerald-300"
                   )}
                 >
                   {val === "yes" ? "Yes, we could use more members" : "No, our team is complete"}
@@ -297,7 +297,7 @@ export function StepTeamSetup({
                         members_requested: val ? Number(val) : null,
                       });
                     }}
-                    className="block w-full max-w-[120px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 focus:border-[#006241] focus:ring-1 focus:ring-[#006241] transition-colors"
+                    className="block w-full max-w-[120px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 transition-colors focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700"
                   >
                     <option value="">Select</option>
                     {Array.from({ length: maxRequestable }, (_, i) => i + 1).map(
