@@ -10,6 +10,8 @@ export interface Participant {
   primary_role: string;
   specific_skills: string[];
   experience_level: string;
+  participant_type: string;
+  ai_tools: string[];
   is_self_registered: boolean;
   registered_by?: string | null;
   team_id?: string | null;
@@ -39,6 +41,7 @@ export interface RegistrationGroup {
   id: string;
   registrant_id: string;
   group_size: number;
+  members_requested: number | null;
   team_id?: string | null;
   tagged_team_skills: string[];
   created_at: string;
@@ -61,6 +64,13 @@ export interface ScheduleItem {
   location?: string | null;
   type: "ceremony" | "workshop" | "meal" | "hacking" | "judging" | "other";
   sort_order: number;
+}
+
+export interface EventConfig {
+  id: string;
+  track_released: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface RegistrationFormData {
