@@ -1,7 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { RegistrationWizard } from "./registration-wizard";
 import { EVENT_CONFIG } from "@/lib/constants";
-import Link from "next/link";
 
 export const metadata = {
   title: `Register | ${EVENT_CONFIG.shortName}`,
@@ -23,30 +22,7 @@ export default async function RegisterPage() {
   }
 
   const participantCount = count ?? 0;
+  const participantCapacityFull = participantCount >= EVENT_CONFIG.capacity;
 
-  if (participantCount >= EVENT_CONFIG.capacity) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-        <div className="max-w-md text-center space-y-4">
-          <div className="text-5xl">&#128532;</div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Registration is Full
-          </h1>
-          <p className="text-gray-600">
-            We have reached our capacity of {EVENT_CONFIG.capacity} participants
-            for {EVENT_CONFIG.name}. Please check back later in case spots open
-            up.
-          </p>
-          <Link
-            href="/"
-            className="inline-block mt-4 px-6 py-3 rounded-lg bg-[#006241] text-white font-medium hover:bg-[#004d33] transition-colors"
-          >
-            Back to Home
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  return <RegistrationWizard />;
+  return <RegistrationWizard participantCapacityFull={participantCapacityFull} />;
 }

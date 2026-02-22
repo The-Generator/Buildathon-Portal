@@ -26,7 +26,13 @@ const INITIAL_FORM_DATA: RegistrationFormData = {
   tagged_team_skills: [],
 };
 
-export function RegistrationWizard() {
+interface RegistrationWizardProps {
+  participantCapacityFull?: boolean;
+}
+
+export function RegistrationWizard({
+  participantCapacityFull = false,
+}: RegistrationWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] =
     useState<RegistrationFormData>(INITIAL_FORM_DATA);
@@ -56,6 +62,12 @@ export function RegistrationWizard() {
   };
 
   const handleSubmit = async () => {
+    if (participantCapacityFull && formData.team_option !== "spectator") {
+      throw new Error(
+        "Participant registration is full. Spectator registration is still open."
+      );
+    }
+
     const res = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -82,6 +94,13 @@ export function RegistrationWizard() {
             April 11, 2026 &middot; Babson College
           </p>
         </div>
+
+        {participantCapacityFull && (
+          <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            Participant registration is currently full. Spectator registration
+            remains open.
+          </div>
+        )}
 
         {/* Progress Steps */}
         <div className="mb-10">
