@@ -19,7 +19,7 @@ export function TrackReleaseToggle() {
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    if (!session) throw new Error("Not authenticated");
+    if (!session || !session.user.email) throw new Error("Not authenticated");
     return `Bearer ${session.user.email}`;
   }, []);
 
@@ -88,7 +88,7 @@ export function TrackReleaseToggle() {
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
           {trackReleased ? (
-            <Radio className="h-5 w-5 text-[#006241]" />
+            <Radio className="h-5 w-5 text-emerald-700" />
           ) : (
             <Lock className="h-5 w-5 text-gray-400" />
           )}
@@ -118,16 +118,17 @@ export function TrackReleaseToggle() {
           <button
             type="button"
             role="switch"
+            aria-label="Toggle track and theme visibility"
             aria-checked={trackReleased}
             disabled={toggling}
             onClick={() => setConfirmOpen(true)}
-            className={`relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#006241] focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ${
-              trackReleased ? "bg-[#006241]" : "bg-gray-300"
+            className={`relative inline-flex h-11 w-20 shrink-0 items-center cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${
+              trackReleased ? "bg-emerald-700" : "bg-gray-300"
             }`}
           >
             <span
-              className={`pointer-events-none inline-block h-6 w-6 rounded-full bg-white shadow transform transition-transform duration-200 ${
-                trackReleased ? "translate-x-5" : "translate-x-0"
+              className={`pointer-events-none inline-block h-9 w-9 rounded-full bg-white shadow transform transition-transform duration-200 ${
+                trackReleased ? "translate-x-10" : "translate-x-0"
               }`}
             />
           </button>
@@ -155,8 +156,13 @@ export function TrackReleaseToggle() {
           <Button
             variant={trackReleased ? "destructive" : "primary"}
             onClick={handleToggle}
+            disabled={toggling}
           >
-            {trackReleased ? "Lock Tracks" : "Release Tracks"}
+            {toggling
+              ? "Updating..."
+              : trackReleased
+                ? "Lock Tracks"
+                : "Release Tracks"}
           </Button>
         </div>
       </Modal>
