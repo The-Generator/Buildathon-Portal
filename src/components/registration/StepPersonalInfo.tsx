@@ -6,6 +6,7 @@ import { Select } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { RoleSelector } from "./RoleSelector";
 import { SkillChips } from "./SkillChips";
+import { AiToolsSelector } from "./AiToolsSelector";
 import {
   PRIMARY_ROLES,
   SPECIFIC_SKILLS,
@@ -217,6 +218,17 @@ export function StepPersonalInfo({
         {errors.experience_level && (
           <p className="mt-1 text-sm text-red-600">{errors.experience_level}</p>
         )}
+      </div>
+
+      {/* AI Tools */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          AI Tools Experience <span className="text-gray-400 font-normal">(select all that apply)</span>
+        </label>
+        <AiToolsSelector
+          selectedTools={data.ai_tools ?? []}
+          onChange={(tools) => onChange({ ai_tools: tools })}
+        />
       </div>
 
       {/* Navigation */}

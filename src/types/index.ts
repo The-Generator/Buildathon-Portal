@@ -92,6 +92,9 @@ export interface RegistrationFormData {
   team_option: "full_team" | "partial_team" | "solo" | "spectator";
   teammates: { full_name: string; email: string }[];
 
+  // AI Tools
+  ai_tools: string[];
+
   // Step 3: Team Skills
   tagged_team_skills: string[];
 }

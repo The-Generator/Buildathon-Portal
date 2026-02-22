@@ -21,6 +21,7 @@ const INITIAL_FORM_DATA: RegistrationFormData = {
   primary_role: "",
   specific_skills: [],
   experience_level: "",
+  ai_tools: [],
   team_option: "solo",
   teammates: [],
   tagged_team_skills: [],
