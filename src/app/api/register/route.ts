@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
           specific_skills: data.specific_skills ?? [],
           experience_level: data.experience_level ?? "",
           participant_type: "spectator",
+          ai_tools: data.ai_tools ?? [],
           is_self_registered: true,
         })
         .select()
@@ -132,6 +133,7 @@ export async function POST(request: NextRequest) {
         specific_skills: data.specific_skills ?? [],
         experience_level: data.experience_level ?? "",
         participant_type: "participant",
+        ai_tools: data.ai_tools ?? [],
         is_self_registered: true,
       })
       .select()

@@ -22,6 +22,7 @@ export const stepPersonalInfoSchema = z
       .array(z.enum([...SPECIFIC_SKILLS]))
       .min(1, "Select at least one skill"),
     experience_level: z.enum([...EXPERIENCE_LEVELS]),
+    ai_tools: z.array(z.string()).optional().default([]),
   })
   .refine(
     (data) => {
@@ -90,6 +91,7 @@ export const fullRegistrationSchema = z
     primary_role: z.enum([...PRIMARY_ROLES]).optional(),
     specific_skills: z.array(z.enum([...SPECIFIC_SKILLS])).optional().default([]),
     experience_level: z.enum([...EXPERIENCE_LEVELS]).optional(),
+    ai_tools: z.array(z.string()).optional().default([]),
 
     // Step 2: Team Setup
     team_option: z.enum(["full_team", "partial_team", "solo", "spectator"]),
