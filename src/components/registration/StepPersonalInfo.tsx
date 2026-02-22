@@ -42,6 +42,7 @@ export function StepPersonalInfo({
       primary_role: data.primary_role,
       specific_skills: data.specific_skills,
       experience_level: data.experience_level,
+      ai_tools: data.ai_tools,
     });
 
     if (!result.success) {
