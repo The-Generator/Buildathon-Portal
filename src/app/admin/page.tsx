@@ -1,5 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { StatsOverview } from "@/components/admin/StatsOverview";
+import { TrackReleaseToggle } from "@/components/admin/TrackReleaseToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +87,9 @@ export default async function AdminOverviewPage() {
         </p>
       </div>
       <StatsOverview stats={stats} />
+      <div className="mt-6">
+        <TrackReleaseToggle />
+      </div>
     </div>
   );
 }
