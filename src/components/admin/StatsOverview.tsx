@@ -69,7 +69,7 @@ export function StatsOverview({ stats }: { stats: StatsData }) {
         </div>
         <div className="w-full bg-gray-200 rounded-full h-3">
           <div
-            className="bg-[#006241] h-3 rounded-full transition-all duration-500"
+            className="bg-emerald-700 h-3 rounded-full transition-all duration-500"
             style={{ width: `${capacityPercent}%` }}
           />
         </div>
@@ -134,7 +134,7 @@ export function StatsOverview({ stats }: { stats: StatsData }) {
                 <div className="flex items-center gap-3">
                   <div className="w-32 bg-gray-200 rounded-full h-2">
                     <div
-                      className="bg-[#006241] h-2 rounded-full"
+                      className="bg-emerald-700 h-2 rounded-full"
                       style={{
                         width: `${stats.totalParticipants > 0 ? Math.round((count / stats.totalParticipants) * 100) : 0}%`,
                       }}
@@ -160,9 +160,9 @@ export function StatsOverview({ stats }: { stats: StatsData }) {
           <div className="space-y-3">
             {Object.entries(stats.formationBreakdown).map(([type, count]) => {
               const labels: Record<string, string> = {
-                full_team: "Full Team",
-                partial_team: "Partial Team",
-                solo: "Solo",
+                pre_formed: "Pre-formed",
+                algorithm_matched: "Algorithm Matched",
+                admin_assigned: "Admin Assigned",
               };
               return (
                 <div key={type} className="flex items-center justify-between">
@@ -172,9 +172,9 @@ export function StatsOverview({ stats }: { stats: StatsData }) {
                   <div className="flex items-center gap-3">
                     <div className="w-32 bg-gray-200 rounded-full h-2">
                       <div
-                        className="bg-[#006241] h-2 rounded-full"
+                        className="bg-emerald-700 h-2 rounded-full"
                         style={{
-                          width: `${stats.totalParticipants > 0 ? Math.round((count / stats.totalParticipants) * 100) : 0}%`,
+                          width: `${stats.totalTeams > 0 ? Math.round((count / stats.totalTeams) * 100) : 0}%`,
                         }}
                       />
                     </div>
