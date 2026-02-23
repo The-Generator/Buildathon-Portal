@@ -31,6 +31,7 @@ export function CheckinDashboard() {
   const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const toastTimeout = useRef<NodeJS.Timeout | null>(null);
+  const seenCheckinsRef = useRef<Set<string>>(new Set());
 
   const showToast = useCallback((name: string) => {
     if (toastTimeout.current) clearTimeout(toastTimeout.current);
@@ -65,7 +66,7 @@ export function CheckinDashboard() {
 
     for (const p of participants) {
       // School
-      const schoolKey = normalizeSchool(p.school);
+      const schoolKey = getParticipantSchoolLabel(p.school, p.school_other);
       if (!schoolBreakdown[schoolKey]) {
         schoolBreakdown[schoolKey] = { total: 0, checkedIn: 0 };
       }
@@ -98,9 +99,13 @@ export function CheckinDashboard() {
       .map((p) => ({
         id: p.id,
         full_name: p.full_name,
-        school: p.school_other || p.school,
+        school: getParticipantSchoolLabel(p.school, p.school_other),
         checked_in_at: p.checked_in_at!,
       }));
+
+    const seenCheckinKeys = participants
+      .filter((p) => p.checked_in && p.checked_in_at)
+      .map((p) => getCheckinKey(p.id, p.checked_in_at!));
 
     return {
       metrics: {
@@ -111,6 +116,7 @@ export function CheckinDashboard() {
         unassignedWalkIns,
       },
       recentCheckins: recent,
+      seenCheckinKeys,
     };
   }, []);
 
@@ -126,6 +132,7 @@ export function CheckinDashboard() {
 
       setMetrics(result.metrics);
       setRecentCheckins(result.recentCheckins);
+      seenCheckinsRef.current = new Set(result.seenCheckinKeys);
       setLoading(false);
     };
 
@@ -150,49 +157,25 @@ export function CheckinDashboard() {
             school: string;
             school_other?: string;
             checked_in: boolean;
-            checked_in_at: string;
-            participant_type?: string;
+            checked_in_at?: string | null;
           };
 
-          if (updated.checked_in) {
-            setMetrics((prev) => {
-              const schoolKey = normalizeSchool(updated.school);
-              const pType = updated.participant_type || "participant";
+          if (updated.checked_in && updated.checked_in_at) {
+            const checkinKey = getCheckinKey(updated.id, updated.checked_in_at);
+            const isNewCheckin = !seenCheckinsRef.current.has(checkinKey);
 
-              const nextSchool = { ...prev.schoolBreakdown };
-              if (nextSchool[schoolKey]) {
-                nextSchool[schoolKey] = {
-                  ...nextSchool[schoolKey],
-                  checkedIn: nextSchool[schoolKey].checkedIn + 1,
-                };
+            void (async () => {
+              const result = await fetchStats();
+              if (!result || cancelled) return;
+
+              setMetrics(result.metrics);
+              setRecentCheckins(result.recentCheckins);
+              seenCheckinsRef.current = new Set(result.seenCheckinKeys);
+
+              if (isNewCheckin) {
+                showToast(updated.full_name);
               }
-
-              const nextType = { ...prev.typeBreakdown };
-              if (nextType[pType]) {
-                nextType[pType] = {
-                  ...nextType[pType],
-                  checkedIn: nextType[pType].checkedIn + 1,
-                };
-              }
-
-              return {
-                ...prev,
-                totalCheckedIn: prev.totalCheckedIn + 1,
-                schoolBreakdown: nextSchool,
-                typeBreakdown: nextType,
-              };
-            });
-
-            // Prepend to recent check-ins
-            const newCheckin: RecentCheckin = {
-              id: updated.id,
-              full_name: updated.full_name,
-              school: updated.school_other || updated.school,
-              checked_in_at: updated.checked_in_at,
-            };
-            setRecentCheckins((prev) => [newCheckin, ...prev].slice(0, 20));
-
-            showToast(updated.full_name);
+            })();
           }
         }
       )
@@ -354,10 +337,17 @@ export function CheckinDashboard() {
   );
 }
 
-function normalizeSchool(school: string): string {
-  const lower = school.toLowerCase();
-  if (lower.includes("babson")) return "babson";
-  if (lower.includes("bentley")) return "bentley";
-  if (lower.includes("bryant")) return "bryant";
-  return "other";
+function getParticipantSchoolLabel(
+  school: string,
+  schoolOther?: string | null
+): string {
+  if (school.trim().toLowerCase() === "other") {
+    const other = schoolOther?.trim();
+    return other && other.length > 0 ? other : "Other";
+  }
+  return school.trim() || "Other";
+}
+
+function getCheckinKey(id: string, checkedInAt: string): string {
+  return `${id}:${checkedInAt}`;
 }

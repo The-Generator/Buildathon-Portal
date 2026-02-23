@@ -39,20 +39,16 @@ const TYPE_COLORS: Record<string, string> = {
 
 const TYPE_ORDER = ["participant", "spectator", "walk_in"];
 
-const SCHOOL_LABELS: Record<string, string> = {
-  babson: "Babson",
-  bentley: "Bentley",
-  bryant: "Bryant",
-  other: "Other",
-};
-
-const SCHOOL_ORDER = ["babson", "bentley", "bryant", "other"];
-
 export function CheckinMetrics({ data }: { data: CheckinMetricsData }) {
   const percentage =
     data.totalRegistered > 0
       ? Math.round((data.totalCheckedIn / data.totalRegistered) * 100)
       : 0;
+  const schoolEntries = Object.entries(data.schoolBreakdown).sort((a, b) => {
+    const totalDiff = b[1].total - a[1].total;
+    if (totalDiff !== 0) return totalDiff;
+    return a[0].localeCompare(b[0]);
+  });
 
   return (
     <div className="space-y-6">
@@ -146,19 +142,15 @@ export function CheckinMetrics({ data }: { data: CheckinMetricsData }) {
             <h3 className="text-sm font-semibold text-gray-900">By School</h3>
           </div>
           <div className="space-y-3">
-            {SCHOOL_ORDER.map((key) => {
-              const entry = data.schoolBreakdown[key];
-              if (!entry) return null;
+            {schoolEntries.map(([school, entry]) => {
               const pct =
                 entry.total > 0
                   ? Math.round((entry.checkedIn / entry.total) * 100)
                   : 0;
               return (
-                <div key={key}>
+                <div key={school}>
                   <div className="flex items-center justify-between text-sm mb-1">
-                    <span className="text-gray-600">
-                      {SCHOOL_LABELS[key] || key}
-                    </span>
+                    <span className="text-gray-600">{school}</span>
                     <span className="font-medium text-gray-900">
                       {entry.checkedIn}/{entry.total}
                     </span>
