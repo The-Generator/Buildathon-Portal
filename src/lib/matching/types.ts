@@ -12,6 +12,7 @@ export interface MatchInput {
   specificSkills: string[];
   experienceLevel: string;
   school: string;
+  aiTools: string[];
   registrationGroupId: string | null;
   groupSize: number; // 1 for solo
 }

@@ -1,8 +1,9 @@
-import { SPECIFIC_SKILLS, EXPERIENCE_LEVELS } from "@/lib/constants";
+import { SPECIFIC_SKILLS, EXPERIENCE_LEVELS, AI_TOOL_CATEGORIES } from "@/lib/constants";
 import type { MatchInput } from "./types";
 
-const WEIGHT_ROLE_DIVERSITY = 0.4;
-const WEIGHT_SKILL_COVERAGE = 0.35;
+const WEIGHT_ROLE_DIVERSITY = 0.3;
+const WEIGHT_SKILL_COVERAGE = 0.25;
+const WEIGHT_AI_TOOL_DIVERSITY = 0.2;
 const WEIGHT_EXPERIENCE_BALANCE = 0.15;
 const WEIGHT_SCHOOL_MIX = 0.1;
 
@@ -22,6 +23,27 @@ function roleDiversityScore(members: MatchInput[]): number {
 function skillCoverageScore(members: MatchInput[]): number {
   const uniqueSkills = new Set(members.flatMap((m) => m.specificSkills));
   return Math.min(uniqueSkills.size / SPECIFIC_SKILLS.length, 1.0);
+}
+
+/**
+ * AI tool diversity score (0-1).
+ * Count unique AI tool categories represented across all members / total categories.
+ * Extracts category from tool strings formatted as "ToolName (Category)".
+ * Teams with empty ai_tools arrays score 0.
+ */
+function aiToolDiversityScore(members: MatchInput[]): number {
+  const allTools = members.flatMap((m) => m.aiTools);
+  if (allTools.length === 0) return 0;
+
+  const categories = new Set<string>();
+  for (const tool of allTools) {
+    const match = tool.match(/\(([^)]+)\)$/);
+    if (match) {
+      categories.add(match[1]);
+    }
+  }
+
+  return Math.min(categories.size / AI_TOOL_CATEGORIES.length, 1.0);
 }
 
 /**
@@ -70,8 +92,9 @@ function schoolMixScore(members: MatchInput[]): number {
 
 /**
  * Calculate a team score from 0 to 100 based on weighted combination of:
- * - Role diversity (40%)
- * - Skill coverage (35%)
+ * - Role diversity (30%)
+ * - Skill coverage (25%)
+ * - AI tool diversity (20%)
  * - Experience balance (15%)
  * - School mix (10%)
  */
@@ -80,12 +103,14 @@ export function calculateTeamScore(members: MatchInput[]): number {
 
   const role = roleDiversityScore(members);
   const skill = skillCoverageScore(members);
+  const aiTool = aiToolDiversityScore(members);
   const experience = experienceBalanceScore(members);
   const school = schoolMixScore(members);
 
   const weighted =
     role * WEIGHT_ROLE_DIVERSITY +
     skill * WEIGHT_SKILL_COVERAGE +
+    aiTool * WEIGHT_AI_TOOL_DIVERSITY +
     experience * WEIGHT_EXPERIENCE_BALANCE +
     school * WEIGHT_SCHOOL_MIX;
 

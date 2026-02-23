@@ -123,6 +123,7 @@ export async function POST() {
         specificSkills: p.specific_skills ?? [],
         experienceLevel: p.experience_level,
         school: p.school_other && p.school === "Other" ? p.school_other : p.school,
+        aiTools: p.ai_tools ?? [],
         registrationGroupId: group ? group.id : null,
         groupSize: group ? group.group_size : 1,
       };
