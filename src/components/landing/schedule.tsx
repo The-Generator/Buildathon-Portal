@@ -23,8 +23,8 @@ const TYPE_STYLES: Record<
   { dot: string; accent: string }
 > = {
   ceremony: {
-    dot: "border-[#00e87b]/50 bg-[#00e87b]/15",
-    accent: "text-[#00e87b]",
+    dot: "border-emerald-400/50 bg-emerald-400/15",
+    accent: "text-emerald-400",
   },
   meal: {
     dot: "border-amber-400/40 bg-amber-400/10",
@@ -115,15 +115,15 @@ export function Schedule() {
   return (
     <section
       id="schedule"
-      className="relative overflow-hidden bg-[#0a0f0d] py-24 sm:py-32"
+      className="relative overflow-hidden bg-zinc-950 py-24 sm:py-32"
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(0,232,123,0.03)_0%,_transparent_60%)]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-emerald-400/5 via-transparent to-transparent" />
 
       <div className="relative mx-auto max-w-7xl px-6">
         {/* Section header */}
         <div className="mx-auto max-w-2xl text-center">
-          <p className="font-data text-sm font-medium uppercase tracking-widest text-[#00e87b]">
+          <p className="font-data text-sm font-medium uppercase tracking-widest text-emerald-400">
             Day-of Schedule
           </p>
           <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
