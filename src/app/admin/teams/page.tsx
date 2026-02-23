@@ -265,9 +265,11 @@ export default function TeamsPage() {
                     {adminToken && (
                       <TeamActions
                         teamId={team.id}
+                        teamName={team.name}
                         isLocked={team.is_locked}
                         isComplete={team.is_complete}
                         adminToken={adminToken}
+                        members={team.members}
                         onUpdated={handleMatchingConfirmed}
                       />
                     )}
