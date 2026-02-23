@@ -113,6 +113,13 @@ export async function PATCH(
       );
     }
 
+    // Fetch current team state for audit diff
+    const { data: currentTeam } = await supabase
+      .from("teams")
+      .select("*")
+      .eq("id", id)
+      .single();
+
     const { data: updatedTeam, error: updateError } = await supabase
       .from("teams")
       .update(updateData)
@@ -125,6 +132,21 @@ export async function PATCH(
         { error: "Failed to update team", details: updateError?.message },
         { status: 500 }
       );
+    }
+
+    // Write audit log entry for each changed field
+    const auditEntries = Object.entries(updateData).map(([field, value]) => ({
+      team_id: id,
+      admin_id: admin.id,
+      action: field,
+      details: {
+        previous: currentTeam ? currentTeam[field] : null,
+        updated: value,
+      },
+    }));
+
+    if (auditEntries.length > 0) {
+      await supabase.from("team_audit_log").insert(auditEntries);
     }
 
     // Fetch members to return complete team info

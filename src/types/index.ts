@@ -67,6 +67,15 @@ export interface ScheduleItem {
   sort_order: number;
 }
 
+export interface TeamAuditEntry {
+  id: string;
+  team_id: string;
+  admin_id: string;
+  action: string;
+  details: Record<string, unknown>;
+  created_at: string;
+}
+
 export interface EventConfig {
   id: string;
   track_released: boolean;
