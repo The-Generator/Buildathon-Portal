@@ -112,38 +112,55 @@ async function main() {
   console.log("Cleaning up previous seed data...");
 
   // Delete in dependency order: registration_groups -> participants -> teams
-  // First find all seed participants
-  const { data: existingParticipants } = await supabase
+  const { data: existingParticipants, error: existingParticipantsError } = await supabase
     .from("participants")
     .select("id")
     .like("email", `%@${SEED_DOMAIN}`);
+  if (existingParticipantsError) {
+    throw new Error(`Fetch seed participants: ${existingParticipantsError.message}`);
+  }
 
-  if (existingParticipants && existingParticipants.length > 0) {
-    const ids = existingParticipants.map((p: { id: string }) => p.id);
+  const { data: seedTeams, error: seedTeamsError } = await supabase
+    .from("teams")
+    .select("id")
+    .like("name", "Seed Team%");
+  if (seedTeamsError) {
+    throw new Error(`Fetch seed teams: ${seedTeamsError.message}`);
+  }
 
-    // Delete registration_groups referencing seed participants
-    await supabase.from("registration_groups").delete().in("registrant_id", ids);
+  const ids = existingParticipants?.map((p: { id: string }) => p.id) ?? [];
+  const teamIds = seedTeams?.map((t: { id: string }) => t.id) ?? [];
 
-    // Find teams these participants belong to (seed teams only)
-    const { data: seedTeams } = await supabase
-      .from("teams")
-      .select("id")
-      .like("name", "Seed Team%");
-    const teamIds = seedTeams?.map((t: { id: string }) => t.id) ?? [];
+  if (ids.length > 0) {
+    const { error } = await supabase
+      .from("registration_groups")
+      .delete()
+      .in("registrant_id", ids);
+    if (error) throw new Error(`Delete seed registration groups by registrant: ${error.message}`);
+  }
 
-    // Unlink participants from teams before deleting
-    await supabase
+  if (teamIds.length > 0) {
+    const { error } = await supabase
+      .from("registration_groups")
+      .delete()
+      .in("team_id", teamIds);
+    if (error) throw new Error(`Delete seed registration groups by team: ${error.message}`);
+  }
+
+  if (ids.length > 0) {
+    const { error: unlinkError } = await supabase
       .from("participants")
       .update({ team_id: null })
       .in("id", ids);
+    if (unlinkError) throw new Error(`Unlink seed participants from teams: ${unlinkError.message}`);
 
-    // Delete seed participants
-    await supabase.from("participants").delete().in("id", ids);
+    const { error } = await supabase.from("participants").delete().in("id", ids);
+    if (error) throw new Error(`Delete seed participants: ${error.message}`);
+  }
 
-    // Delete seed teams
-    if (teamIds.length > 0) {
-      await supabase.from("teams").delete().in("id", teamIds);
-    }
+  if (teamIds.length > 0) {
+    const { error } = await supabase.from("teams").delete().in("id", teamIds);
+    if (error) throw new Error(`Delete seed teams: ${error.message}`);
   }
 
   console.log("Seeding teams...");
@@ -176,7 +193,7 @@ async function main() {
     size: number;
   }[] = [];
   for (let t = 1; t <= 8; t++) {
-    const size = 2 + (t % 3); // cycles 2, 3, 4
+    const size = 2 + (t % 3); // cycles 3, 4, 2
     const { data: team, error } = await supabase
       .from("teams")
       .insert({
@@ -223,12 +240,13 @@ async function main() {
 
   // Registration groups for full teams
   for (const reg of fullTeamRegistrants) {
-    await supabase.from("registration_groups").insert({
+    const { error } = await supabase.from("registration_groups").insert({
       registrant_id: reg.id,
       group_size: reg.groupSize,
       team_id: reg.teamId,
       tagged_team_skills: pickN(SKILLS, 3),
     });
+    if (error) throw new Error(`Full-team registration group insert failed: ${error.message}`);
   }
 
   // ── Partial team members ───────────────────────────────────────────
@@ -263,13 +281,14 @@ async function main() {
   // Registration groups for partial teams
   for (const reg of partialRegistrants) {
     const membersRequested = 5 - reg.groupSize;
-    await supabase.from("registration_groups").insert({
+    const { error } = await supabase.from("registration_groups").insert({
       registrant_id: reg.id,
       group_size: reg.groupSize,
       team_id: reg.teamId,
       tagged_team_skills: pickN(SKILLS, 3),
       members_requested: membersRequested > 0 ? membersRequested : null,
     });
+    if (error) throw new Error(`Partial-team registration group insert failed: ${error.message}`);
   }
 
   // ── Solo participants (50) ─────────────────────────────────────────
@@ -287,11 +306,12 @@ async function main() {
 
   // Registration groups for solos
   for (const reg of soloRegistrants) {
-    await supabase.from("registration_groups").insert({
+    const { error } = await supabase.from("registration_groups").insert({
       registrant_id: reg.id,
       group_size: 1,
       tagged_team_skills: pickN(SKILLS, 2),
     });
+    if (error) throw new Error(`Solo registration group insert failed: ${error.message}`);
   }
 
   // ── Spectators (15) ────────────────────────────────────────────────
