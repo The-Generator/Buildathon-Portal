@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MatchingPreview } from "@/components/admin/MatchingPreview";
+import { TeamActions } from "@/components/admin/TeamActions";
 import {
   ChevronDown,
   ChevronUp,
@@ -260,6 +261,15 @@ export default function TeamsPage() {
                           </p>
                         )}
                       </div>
+                    )}
+                    {adminToken && (
+                      <TeamActions
+                        teamId={team.id}
+                        isLocked={team.is_locked}
+                        isComplete={team.is_complete}
+                        adminToken={adminToken}
+                        onUpdated={handleMatchingConfirmed}
+                      />
                     )}
                   </CardContent>
                 )}
