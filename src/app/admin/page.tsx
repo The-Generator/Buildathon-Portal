@@ -12,7 +12,7 @@ async function getStats() {
   // Fetch all participants
   const { data: participants, error: pError } = await supabase
     .from("participants")
-    .select("school, school_other, checked_in, team_id");
+    .select("school, school_other, checked_in, team_id, participant_type");
 
   if (pError) {
     console.error("Failed to fetch participants:", pError);
@@ -40,6 +40,17 @@ async function getStats() {
     schoolBreakdown[school] = (schoolBreakdown[school] || 0) + 1;
   }
 
+  // Participant type breakdown
+  const typeBreakdown: Record<string, number> = {
+    participant: 0,
+    spectator: 0,
+    walk_in: 0,
+  };
+  for (const p of allParticipants) {
+    const pType = p.participant_type || "participant";
+    typeBreakdown[pType] = (typeBreakdown[pType] || 0) + 1;
+  }
+
   // Formation type breakdown - based on team formation_type
   const formationBreakdown: Record<string, number> = {
     pre_formed: 0,
@@ -57,6 +68,7 @@ async function getStats() {
 
   return {
     totalParticipants: allParticipants.length,
+    typeBreakdown,
     schoolBreakdown,
     formationBreakdown,
     totalTeams: allTeams.length,

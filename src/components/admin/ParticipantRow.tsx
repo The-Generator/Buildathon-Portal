@@ -9,6 +9,12 @@ interface ParticipantRowProps {
   participant: Participant & { team_name?: string };
 }
 
+const typeConfig: Record<string, { label: string; color: "green" | "gray" | "orange" }> = {
+  participant: { label: "Participant", color: "green" },
+  spectator: { label: "Spectator", color: "gray" },
+  walk_in: { label: "Walk-in", color: "orange" },
+};
+
 export function ParticipantRow({ participant }: ParticipantRowProps) {
   const [expanded, setExpanded] = useState(false);
 
@@ -16,6 +22,11 @@ export function ParticipantRow({ participant }: ParticipantRowProps) {
     participant.school === "Other"
       ? participant.school_other || "Other"
       : participant.school;
+
+  const pType = typeConfig[participant.participant_type] ?? {
+    label: participant.participant_type,
+    color: "gray" as const,
+  };
 
   return (
     <>
@@ -35,6 +46,7 @@ export function ParticipantRow({ participant }: ParticipantRowProps) {
             <span className="text-sm font-medium text-gray-900">
               {participant.full_name}
             </span>
+            <Badge color={pType.color}>{pType.label}</Badge>
           </div>
         </td>
         <td className="px-4 py-3 text-sm text-gray-600">
