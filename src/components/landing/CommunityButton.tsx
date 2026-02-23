@@ -9,7 +9,7 @@ export function CommunityButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Join our Discord community"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-[#5865F2] px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-[#5865F2]/25 transition-all hover:bg-[#4752C4] hover:shadow-xl hover:shadow-[#5865F2]/30 sm:bottom-8 sm:right-8"
+      className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-full bg-indigo-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all hover:bg-indigo-600 hover:shadow-xl hover:shadow-indigo-500/30 sm:bottom-8 sm:right-8"
     >
       {/* Discord icon */}
       <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
