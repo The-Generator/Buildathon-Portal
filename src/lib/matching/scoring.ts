@@ -1,4 +1,9 @@
-import { SPECIFIC_SKILLS, EXPERIENCE_LEVELS, AI_TOOL_CATEGORIES } from "@/lib/constants";
+import {
+  SPECIFIC_SKILLS,
+  EXPERIENCE_LEVELS,
+  AI_TOOL_CATEGORIES,
+  AI_TOOLS_BY_CATEGORY,
+} from "@/lib/constants";
 import type { MatchInput } from "./types";
 
 const WEIGHT_ROLE_DIVERSITY = 0.3;
@@ -6,6 +11,13 @@ const WEIGHT_SKILL_COVERAGE = 0.25;
 const WEIGHT_AI_TOOL_DIVERSITY = 0.2;
 const WEIGHT_EXPERIENCE_BALANCE = 0.15;
 const WEIGHT_SCHOOL_MIX = 0.1;
+
+const AI_TOOL_CATEGORY_SET = new Set<string>(AI_TOOL_CATEGORIES);
+const AI_TOOL_CATEGORY_BY_TOOL = new Map<string, string>(
+  Object.entries(AI_TOOLS_BY_CATEGORY).flatMap(([category, tools]) =>
+    tools.map((tool) => [tool, category] as const)
+  )
+);
 
 /**
  * Role diversity score (0-1).
@@ -38,8 +50,14 @@ function aiToolDiversityScore(members: MatchInput[]): number {
   const categories = new Set<string>();
   for (const tool of allTools) {
     const match = tool.match(/\(([^)]+)\)$/);
-    if (match) {
+    if (match && AI_TOOL_CATEGORY_SET.has(match[1])) {
       categories.add(match[1]);
+      continue;
+    }
+
+    const mappedCategory = AI_TOOL_CATEGORY_BY_TOOL.get(tool);
+    if (mappedCategory) {
+      categories.add(mappedCategory);
     }
   }
 
