@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "npx tsx --env-file=.env.local scripts/seed-simulation.ts",
+    "validate": "npx tsx --env-file=.env.local scripts/validate-simulation.ts"
   },
   "dependencies": {
     "@google/genai": "^1.42.0",
