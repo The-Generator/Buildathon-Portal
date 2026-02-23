@@ -8,6 +8,7 @@ import { Schedule } from "@/components/landing/schedule";
 import { Sponsors } from "@/components/landing/sponsors";
 import { JudgingRubric } from "@/components/landing/JudgingRubric";
 import { RegistrationInfo } from "@/components/landing/RegistrationInfo";
+import { PhotoGallery } from "@/components/landing/PhotoGallery";
 import { FAQ } from "@/components/landing/faq";
 import { Footer } from "@/components/landing/footer";
 import { CommunityButton } from "@/components/landing/CommunityButton";
@@ -27,6 +28,7 @@ export default function Home() {
         <Schedule />
         <Sponsors />
         <JudgingRubric />
+        <PhotoGallery />
         <FAQ />
       </main>
       <Footer />

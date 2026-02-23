@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { EVENT_CONFIG } from "@/lib/constants";
 
@@ -145,10 +146,14 @@ export function Hero() {
 
   return (
     <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#0a0f0d]">
-      {/* Hero background image — low opacity for depth */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-        style={{ backgroundImage: "url(/generated/hero-bg.png)" }}
+      {/* Hero background image — real event photo */}
+      <Image
+        src="/photos/buildathon-overview.jpg"
+        alt="Build-a-thon event overview"
+        fill
+        priority
+        className="object-cover object-center opacity-20"
+        sizes="100vw"
       />
       {/* Dark overlay gradient for text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f0d]/70 via-[#0a0f0d]/50 to-[#0a0f0d]/95" />

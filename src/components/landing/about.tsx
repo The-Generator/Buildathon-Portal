@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Brain, Clock, Users, Zap } from "lucide-react";
 
 const features = [
@@ -30,10 +31,13 @@ const features = [
 export function About() {
   return (
     <section id="about" className="relative bg-[#0a0f0d] py-24 sm:py-32 overflow-hidden">
-      {/* Subtle background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center opacity-[0.05]"
-        style={{ backgroundImage: "url(/generated/about-bg.png)" }}
+      {/* Subtle background image — real event photo */}
+      <Image
+        src="/photos/buildathon-hacking.jpg"
+        alt=""
+        fill
+        className="object-cover object-center opacity-[0.05]"
+        sizes="100vw"
       />
       {/* Gradients */}
       <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0a0f0d] to-transparent" />
