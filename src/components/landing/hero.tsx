@@ -26,10 +26,10 @@ function useCountdown(target: Date) {
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col items-center">
-      <span className="font-data text-4xl font-medium tabular-nums text-white sm:text-5xl md:text-6xl">
+      <span className="font-data text-3xl font-medium tabular-nums text-white sm:text-5xl md:text-6xl">
         {String(value).padStart(2, "0")}
       </span>
-      <span className="font-body mt-1 text-xs font-medium uppercase tracking-widest text-white/50 sm:text-sm">
+      <span className="font-body mt-1 text-[10px] font-medium uppercase tracking-widest text-white/50 sm:text-sm">
         {label}
       </span>
     </div>
@@ -133,9 +133,9 @@ function BrainWaveSVG() {
 /* Stat row — inline, no floating cards */
 function StatItem({ value, label }: { value: string; label: string }) {
   return (
-    <div className="flex flex-col items-center px-4">
-      <p className="font-data text-2xl font-medium text-[#00e87b] sm:text-3xl">{value}</p>
-      <p className="font-body mt-1 text-xs font-medium uppercase tracking-wider text-white/50 sm:text-sm">{label}</p>
+    <div className="flex flex-col items-center px-3 sm:px-4">
+      <p className="font-data text-xl font-medium text-[#00e87b] sm:text-3xl">{value}</p>
+      <p className="font-body mt-1 text-[10px] font-medium uppercase tracking-wider text-white/50 sm:text-sm">{label}</p>
     </div>
   );
 }
@@ -165,18 +165,22 @@ export function Hero() {
         }}
       />
 
-      {/* Animated SVG decorations */}
-      <DoubleHelixSVG />
-      <DNAHelixSVG />
-      <BrainWaveSVG />
+      {/* Animated SVG decorations — hidden on mobile to reduce clutter */}
+      <div className="hidden sm:block">
+        <DoubleHelixSVG />
+        <DNAHelixSVG />
+        <BrainWaveSVG />
+      </div>
 
-      {/* Floating orbs */}
-      <div className="animate-float-fast absolute top-1/4 right-1/4 h-3 w-3 rounded-full bg-[#00e87b] opacity-30 blur-[1px]" />
-      <div className="animate-drift absolute bottom-1/3 left-1/4 h-2 w-2 rounded-full bg-[#00e87b] opacity-25 blur-[1px]" />
-      <div className="animate-float-medium absolute top-2/3 right-1/3 h-4 w-4 rounded-full bg-[#00e87b] opacity-15 blur-[2px]" />
+      {/* Floating orbs — hidden on mobile */}
+      <div className="hidden sm:block">
+        <div className="animate-float-fast absolute top-1/4 right-1/4 h-3 w-3 rounded-full bg-[#00e87b] opacity-30 blur-[1px]" />
+        <div className="animate-drift absolute bottom-1/3 left-1/4 h-2 w-2 rounded-full bg-[#00e87b] opacity-25 blur-[1px]" />
+        <div className="animate-float-medium absolute top-2/3 right-1/3 h-4 w-4 rounded-full bg-[#00e87b] opacity-15 blur-[2px]" />
+      </div>
 
       {/* Main content */}
-      <div className="relative z-10 mx-auto max-w-5xl px-6 py-32 text-center">
+      <div className="relative z-10 mx-auto max-w-5xl px-5 py-24 text-center sm:px-6 sm:py-32">
         {/* Date badge */}
         <div className="font-data mb-8 inline-flex items-center gap-2 rounded-full border border-[#00e87b]/20 bg-[#00e87b]/10 px-5 py-2 text-sm font-medium text-[#00e87b]">
           <span className="h-2 w-2 rounded-full bg-[#00e87b] animate-pulse" />
@@ -184,7 +188,7 @@ export function Hero() {
         </div>
 
         {/* Heading */}
-        <h1 className="font-display text-5xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl">
+        <h1 className="font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-white sm:text-6xl md:text-7xl lg:text-8xl">
           Generator
           <br />
           <span className="bg-gradient-to-r from-[#00e87b] via-[#00d4a0] to-[#00e87b] bg-clip-text text-transparent animate-gradient">
@@ -193,7 +197,7 @@ export function Hero() {
         </h1>
 
         {/* Theme */}
-        <p className="font-body mx-auto mt-6 max-w-2xl text-lg text-white/60 sm:text-xl">
+        <p className="font-body mx-auto mt-5 max-w-2xl text-base text-white/60 sm:mt-6 sm:text-xl">
           A 12-hour hackathon at <span className="text-white/90 font-medium">Babson College</span> exploring
           the intersection of <span className="text-[#00e87b] font-semibold">AI</span>,{" "}
           <span className="text-[#00e87b] font-semibold">Body</span> &{" "}
@@ -201,18 +205,18 @@ export function Hero() {
         </p>
 
         {/* Countdown */}
-        <div className="mt-12 flex justify-center gap-5 sm:gap-8">
+        <div className="mt-10 flex justify-center gap-3 sm:mt-12 sm:gap-8">
           <CountdownUnit value={countdown.days} label="Days" />
-          <span className="font-data self-start pt-2 text-3xl font-light text-white/20 sm:text-4xl md:text-5xl">:</span>
+          <span className="font-data self-start pt-1 text-2xl font-light text-white/20 sm:pt-2 sm:text-4xl md:text-5xl">:</span>
           <CountdownUnit value={countdown.hours} label="Hours" />
-          <span className="font-data self-start pt-2 text-3xl font-light text-white/20 sm:text-4xl md:text-5xl">:</span>
+          <span className="font-data self-start pt-1 text-2xl font-light text-white/20 sm:pt-2 sm:text-4xl md:text-5xl">:</span>
           <CountdownUnit value={countdown.minutes} label="Min" />
-          <span className="font-data self-start pt-2 text-3xl font-light text-white/20 sm:text-4xl md:text-5xl">:</span>
+          <span className="font-data self-start pt-1 text-2xl font-light text-white/20 sm:pt-2 sm:text-4xl md:text-5xl">:</span>
           <CountdownUnit value={countdown.seconds} label="Sec" />
         </div>
 
         {/* CTA buttons */}
-        <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+        <div className="mt-8 flex flex-col items-center gap-3 sm:mt-12 sm:flex-row sm:justify-center sm:gap-4">
           <Link
             href="/register"
             className="shimmer-border rounded-full bg-[#00e87b] px-10 py-4 text-base font-bold text-[#0a0f0d] shadow-lg shadow-[#00e87b]/20 transition-all hover:bg-[#00ff88] hover:shadow-xl hover:shadow-[#00e87b]/30"
@@ -228,11 +232,29 @@ export function Hero() {
         </div>
 
         {/* Stats row */}
-        <div className="mt-16 flex justify-center divide-x divide-white/10">
+        <div className="mt-10 flex justify-center divide-x divide-white/10 sm:mt-16">
           <StatItem value="500" label="Hackers" />
           <StatItem value="12h" label="of Building" />
           <StatItem value="3" label="Universities" />
           <StatItem value="5" label="Per Team" />
+        </div>
+
+        {/* Video embed placeholder */}
+        <div className="mx-auto mt-12 max-w-2xl sm:mt-16">
+          <div className="glass-card overflow-hidden rounded-2xl">
+            <div className="relative aspect-video w-full bg-black/40">
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#00e87b]/30 bg-[#00e87b]/10 sm:h-16 sm:w-16">
+                  <svg className="ml-1 h-6 w-6 text-[#00e87b] sm:h-7 sm:w-7" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                </div>
+                <p className="font-body text-sm font-medium text-white/50 sm:text-base">
+                  Build-a-thon Recap Video
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
