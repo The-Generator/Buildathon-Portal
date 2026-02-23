@@ -4,47 +4,35 @@ const photos = [
   {
     src: "/photos/buildathon-event.jpg",
     alt: "Students collaborating at the Build-a-thon",
-    width: 1200,
-    height: 800,
   },
   {
     src: "/photos/buildathon-hacking.jpg",
     alt: "Teams hacking on projects",
-    width: 1200,
-    height: 800,
   },
   {
     src: "/photos/buildathon-overhead.jpg",
     alt: "Overhead view of the Build-a-thon workspace",
-    width: 600,
-    height: 529,
   },
   {
     src: "/photos/buildathon-presentation.jpg",
     alt: "Team presenting their project",
-    width: 600,
-    height: 446,
   },
   {
     src: "/photos/buildathon-group.jpeg",
     alt: "Build-a-thon team group photo",
-    width: 1200,
-    height: 800,
   },
   {
     src: "/photos/buildathon-teamwork.jpg",
     alt: "Students working together at the Build-a-thon",
-    width: 600,
-    height: 323,
   },
 ];
 
 export function PhotoGallery() {
   return (
-    <section className="relative bg-[#0a0f0d] py-24 sm:py-32 overflow-hidden">
+    <section className="relative overflow-hidden bg-neutral-950 py-24 sm:py-32">
       {/* Gradient borders */}
-      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0a0f0d] to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#0a0f0d] to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-neutral-950 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-neutral-950 to-transparent" />
 
       <div className="relative mx-auto max-w-7xl px-6">
         {/* Section header */}
