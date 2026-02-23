@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/admin-auth";
+
+const moveParticipantSchema = z.object({
+  participant_id: z.string().uuid(),
+  target_team_id: z.string().uuid(),
+});
 
 export async function POST(
   request: NextRequest,
@@ -14,17 +20,16 @@ export async function POST(
 
     const { id: sourceTeamId } = await params;
     const body = await request.json();
-    const { participant_id, target_team_id } = body as {
-      participant_id?: string;
-      target_team_id?: string;
-    };
 
-    if (!participant_id || !target_team_id) {
+    const parsed = moveParticipantSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "participant_id and target_team_id are required" },
+        { error: "Validation failed", details: parsed.error.flatten() },
         { status: 400 }
       );
     }
+
+    const { participant_id, target_team_id } = parsed.data;
 
     if (sourceTeamId === target_team_id) {
       return NextResponse.json(
@@ -124,13 +129,22 @@ export async function POST(
       ...new Set((sourceMembers ?? []).flatMap((m) => m.specific_skills ?? [])),
     ];
 
-    await supabase
+    const { error: sourceAggregateError } = await supabase
       .from("teams")
       .update({
         aggregate_roles: sourceRoles,
         aggregate_skills: sourceSkills,
       })
       .eq("id", sourceTeamId);
+    if (sourceAggregateError) {
+      return NextResponse.json(
+        {
+          error: "Participant moved but failed to recalculate source team aggregates",
+          details: sourceAggregateError.message,
+        },
+        { status: 500 }
+      );
+    }
 
     // Recalculate aggregates for target team
     const { data: targetMembers } = await supabase
@@ -145,13 +159,22 @@ export async function POST(
       ...new Set((targetMembers ?? []).flatMap((m) => m.specific_skills ?? [])),
     ];
 
-    await supabase
+    const { error: targetAggregateError } = await supabase
       .from("teams")
       .update({
         aggregate_roles: targetRoles,
         aggregate_skills: targetSkills,
       })
       .eq("id", target_team_id);
+    if (targetAggregateError) {
+      return NextResponse.json(
+        {
+          error: "Participant moved but failed to recalculate target team aggregates",
+          details: targetAggregateError.message,
+        },
+        { status: 500 }
+      );
+    }
 
     // Write audit log entry
     const { error: auditError } = await supabase
@@ -182,7 +205,13 @@ export async function POST(
       ]);
 
     if (auditError) {
-      console.error("Audit log write failed:", auditError);
+      return NextResponse.json(
+        {
+          error: "Participant moved but failed to write audit log",
+          details: auditError.message,
+        },
+        { status: 500 }
+      );
     }
 
     return NextResponse.json(
