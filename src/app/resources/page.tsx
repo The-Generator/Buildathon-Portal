@@ -30,7 +30,7 @@ export default function ResourcesPage() {
         <div className="mx-auto flex max-w-7xl items-center gap-4 px-6 py-4">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 font-body text-sm font-medium text-white/60 transition-colors hover:text-white"
+            className="inline-flex min-h-11 items-center gap-2 px-3 font-body text-sm font-medium text-white/60 transition-colors hover:text-white"
           >
             <ArrowLeft className="h-4 w-4" />
             Back

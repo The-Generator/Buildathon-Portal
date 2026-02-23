@@ -17,9 +17,11 @@ export function CategoryFilter({ selected, onChange, counts }: CategoryFilterPro
 
         return (
           <button
+            type="button"
             key={category}
             onClick={() => onChange(category)}
-            className={`font-body rounded-full px-4 py-2 text-sm font-medium transition-all ${
+            aria-pressed={isActive}
+            className={`font-body inline-flex min-h-11 items-center rounded-full px-4 text-sm font-medium transition-all ${
               isActive
                 ? "bg-[#00e87b] text-[#0a0f0d]"
                 : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
