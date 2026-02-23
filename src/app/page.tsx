@@ -1,4 +1,5 @@
 import { Header } from "@/components/landing/header";
+import { GeneratorBanner } from "@/components/landing/GeneratorBanner";
 import { Hero } from "@/components/landing/hero";
 import { About } from "@/components/landing/about";
 import { Tracks } from "@/components/landing/tracks";
@@ -16,6 +17,7 @@ export default function Home() {
       <Header />
       <CommunityButton />
       <main>
+        <GeneratorBanner />
         <Hero />
         <About />
         <Tracks />
