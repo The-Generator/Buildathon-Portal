@@ -1444,10 +1444,53 @@ Issue 36 (Add/remove member) → Issue 37 (Unassigned queue) → Issue 40a (Quic
 Issue 39 (Realtime teams) -- independent
 Issue 40b (Admin password login) -- independent
 
+Issue 41 (Profile fields + schema) → Issue 42 (Directory page) + Issue 43 (Profile card)
+
 Issue 22 (Nav) → Issues 26, 28 (sidebar targets)
 Issues 23-25, 27, 29, 31-33 -- independent frontend
 Issue 30 (Simulation) -- last
 ```
+
+## Phase 5d: Participant Networking Directory
+
+> dream.page-style public directory where opted-in participants can discover and network with each other before the event.
+
+### Issue 41: Add LinkedIn + portfolio fields to registration and schema
+
+**GitHub:** #55
+
+**Context:** Participants currently have no social/profile fields. This adds optional LinkedIn, portfolio, bio, and a profile_visible opt-in toggle.
+
+**Files:**
+- CREATE `supabase/migrations/004_participant_profiles.sql`
+- MODIFY `src/types/index.ts`
+- MODIFY `src/lib/validations.ts`
+- MODIFY `src/components/registration/StepPersonalInfo.tsx`
+- MODIFY `src/app/api/register/route.ts`
+
+### Issue 42: Public participant directory page
+
+**GitHub:** #56
+
+**Context:** Public "Meet the Builders" page showing opted-in participants with filters by school, role, name search.
+
+**Files:**
+- CREATE `src/app/participants/page.tsx`
+
+**Depends on:** Issue 41
+
+### Issue 43: Participant profile card component
+
+**GitHub:** #57
+
+**Context:** Card component for the directory grid: name, school, role badge, skill chips, bio, LinkedIn/portfolio links.
+
+**Files:**
+- CREATE `src/components/participants/ParticipantCard.tsx`
+
+**Depends on:** Issue 41
+
+---
 
 ## Implementation Order
 
@@ -1461,6 +1504,10 @@ Issue 30 (Simulation) -- last
 7. Issues 37, 38a, 38b (UI -- parallel: 37 depends on 36, 38a depends on 34, 38b depends on 35)
 8. Issue 40a (quick assign -- depends on 37)
 9. Issue 30 (simulation -- last)
+
+**Networking directory:**
+1. Issue 41 (profile fields + schema)
+2. Issues 42, 43 (directory page + card -- parallel, both depend on 41)
 
 **Frontend (parallel with backend):**
 1. Issues 22, 23 (nav + hero -- parallel)

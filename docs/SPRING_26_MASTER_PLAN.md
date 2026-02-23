@@ -98,12 +98,27 @@ Ship a registration + event-day operations system that preserves Jotform logic, 
 - **Scope:** lint/type/tests, security review, data integrity checks, rollback plan.
 - **Acceptance criteria:** all critical checks green; unresolved risks documented and approved.
 
+## Phase 6 -- Participant Networking Directory
+
+### Issue 6.1: Profile fields + schema migration
+- **Outcome:** linkedin_url, portfolio_url, bio, profile_visible columns on participants.
+- **Scope:** migration, type updates, validation schema, registration form fields.
+- **Acceptance criteria:** registration collects optional profile data; profile_visible defaults false.
+- **Issues:** #55 (draft Issue 41)
+
+### Issue 6.2: Public directory page + profile card
+- **Outcome:** public "Meet the Builders" page showing opted-in participants.
+- **Scope:** filterable grid (school, role, name search), profile cards with social links.
+- **Acceptance criteria:** only profile_visible=true shown; no email/phone exposed.
+- **Issues:** #56, #57 (draft Issues 42, 43)
+
 ## Dependency Order
 1. Phase 1 must complete before any behavior-changing implementation.
 2. Phase 2 policy controls must land before opening Spring 2026 registration.
 3. Phase 3 real-time operations depend on final policy + schema mapping.
 4. Phase 4 command center should iterate in parallel with Phase 3 once core data contracts stabilize.
 5. Phase 5 is mandatory before production launch.
+6. Phase 6 can be built in parallel with Phase 4/5 (no blocking dependencies).
 
 ## Suggested GitHub Labels
 - `spring-26`
