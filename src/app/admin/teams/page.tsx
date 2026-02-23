@@ -160,7 +160,7 @@ export default function TeamsPage() {
             onClick={() => setFilter(value)}
             className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               filter === value
-                ? "bg-[#006241] text-white"
+                ? "bg-emerald-700 text-white"
                 : "bg-white text-gray-600 border border-gray-300 hover:bg-gray-50"
             }`}
           >
