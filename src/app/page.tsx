@@ -7,6 +7,7 @@ import { Prizes } from "@/components/landing/prizes";
 import { Schedule } from "@/components/landing/schedule";
 import { Sponsors } from "@/components/landing/sponsors";
 import { JudgingRubric } from "@/components/landing/JudgingRubric";
+import { RegistrationInfo } from "@/components/landing/RegistrationInfo";
 import { FAQ } from "@/components/landing/faq";
 import { Footer } from "@/components/landing/footer";
 import { CommunityButton } from "@/components/landing/CommunityButton";
@@ -20,6 +21,7 @@ export default function Home() {
         <GeneratorBanner />
         <Hero />
         <About />
+        <RegistrationInfo />
         <Tracks />
         <Prizes />
         <Schedule />
