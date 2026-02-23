@@ -1,17 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { Badge } from "@/components/ui/badge";
-import { ClipboardCheck } from "lucide-react";
 import { CheckinMetrics, type CheckinMetricsData } from "./CheckinMetrics";
-
-interface RecentCheckin {
-  id: string;
-  full_name: string;
-  school: string;
-  checked_in_at: string;
-}
+import { CheckinLiveFeed } from "./CheckinLiveFeed";
 
 export function CheckinDashboard() {
   const [metrics, setMetrics] = useState<CheckinMetricsData>({
@@ -21,31 +13,21 @@ export function CheckinDashboard() {
     schoolBreakdown: {},
     unassignedWalkIns: 0,
   });
-  const [recentCheckins, setRecentCheckins] = useState<RecentCheckin[]>([]);
   const [manualEmail, setManualEmail] = useState("");
   const [manualStatus, setManualStatus] = useState<{
     type: "success" | "error";
     message: string;
   } | null>(null);
   const [manualLoading, setManualLoading] = useState(false);
-  const [toast, setToast] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const toastTimeout = useRef<NodeJS.Timeout | null>(null);
-  const seenCheckinsRef = useRef<Set<string>>(new Set());
 
-  const showToast = useCallback((name: string) => {
-    if (toastTimeout.current) clearTimeout(toastTimeout.current);
-    setToast(name);
-    toastTimeout.current = setTimeout(() => setToast(null), 3000);
-  }, []);
-
-  const fetchStats = useCallback(async () => {
+  const fetchMetrics = useCallback(async () => {
     const supabase = createClient();
 
     const { data: participants } = await supabase
       .from("participants")
       .select(
-        "id, full_name, school, school_other, checked_in, checked_in_at, participant_type, team_id"
+        "id, school, school_other, checked_in, participant_type, team_id"
       );
 
     if (!participants) return null;
@@ -53,19 +35,16 @@ export function CheckinDashboard() {
     const total = participants.length;
     const checkedIn = participants.filter((p) => p.checked_in).length;
 
-    // School breakdown (with check-in counts)
     const schoolBreakdown: Record<
       string,
       { total: number; checkedIn: number }
     > = {};
-    // Type breakdown (with check-in counts)
     const typeBreakdown: Record<
       string,
       { total: number; checkedIn: number }
     > = {};
 
     for (const p of participants) {
-      // School
       const schoolKey = getParticipantSchoolLabel(p.school, p.school_other);
       if (!schoolBreakdown[schoolKey]) {
         schoolBreakdown[schoolKey] = { total: 0, checkedIn: 0 };
@@ -73,7 +52,6 @@ export function CheckinDashboard() {
       schoolBreakdown[schoolKey].total++;
       if (p.checked_in) schoolBreakdown[schoolKey].checkedIn++;
 
-      // Participant type
       const pType = p.participant_type || "participant";
       if (!typeBreakdown[pType]) {
         typeBreakdown[pType] = { total: 0, checkedIn: 0 };
@@ -82,41 +60,16 @@ export function CheckinDashboard() {
       if (p.checked_in) typeBreakdown[pType].checkedIn++;
     }
 
-    // Unassigned walk-ins: walk_in type with no team_id
     const unassignedWalkIns = participants.filter(
       (p) => p.participant_type === "walk_in" && !p.team_id
     ).length;
 
-    // Recent check-ins (last 20)
-    const recent = participants
-      .filter((p) => p.checked_in && p.checked_in_at)
-      .sort(
-        (a, b) =>
-          new Date(b.checked_in_at!).getTime() -
-          new Date(a.checked_in_at!).getTime()
-      )
-      .slice(0, 20)
-      .map((p) => ({
-        id: p.id,
-        full_name: p.full_name,
-        school: getParticipantSchoolLabel(p.school, p.school_other),
-        checked_in_at: p.checked_in_at!,
-      }));
-
-    const seenCheckinKeys = participants
-      .filter((p) => p.checked_in && p.checked_in_at)
-      .map((p) => getCheckinKey(p.id, p.checked_in_at!));
-
     return {
-      metrics: {
-        totalRegistered: total,
-        totalCheckedIn: checkedIn,
-        typeBreakdown,
-        schoolBreakdown,
-        unassignedWalkIns,
-      },
-      recentCheckins: recent,
-      seenCheckinKeys,
+      totalRegistered: total,
+      totalCheckedIn: checkedIn,
+      typeBreakdown,
+      schoolBreakdown,
+      unassignedWalkIns,
     };
   }, []);
 
@@ -124,24 +77,21 @@ export function CheckinDashboard() {
     let cancelled = false;
 
     const load = async () => {
-      const result = await fetchStats();
+      const result = await fetchMetrics();
       if (!result || cancelled) {
         if (!cancelled) setLoading(false);
         return;
       }
-
-      setMetrics(result.metrics);
-      setRecentCheckins(result.recentCheckins);
-      seenCheckinsRef.current = new Set(result.seenCheckinKeys);
+      setMetrics(result);
       setLoading(false);
     };
 
     void load();
 
-    // Subscribe to realtime changes on participants table
+    // Realtime subscription for metrics refresh
     const supabase = createClient();
     const channel = supabase
-      .channel("checkin-realtime")
+      .channel("checkin-metrics-realtime")
       .on(
         "postgres_changes",
         {
@@ -150,33 +100,12 @@ export function CheckinDashboard() {
           table: "participants",
           filter: "checked_in=eq.true",
         },
-        (payload) => {
-          const updated = payload.new as {
-            id: string;
-            full_name: string;
-            school: string;
-            school_other?: string;
-            checked_in: boolean;
-            checked_in_at?: string | null;
-          };
-
-          if (updated.checked_in && updated.checked_in_at) {
-            const checkinKey = getCheckinKey(updated.id, updated.checked_in_at);
-            const isNewCheckin = !seenCheckinsRef.current.has(checkinKey);
-
-            void (async () => {
-              const result = await fetchStats();
-              if (!result || cancelled) return;
-
-              setMetrics(result.metrics);
-              setRecentCheckins(result.recentCheckins);
-              seenCheckinsRef.current = new Set(result.seenCheckinKeys);
-
-              if (isNewCheckin) {
-                showToast(updated.full_name);
-              }
-            })();
-          }
+        () => {
+          void (async () => {
+            const result = await fetchMetrics();
+            if (!result || cancelled) return;
+            setMetrics(result);
+          })();
         }
       )
       .subscribe();
@@ -184,9 +113,8 @@ export function CheckinDashboard() {
     return () => {
       cancelled = true;
       supabase.removeChannel(channel);
-      if (toastTimeout.current) clearTimeout(toastTimeout.current);
     };
-  }, [fetchStats, showToast]);
+  }, [fetchMetrics]);
 
   const handleManualCheckin = async () => {
     if (!manualEmail.trim()) return;
@@ -242,57 +170,11 @@ export function CheckinDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Toast notification */}
-      {toast && (
-        <div className="fixed top-20 right-6 z-50 animate-in slide-in-from-right fade-in bg-emerald-700 text-white px-4 py-3 rounded-lg shadow-lg text-sm font-medium">
-          <span className="mr-2">&#10003;</span>
-          {toast} just checked in
-        </div>
-      )}
-
       {/* Metrics section */}
       <CheckinMetrics data={metrics} />
 
-      {/* Recent Check-ins Feed */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-        <div className="px-6 py-4 border-b border-gray-100">
-          <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-            <ClipboardCheck className="h-4 w-4 text-gray-400" />
-            Recent Check-ins
-            <Badge color="green" className="ml-auto">
-              Live
-            </Badge>
-          </h3>
-        </div>
-        <div className="divide-y divide-gray-50 max-h-96 overflow-y-auto">
-          {recentCheckins.length === 0 ? (
-            <div className="px-6 py-8 text-center text-sm text-gray-400">
-              No check-ins yet
-            </div>
-          ) : (
-            recentCheckins.map((checkin) => (
-              <div
-                key={checkin.id}
-                className="px-6 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
-              >
-                <div>
-                  <p className="text-sm font-medium text-gray-900">
-                    {checkin.full_name}
-                  </p>
-                  <p className="text-xs text-gray-500">{checkin.school}</p>
-                </div>
-                <span className="text-xs text-gray-400 whitespace-nowrap">
-                  {new Date(checkin.checked_in_at).toLocaleTimeString("en-US", {
-                    hour: "numeric",
-                    minute: "2-digit",
-                    hour12: true,
-                  })}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
+      {/* Live feed (self-contained realtime) */}
+      <CheckinLiveFeed />
 
       {/* Manual Check-In */}
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
@@ -346,8 +228,4 @@ function getParticipantSchoolLabel(
     return other && other.length > 0 ? other : "Other";
   }
   return school.trim() || "Other";
-}
-
-function getCheckinKey(id: string, checkedInAt: string): string {
-  return `${id}:${checkedInAt}`;
 }
