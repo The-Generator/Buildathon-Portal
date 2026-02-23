@@ -50,16 +50,16 @@ export function RegistrationInfo() {
   return (
     <section
       id="register-info"
-      className="relative bg-[#0a0f0d] py-24 sm:py-32 overflow-hidden"
+      className="relative overflow-hidden bg-neutral-950 py-24 sm:py-32"
     >
       {/* Subtle top/bottom gradient continuity */}
-      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[#0a0f0d] to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#0a0f0d] to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-neutral-950 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-neutral-950 to-transparent" />
 
       <div className="relative mx-auto max-w-3xl px-6">
         {/* Section header */}
         <div className="text-center">
-          <p className="font-data text-sm font-medium uppercase tracking-widest text-[#00e87b]">
+          <p className="font-data text-sm font-medium uppercase tracking-widest text-emerald-400">
             Registration
           </p>
           <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
@@ -77,11 +77,11 @@ export function RegistrationInfo() {
               key={item.label}
               className="flex gap-4 sm:gap-6"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#00e87b]/10 text-[#00e87b] sm:h-12 sm:w-12">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-400 sm:h-12 sm:w-12">
                 <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
               <div className="min-w-0">
-                <dt className="font-body text-sm font-semibold uppercase tracking-wide text-[#00e87b]">
+                <dt className="font-body text-sm font-semibold uppercase tracking-wide text-emerald-400">
                   {item.label}
                 </dt>
                 <dd className="font-body mt-1 text-base leading-relaxed text-white/70 sm:text-lg">
@@ -96,7 +96,7 @@ export function RegistrationInfo() {
         <div className="mt-14 text-center">
           <Link
             href="/register"
-            className="shimmer-border inline-block rounded-full bg-[#00e87b] px-10 py-4 text-base font-bold text-[#0a0f0d] shadow-lg shadow-[#00e87b]/20 transition-all hover:bg-[#00ff88] hover:shadow-xl hover:shadow-[#00e87b]/30"
+            className="shimmer-border inline-block rounded-full bg-emerald-400 px-10 py-4 text-base font-bold text-neutral-950 shadow-lg shadow-emerald-400/20 transition-all hover:bg-emerald-300 hover:shadow-xl hover:shadow-emerald-400/30"
           >
             Register Now
           </Link>
