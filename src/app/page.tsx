@@ -5,6 +5,7 @@ import { Tracks } from "@/components/landing/tracks";
 import { Prizes } from "@/components/landing/prizes";
 import { Schedule } from "@/components/landing/schedule";
 import { Sponsors } from "@/components/landing/sponsors";
+import { JudgingRubric } from "@/components/landing/JudgingRubric";
 import { FAQ } from "@/components/landing/faq";
 import { Footer } from "@/components/landing/footer";
 
@@ -19,6 +20,7 @@ export default function Home() {
         <Prizes />
         <Schedule />
         <Sponsors />
+        <JudgingRubric />
         <FAQ />
       </main>
       <Footer />
