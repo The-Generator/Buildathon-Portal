@@ -176,7 +176,7 @@ export default function ParticipantsPage() {
                 setSearch(e.target.value);
                 setPage(0);
               }}
-              className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241] focus:border-[#006241]"
+              className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700"
             />
           </div>
           <select
@@ -185,7 +185,7 @@ export default function ParticipantsPage() {
               setSchoolFilter(e.target.value);
               setPage(0);
             }}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241]"
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700"
           >
             {SCHOOL_OPTIONS.map((s) => (
               <option key={s} value={s}>
@@ -199,7 +199,7 @@ export default function ParticipantsPage() {
               setRoleFilter(e.target.value);
               setPage(0);
             }}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241]"
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700"
           >
             {ROLE_OPTIONS.map((r) => (
               <option key={r} value={r}>
@@ -213,7 +213,7 @@ export default function ParticipantsPage() {
               setTeamStatusFilter(e.target.value);
               setPage(0);
             }}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241]"
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700"
           >
             {TEAM_STATUS_OPTIONS.map((t) => (
               <option key={t} value={t}>
@@ -227,7 +227,7 @@ export default function ParticipantsPage() {
               setTypeFilter(e.target.value);
               setPage(0);
             }}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241]"
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-700 focus:border-emerald-700"
           >
             {PARTICIPANT_TYPE_OPTIONS.map((t) => (
               <option key={t} value={t}>
