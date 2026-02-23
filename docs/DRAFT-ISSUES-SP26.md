@@ -998,6 +998,425 @@ Depends on: All prior backend issues
 
 ---
 
+## Phase 5b: Admin Teams Management Backend
+
+> Fills the admin/teams management gaps identified from the old buildathon-management system
+> (github.com/cbrane/buildathon-management). The old system had create/delete/add-member/
+> remove-member/unassigned-queue but was buggy -- inconsistent status flags, no audit trail,
+> simplistic matching. These issues bring those requirements into the new architecture properly.
+
+### Issue 34: Admin create team API
+
+**Context:**
+Plan: `docs/SPRING_26_MASTER_PLAN.md` Phase 4.4
+Existing: `src/app/api/matching/confirm/route.ts` creates teams from the algorithm with `generateInviteCode()`, aggregate computation, and participant `team_id` assignment. `src/app/api/teams/[id]/route.ts` has GET (single team) and PATCH (metadata update + audit log). There is currently NO way to manually create a team from the admin dashboard -- teams only come from registration (pre_formed) or matching (algorithm_matched).
+
+**What to Build:**
+`src/app/api/admin/teams/route.ts` -- POST endpoint for admin team creation.
+
+Accepts JSON body:
+```typescript
+{
+  name?: string;           // optional -- auto-generates "Team N" if omitted
+  participant_ids: string[]; // 1-5 participant UUIDs to assign
+}
+```
+
+Creates team row with `formation_type: "admin_assigned"`, `invite_code` from `generateInviteCode()`, `is_complete: participant_ids.length >= 5`, `is_locked: false`. Updates each participant's `team_id`. Computes `aggregate_roles` and `aggregate_skills` from assigned members (same pattern as `src/app/api/matching/confirm/route.ts` lines 68-82). Writes audit log entry with `action: "team_created"`. Returns created team with members array.
+
+For auto-naming: query `SELECT MAX(CAST(SUBSTRING(name FROM 'Team (\d+)') AS INTEGER)) FROM teams` to find the next number.
+
+### Integration:
+- Called by the CreateTeamModal UI (Issue 38a)
+- Uses `verifyAdmin()` from `src/lib/admin-auth.ts`
+- Uses `generateInviteCode()` from `src/lib/utils.ts`
+- Uses `createAdminClient()` from `src/lib/supabase/admin.ts`
+
+**Read Before Implementing:**
+1. `src/app/api/matching/confirm/route.ts` -- team insert + participant assignment + aggregate computation pattern to reuse
+2. `src/app/api/teams/[id]/route.ts` -- audit log write pattern in the PATCH handler (lines 96-117)
+3. `src/lib/admin-auth.ts` -- `verifyAdmin()` returns admin object with `id` for audit entries
+4. `src/lib/utils.ts` -- `generateInviteCode()` uses nanoid(8)
+
+**Files:**
+- CREATE `src/app/api/admin/teams/route.ts`
+
+**Depends On:**
+- `src/lib/admin-auth.ts` (already built)
+- `src/lib/utils.ts` (already built -- generateInviteCode)
+- `supabase/migrations/003_team_audit_log.sql` (already built -- #30 closed)
+
+**Acceptance Criteria:**
+- [ ] POST creates team with `formation_type: "admin_assigned"`
+- [ ] All participant_ids get their `team_id` set to the new team
+- [ ] `aggregate_roles` and `aggregate_skills` computed from assigned members
+- [ ] Auto-generates sequential team name when name not provided
+- [ ] Rejects if any participant_id already has a team_id (409 response)
+- [ ] Writes audit log entry with `action: "team_created"`
+- [ ] Admin auth required (401 without token)
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+### Issue 35: Delete/dissolve team API + audit
+
+**Context:**
+Plan: `docs/SPRING_26_MASTER_PLAN.md` Phase 4.4
+Existing: `src/app/api/teams/[id]/route.ts` has GET and PATCH handlers but NO DELETE. The PATCH handler already writes to `team_audit_log` on every field change (lines 96-117). `src/app/api/teams/[id]/move/route.ts` shows the pattern for resetting participant `team_id` and recomputing aggregates.
+Old system: `storage.js` `deleteTeam()` reset all members to `team_id=null` then deleted the team row.
+
+**What to Build:**
+Add a DELETE handler to `src/app/api/teams/[id]/route.ts`.
+
+Logic:
+1. `verifyAdmin()` -- reject 401 if unauthorized
+2. Fetch team by id -- reject 404 if not found
+3. If `team.is_locked === true`, reject 400 with message "Unlock team before dissolving"
+4. Count members via `SELECT * FROM participants WHERE team_id = :id`
+5. Write audit entry: `{ team_id: id, admin_id: admin.id, action: "team_dissolved", details: { team_name: team.name, member_count, member_ids } }`
+6. `UPDATE participants SET team_id = NULL WHERE team_id = :id`
+7. `DELETE FROM teams WHERE id = :id`
+8. Return `{ success: true, freed_participants: member_count }`
+
+**Read Before Implementing:**
+1. `src/app/api/teams/[id]/route.ts` -- existing GET/PATCH handlers, audit log write pattern (extend this file)
+2. `src/app/api/teams/[id]/move/route.ts` -- pattern for resetting participant team_id (lines 100-105)
+3. `src/types/index.ts` -- `TeamAuditEntry` interface shape
+
+**Files:**
+- MODIFY `src/app/api/teams/[id]/route.ts` (add DELETE export)
+
+**Depends On:**
+- `src/lib/admin-auth.ts` (already built)
+- `supabase/migrations/003_team_audit_log.sql` (already built -- #30 closed)
+
+**Acceptance Criteria:**
+- [ ] DELETE resets all team members' `team_id` to null
+- [ ] Deletes the team row from `teams` table
+- [ ] Returns `{ success: true, freed_participants: N }`
+- [ ] Rejects with 400 if team `is_locked`
+- [ ] Writes `team_dissolved` entry to `team_audit_log` before deletion
+- [ ] Admin auth required (401 without token)
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+### Issue 36: Add/remove participant from team API
+
+**Context:**
+Plan: `docs/SPRING_26_MASTER_PLAN.md` Phase 4.4
+Existing: `src/app/api/teams/[id]/move/route.ts` moves a participant FROM one team TO another (handles team_id swap, aggregate recomputation, and audit logging). But there is no way to add an unassigned participant to a team, or remove a participant to the unassigned pool. The move route requires both source and target team -- it can't handle null on either side.
+Old system: `storage.js` had `addMemberToTeam()` (collision check + team_id set) and `removeMemberFromTeam()` (team_id to null).
+
+**What to Build:**
+`src/app/api/teams/[id]/members/route.ts` -- two handlers:
+
+**POST** (add members):
+Accepts `{ participant_ids: string[] }`. Validates:
+- Team exists and is not locked (400)
+- Each participant exists (404 for any missing)
+- No participant already has a non-null `team_id` (409, unless `force: true` in body)
+- Team would not exceed 5 members after addition (400)
+Updates participants' `team_id`. Recomputes `aggregate_roles`/`aggregate_skills` (same pattern as `move/route.ts` lines 118-131). Writes audit entries with `action: "member_added"`.
+
+**DELETE** (remove member):
+Accepts `{ participant_id: string }`. Validates participant exists and belongs to this team. Sets `team_id = null`. Recomputes aggregates. Writes audit entry with `action: "member_removed"`.
+
+**Read Before Implementing:**
+1. `src/app/api/teams/[id]/move/route.ts` -- aggregate recomputation pattern (lines 108-131) and audit log write pattern (lines 134-160)
+2. `src/app/api/teams/[id]/route.ts` -- team fetch + admin auth pattern
+3. `src/types/index.ts` -- `Participant` interface (team_id field), `TeamAuditEntry`
+
+**Files:**
+- CREATE `src/app/api/teams/[id]/members/route.ts`
+
+**Depends On:**
+- `src/lib/admin-auth.ts` (already built)
+- `supabase/migrations/003_team_audit_log.sql` (already built -- #30 closed)
+
+**Acceptance Criteria:**
+- [ ] POST sets `team_id` on participants, 409 if already on another team
+- [ ] POST rejects if team would exceed 5 members (400)
+- [ ] POST rejects if team is locked (400)
+- [ ] DELETE sets participant `team_id` to null
+- [ ] Both recompute `aggregate_roles` and `aggregate_skills` on the team
+- [ ] Both write audit log entries
+- [ ] Admin auth required on both (401 without token)
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+### Issue 37: Unassigned participants queue component
+
+**Context:**
+Plan: `docs/SPRING_26_MASTER_PLAN.md` Phase 4.4
+Existing: `src/app/admin/teams/page.tsx` fetches all participants via `createClient()` browser queries and groups them by `team_id` into team cards. Unassigned participants (those with `team_id = null`) are currently invisible on this page. `src/app/admin/participants/page.tsx` has a "No Team" filter but no assign action. `src/components/admin/MoveParticipantModal.tsx` shows the established modal + team selector UI pattern (fetches teams, shows member count, disables full/locked teams).
+
+**What to Build:**
+`src/components/admin/UnassignedQueue.tsx` -- client component that displays unassigned non-spectator participants below the teams grid on the admin teams page.
+
+Props: `{ adminToken: string; onAssigned: () => void }`. On mount, queries Supabase browser client for participants where `team_id IS NULL` and `participant_type != 'spectator'`. Renders a collapsible section with:
+- Header: "Unassigned Queue (N)" with expand/collapse toggle
+- A compact list: each row shows `full_name`, `school`, `primary_role`, and an "Assign" button
+- Clicking "Assign" opens an inline dropdown (not a modal) listing teams with `< 5 members` and `is_locked = false`, showing `team.name (M/5)` per option
+- Selecting a team calls `POST /api/teams/[teamId]/members` with `{ participant_ids: [participantId] }`
+- On success, calls `onAssigned()` prop to refresh parent and removes the participant from the local list
+
+Uses `createClient()` from `src/lib/supabase/client.ts` for the initial fetch (same pattern as the teams page). No server-side API route needed -- the browser client can query participants directly, and assignment goes through the Issue 36 API.
+
+**Read Before Implementing:**
+1. `src/app/admin/teams/page.tsx` -- where this component gets mounted, existing data fetch pattern, `handleMatchingConfirmed` callback pattern for `onAssigned`
+2. `src/components/admin/MoveParticipantModal.tsx` -- team selector pattern: fetching teams with member counts, disabling full/locked teams (lines 49-72)
+3. `src/components/admin/TeamActions.tsx` -- existing action button patterns in the expanded card area
+4. `src/components/ui/badge.tsx` -- Badge component for role/school display
+
+**Files:**
+- CREATE `src/components/admin/UnassignedQueue.tsx`
+- MODIFY `src/app/admin/teams/page.tsx` (import and render `<UnassignedQueue>` below the teams grid, pass `adminToken` and `onAssigned={handleMatchingConfirmed}`)
+
+**Depends On:**
+- Issue 36 (members API -- POST endpoint for assignment)
+- `src/lib/supabase/client.ts` (already built)
+
+**Acceptance Criteria:**
+- [ ] Component renders unassigned non-spectator participants with name, school, role
+- [ ] "Assign" button opens inline team dropdown with available teams
+- [ ] Selecting a team calls POST `/api/teams/[id]/members` and refreshes on success
+- [ ] Full (5 members) and locked teams are disabled in the dropdown
+- [ ] Collapsible section header shows live count
+- [ ] Integrates into admin teams page below the teams grid
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+### Issue 38a: Admin create team modal
+
+**Context:**
+Plan: `docs/SPRING_26_MASTER_PLAN.md` Phase 4.4
+Existing: `src/components/admin/MoveParticipantModal.tsx` is the established modal pattern -- uses `<Modal>` from `src/components/ui/modal.tsx`, fetches data on open, has loading/error states, confirmation button. `src/app/admin/teams/page.tsx` has a header area with the "Teams" heading where a "Create Team" button fits.
+
+**What to Build:**
+`src/components/admin/CreateTeamModal.tsx` -- modal to create a new team from unassigned participants.
+
+Props: `{ open: boolean; onClose: () => void; adminToken: string; onCreated: () => void }`.
+
+On open:
+- Fetch unassigned non-spectator participants via browser Supabase client (`team_id IS NULL`, `participant_type != 'spectator'`)
+- Display searchable list with checkboxes (search filters by `full_name` or `school`)
+- Each row: checkbox, full_name, school, primary_role (using Badge)
+- Optional team name input at top (placeholder: "Auto-generated if empty")
+- "Create Team" button enabled when 2-5 participants selected
+- On submit: call `POST /api/admin/teams` with `{ name?, participant_ids }` using adminToken
+- On success: call `onCreated()` and close modal
+
+Follow the `MoveParticipantModal` structure exactly: same Modal wrapper, same loading/error/moving state pattern, same button layout.
+
+### Integration:
+- Triggered from a "Create Team" button added to the teams page header (next to the "Teams" heading)
+- Calls Issue 34 POST API
+- `onCreated` triggers `handleMatchingConfirmed` in the teams page to refresh
+
+**Read Before Implementing:**
+1. `src/components/admin/MoveParticipantModal.tsx` -- modal structure to replicate (Modal wrapper, fetch on open, loading state, error display, action buttons)
+2. `src/components/ui/modal.tsx` -- Modal component API (props: open, onClose, title)
+3. `src/app/admin/teams/page.tsx` -- where "Create Team" button goes (header area, lines 115-123), `handleMatchingConfirmed` callback
+4. `src/lib/supabase/client.ts` -- browser client for participant fetch
+
+**Files:**
+- CREATE `src/components/admin/CreateTeamModal.tsx`
+- MODIFY `src/app/admin/teams/page.tsx` (add "Create Team" button in header, import and render modal)
+
+**Depends On:**
+- Issue 34 (create team API)
+- `src/components/ui/modal.tsx` (already built)
+
+**Acceptance Criteria:**
+- [ ] Modal shows searchable list of unassigned non-spectator participants
+- [ ] Checkbox selection with 2-5 participant constraint
+- [ ] Optional team name input
+- [ ] "Create Team" calls POST `/api/admin/teams` with selected participant IDs
+- [ ] Success closes modal and refreshes teams list
+- [ ] Error state displayed inline (same pattern as MoveParticipantModal)
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+### Issue 38b: Dissolve team button + confirmation
+
+**Context:**
+Plan: `docs/SPRING_26_MASTER_PLAN.md` Phase 4.4
+Existing: `src/components/admin/TeamActions.tsx` renders lock/unlock and complete/incomplete buttons in the expanded team card area. It calls `PATCH /api/teams/${teamId}` via fetch with adminToken. `src/app/api/teams/[id]/route.ts` will have a DELETE handler (Issue 35).
+
+**What to Build:**
+Add a "Dissolve" button to `src/components/admin/TeamActions.tsx`. Renders as a destructive-styled button (red outline) below the existing lock/complete buttons. On click: shows a browser `confirm()` dialog: "Dissolve {teamName}? All {members.length} members will be returned to the unassigned pool." If confirmed, calls `DELETE /api/teams/${teamId}` with adminToken. On success, calls `onUpdated()` to refresh the teams page.
+
+### Integration:
+- Lives in `TeamActions` alongside existing lock/complete buttons
+- Calls Issue 35 DELETE endpoint
+- `onUpdated()` is already wired to refresh the teams page
+
+**Read Before Implementing:**
+1. `src/components/admin/TeamActions.tsx` -- existing button pattern, `patchTeam` helper function, loading state management
+2. `src/app/api/teams/[id]/route.ts` -- DELETE handler response shape from Issue 35
+3. `src/components/ui/button.tsx` -- Button variant props (need `variant="outline"` with red styling)
+
+**Files:**
+- MODIFY `src/components/admin/TeamActions.tsx` (add dissolve button + confirm handler)
+
+**Depends On:**
+- Issue 35 (DELETE endpoint on teams API)
+- `src/components/admin/TeamActions.tsx` (already built -- #29 closed)
+
+**Acceptance Criteria:**
+- [ ] "Dissolve" button visible in expanded team card actions area
+- [ ] `confirm()` dialog shows team name and member count
+- [ ] DELETE call uses adminToken auth header
+- [ ] Success triggers `onUpdated()` to refresh teams list
+- [ ] Button disabled while any action is loading (reuses existing `loading` state)
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+## Phase 5c: Realtime + Event-Day Operations
+
+### Issue 39: Realtime sync on admin teams page
+
+**Context:**
+Plan: `docs/SPRING_26_MASTER_PLAN.md` Phase 3.2 (real-time team state model)
+Existing: `src/app/admin/teams/page.tsx` fetches teams and participants on mount via `fetchData()`, and re-fetches after every action via `handleMatchingConfirmed()`. But if Admin A creates a team, Admin B's teams page doesn't update until they manually refresh. The old buildathon-management system had Supabase realtime subscriptions in `ManagementDashboard.jsx` (lines 82-138) and `ParticipantManagement.jsx` (lines 24-85) -- subscriptions on `participants`, `teams`, and `check_ins` tables with optimistic updates. That system worked for multi-station check-in.
+
+**What to Build:**
+Add Supabase realtime subscriptions to `src/app/admin/teams/page.tsx`. Subscribe to `postgres_changes` on both `teams` and `participants` tables. On any INSERT/UPDATE/DELETE event, call `fetchData()` to reload the full teams list. Use a debounce (300ms) to avoid rapid re-fetches when multiple rows change in a batch operation (e.g., dissolving a team updates N participants + deletes 1 team = N+1 events).
+
+Implementation: use the `createClient()` browser client (already imported). Set up subscriptions in a `useEffect` with cleanup. The `channel` pattern:
+```typescript
+const channel = supabase.channel('admin-teams-realtime')
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'teams' }, handleChange)
+  .on('postgres_changes', { event: '*', schema: 'public', table: 'participants' }, handleChange)
+  .subscribe();
+```
+
+Where `handleChange` debounces into `fetchData()`.
+
+**Read Before Implementing:**
+1. `src/app/admin/teams/page.tsx` -- existing `fetchData()` function (lines 30-56), `handleMatchingConfirmed` callback, `createClient` import
+2. `src/components/admin/CheckinDashboard.tsx` -- if Issue 33 (realtime feed) is built by then, check its subscription pattern for consistency
+3. `src/lib/supabase/client.ts` -- browser client supports `.channel()` and `.on('postgres_changes', ...)`
+
+**Files:**
+- MODIFY `src/app/admin/teams/page.tsx` (add useEffect with realtime subscriptions + debounced refetch + cleanup)
+
+**Depends On:** Nothing -- standalone improvement to existing page
+
+**Acceptance Criteria:**
+- [ ] Teams page auto-updates when another admin creates/dissolves/modifies a team
+- [ ] Teams page auto-updates when participants are assigned/removed from teams
+- [ ] Debounce prevents rapid re-fetches during batch operations
+- [ ] Subscription properly cleaned up on unmount (no memory leaks)
+- [ ] No duplicate subscriptions on re-render
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+### Issue 40a: Event-day quick-assign for unassigned participants
+
+**Context:**
+Plan: `docs/SPRING_26_MASTER_PLAN.md` Phase 3.3 (live matching operation mode)
+Existing: `src/components/admin/MatchingPreview.tsx` runs the full matching algorithm via `POST /api/matching/preview`. It processes ALL unassigned participants + all members on incomplete unlocked teams, runs `runMatching()` from `src/lib/matching/algorithm.ts`, and produces complete team formations. Admin reviews proposed teams and clicks "Confirm & Lock Teams" which creates new teams via `/api/matching/confirm`. This works for pre-event bulk matching but is heavy for event-day: you don't want to re-process everyone when 3 walk-ins just arrived.
+
+**What to Build:**
+Add a "Quick Assign" button to the `UnassignedQueue` component (Issue 37). When clicked, it calls `POST /api/matching/preview` (same existing endpoint -- it already only processes unassigned participants and incomplete teams). But instead of the full MatchingPreview card with stats/team cards/review, it shows a lightweight confirmation: "Assign N participants to M teams?" with a summary list of assignments, then calls `/api/matching/confirm` on confirm.
+
+Implementation in `UnassignedQueue.tsx`:
+- Add a "Quick Assign All" button in the queue header (next to the collapse toggle)
+- On click: fetch `/api/matching/preview` with adminToken
+- Show results inline in the queue: for each proposed team, show "Participant A, B, C -> Team N (score: X)"
+- "Confirm All" button calls `/api/matching/confirm` then triggers `onAssigned()`
+- "Cancel" dismisses the preview
+
+This reuses the existing matching algorithm and API -- no new backend work. The only change is a lighter UI for reviewing results.
+
+**Read Before Implementing:**
+1. `src/components/admin/UnassignedQueue.tsx` -- where button goes (must be built first via Issue 37)
+2. `src/components/admin/MatchingPreview.tsx` -- existing preview/confirm flow to simplify (fetch pattern lines 32-55, confirm pattern lines 57-87)
+3. `src/app/api/matching/preview/route.ts` -- response shape: `{ poolStats, matchResult: SerializedMatchOutput }`
+4. `src/app/api/matching/confirm/route.ts` -- request shape: `{ matches: [{ team_id, participant_ids }] }`
+5. `src/lib/matching/types.ts` -- `SerializedMatchOutput` and `SerializedDraftTeam` interfaces
+
+**Files:**
+- MODIFY `src/components/admin/UnassignedQueue.tsx` (add quick-assign button, inline preview, confirm action)
+
+**Depends On:**
+- Issue 37 (UnassignedQueue component must exist)
+- `src/app/api/matching/preview/route.ts` (already built -- #26 closed)
+- `src/app/api/matching/confirm/route.ts` (already built)
+
+**Acceptance Criteria:**
+- [ ] "Quick Assign All" button visible in unassigned queue header
+- [ ] Calls existing matching preview API and shows assignment summary inline
+- [ ] "Confirm All" calls existing matching confirm API
+- [ ] On success, triggers refresh of teams list and unassigned queue
+- [ ] "Cancel" dismisses the preview without making changes
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
+### Issue 40b: Simplify admin login to shared password
+
+**Context:**
+Plan: `docs/SPRING_26_MASTER_PLAN.md` Phase 4 (admin command center)
+Existing auth flow is fragmented and over-complicated for a one-day event:
+- `src/app/admin/login/page.tsx` -- Supabase magic link OTP to admin email
+- `src/middleware.ts` -- checks Supabase session, redirects to login if missing
+- `src/app/admin/layout.tsx` -- verifies session email is in `admins` table
+- `src/lib/admin-auth.ts` -- API routes check `Authorization: Bearer <email>` against `admins` table
+- `src/app/admin/teams/page.tsx` -- gets token from `sessionStorage.getItem("admin_token")` (inconsistent with other pages that use `session.user.email`)
+
+Problems: magic links require email delivery (unreliable at event venues), multiple email accounts need to be in the `admins` table, and the Bearer token pattern is inconsistent across components. For a buildathon with 3-5 organizers, a shared password is simpler and more reliable.
+
+**What to Build:**
+Replace the magic link login with a password form. Add `ADMIN_PASSWORD` to environment variables (`.env.local`). Change the login page to a single password input field. On submit, compare against `ADMIN_PASSWORD` server-side via a new `POST /api/admin/auth` route that returns a session token (a signed JWT or a simple hash). Store the token in `sessionStorage` as `admin_token`. Update `verifyAdmin()` in `src/lib/admin-auth.ts` to validate this token instead of looking up emails in the `admins` table. Update the middleware to check for the session token cookie/header instead of Supabase auth session.
+
+The `admins` table stays for audit log attribution (`admin_id` on audit entries) but is no longer used for authentication -- just for identity display. The layout can show "Admin" instead of a specific name, or we can add an optional name prompt after password entry.
+
+**Read Before Implementing:**
+1. `src/app/admin/login/page.tsx` -- current magic link form to replace with password input
+2. `src/lib/admin-auth.ts` -- `verifyAdmin()` function to simplify (currently queries `admins` table by email)
+3. `src/middleware.ts` -- session check logic to update (currently uses Supabase auth)
+4. `src/app/admin/layout.tsx` -- auth check on mount + admin name display (lines 40-68)
+5. `src/components/admin/TrackReleaseToggle.tsx` -- example of `session.user.email` token pattern (line 23)
+6. `src/app/admin/teams/page.tsx` -- example of `sessionStorage.getItem("admin_token")` pattern (line 26)
+
+**Files:**
+- CREATE `src/app/api/admin/auth/route.ts` (POST: validate password, return token)
+- MODIFY `src/app/admin/login/page.tsx` (replace magic link with password form)
+- MODIFY `src/lib/admin-auth.ts` (validate token instead of email lookup)
+- MODIFY `src/middleware.ts` (check for admin token cookie instead of Supabase session)
+- MODIFY `src/app/admin/layout.tsx` (simplify auth check, remove Supabase session dependency)
+
+**Depends On:** Nothing -- can be done independently. All existing admin components already pass `adminToken` to API calls.
+
+**Acceptance Criteria:**
+- [ ] Password form replaces magic link on `/admin/login`
+- [ ] Correct password grants access to all admin routes
+- [ ] Wrong password shows error, no access
+- [ ] `ADMIN_PASSWORD` is in environment variable, not hardcoded
+- [ ] All existing admin API routes still work with the new token
+- [ ] Token persists in sessionStorage (survives page refresh within tab)
+- [ ] Logout clears token and redirects to login
+- [ ] Build passes (`npm run build`)
+- [ ] No TypeScript errors
+
+---
+
 ## Dependency Graph
 
 ```
@@ -1019,6 +1438,12 @@ Issue 1 → Issue 15 (Admin filter) → Issue 16 (Badges + stats)
 Issue 17 (Team actions) → Issue 18 (Audit log) → Issue 19 (Move modal)
 Issue 1 → Issue 20 (Check-in metrics) → Issue 21 (Realtime feed)
 
+Issue 34 (Create team API) → Issue 38a (Create team modal)
+Issue 35 (Delete team API) → Issue 38b (Dissolve button)
+Issue 36 (Add/remove member) → Issue 37 (Unassigned queue) → Issue 40a (Quick assign)
+Issue 39 (Realtime teams) -- independent
+Issue 40b (Admin password login) -- independent
+
 Issue 22 (Nav) → Issues 26, 28 (sidebar targets)
 Issues 23-25, 27, 29, 31-33 -- independent frontend
 Issue 30 (Simulation) -- last
@@ -1032,7 +1457,10 @@ Issue 30 (Simulation) -- last
 3. Issue 9→10, 11→12 (track gating + walk-in -- parallel)
 4. Issue 13→14 (matching upgrades)
 5. Issues 15→16, 17→18→19, 20→21 (admin -- 3 parallel chains)
-6. Issue 30 (simulation -- last)
+6. Issues 34, 35, 36, 39, 40b (all parallel -- no cross-deps)
+7. Issues 37, 38a, 38b (UI -- parallel: 37 depends on 36, 38a depends on 34, 38b depends on 35)
+8. Issue 40a (quick assign -- depends on 37)
+9. Issue 30 (simulation -- last)
 
 **Frontend (parallel with backend):**
 1. Issues 22, 23 (nav + hero -- parallel)

@@ -60,6 +60,21 @@ Ship a registration + event-day operations system that preserves Jotform logic, 
 - **Outcome:** admin actions for lock/unlock, move participant, merge/split teams.
 - **Scope:** guarded mutations with confirmation + audit log.
 - **Acceptance criteria:** all interventions are reversible or compensatable.
+- **Draft Issues:** #17 (lock/unlock/complete), #18 (audit log), #19 (move participant modal)
+
+### Issue 4.4: Admin teams CRUD + unassigned queue
+- **Outcome:** admins can create teams manually, dissolve teams, add/remove members, and view unassigned participants.
+- **Scope:** full team lifecycle management from admin dashboard. Replaces broken flows from old buildathon-management system (manual team creation, member assignment, team dissolution, seeker queue).
+- **Acceptance criteria:** admin can create a team from unassigned participants, dissolve a team returning members to unassigned pool, add/remove individual members, and view a live queue of unassigned non-spectator participants.
+- **Draft Issues (7 right-sized issues, 3-8 files each):**
+  - **Backend (parallel):** #34 (create team API -- 1 file), #35 (dissolve team API -- 1 file modified), #36 (add/remove member API -- 1 file)
+  - **Frontend (each depends on its backend):** #37 (unassigned queue component -- 2 files), #38a (create team modal -- 2 files), #38b (dissolve button -- 1 file modified)
+
+### Issue 4.5: Realtime + event-day operations
+- **Outcome:** teams page auto-syncs across multiple admin stations; event-day quick-assign for walk-ins; simplified admin login.
+- **Scope:** realtime subscriptions on teams page, lightweight matching UI on unassigned queue, shared password auth replacing magic links.
+- **Acceptance criteria:** Admin A's changes appear on Admin B's screen within 1s. Walk-in batch assignment takes < 30 seconds. Admin login works without email delivery.
+- **Draft Issues:** #39 (realtime sync -- 1 file), #40a (quick assign -- 1 file), #40b (admin password login -- 5 files)
 
 ### Issue 4.3: Incident fallback mode
 - **Outcome:** resilient operation during partial outages.
