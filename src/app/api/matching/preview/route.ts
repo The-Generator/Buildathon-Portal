@@ -126,6 +126,7 @@ export async function POST() {
         aiTools: p.ai_tools ?? [],
         registrationGroupId: group ? group.id : null,
         groupSize: group ? group.group_size : 1,
+        membersRequested: group?.members_requested ?? 0,
       };
     });
 

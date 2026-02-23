@@ -159,6 +159,17 @@ function greedyConstruction(inputs: MatchInput[]): {
   // Re-sort solos after potential additions
   solos = sortSolos(solos);
 
+  // Sort each group bucket so groups with membersRequested > 0 come first
+  // (they explicitly asked for more members and should get priority picking solos)
+  const prioritizeRequesting = (a: MatchInput[], b: MatchInput[]) => {
+    const aReq = Math.max(...a.map((m) => m.membersRequested));
+    const bReq = Math.max(...b.map((m) => m.membersRequested));
+    return bReq - aReq;
+  };
+  groupsOf4.sort(prioritizeRequesting);
+  groupsOf3.sort(prioritizeRequesting);
+  groupsOf2.sort(prioritizeRequesting);
+
   // Full groups become teams directly
   for (const members of fullGroups) {
     teams.push(buildDraftTeam(makeTeamId(teamIndex++), members));

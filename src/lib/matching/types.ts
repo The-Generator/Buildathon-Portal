@@ -15,6 +15,7 @@ export interface MatchInput {
   aiTools: string[];
   registrationGroupId: string | null;
   groupSize: number; // 1 for solo
+  membersRequested: number; // 0 if not requesting additional members
 }
 
 export interface DraftTeam {
