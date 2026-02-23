@@ -19,7 +19,8 @@ export function CheckinLiveFeed() {
   const [loading, setLoading] = useState(true);
   const seenIdsRef = useRef<Set<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
-  const toastTimeout = useRef<NodeJS.Timeout | null>(null);
+  const toastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const initialFeedFloorMsRef = useRef<number | null>(null);
 
   const showToast = useCallback((name: string) => {
     if (toastTimeout.current) clearTimeout(toastTimeout.current);
@@ -53,6 +54,10 @@ export function CheckinLiveFeed() {
       }));
 
       seenIdsRef.current = new Set(data.map((p) => p.id));
+      initialFeedFloorMsRef.current =
+        mapped.length === MAX_FEED_SIZE
+          ? Date.parse(mapped[mapped.length - 1].checked_in_at)
+          : null;
       setEntries(mapped);
       setLoading(false);
     };
@@ -81,6 +86,14 @@ export function CheckinLiveFeed() {
 
           if (!row.checked_in || !row.checked_in_at) return;
           if (seenIdsRef.current.has(row.id)) return;
+          const checkedInAtMs = Date.parse(row.checked_in_at);
+          if (Number.isNaN(checkedInAtMs)) return;
+          if (
+            initialFeedFloorMsRef.current !== null &&
+            checkedInAtMs <= initialFeedFloorMsRef.current
+          ) {
+            return;
+          }
 
           seenIdsRef.current.add(row.id);
 
