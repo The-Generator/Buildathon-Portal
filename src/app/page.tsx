@@ -8,11 +8,13 @@ import { Sponsors } from "@/components/landing/sponsors";
 import { JudgingRubric } from "@/components/landing/JudgingRubric";
 import { FAQ } from "@/components/landing/faq";
 import { Footer } from "@/components/landing/footer";
+import { CommunityButton } from "@/components/landing/CommunityButton";
 
 export default function Home() {
   return (
     <>
       <Header />
+      <CommunityButton />
       <main>
         <Hero />
         <About />
