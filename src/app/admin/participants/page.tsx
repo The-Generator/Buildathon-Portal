@@ -14,6 +14,7 @@ const PAGE_SIZE = 25;
 const SCHOOL_OPTIONS = ["All", "Babson", "Bentley", "Bryant", "Other"];
 const ROLE_OPTIONS = ["All", "Developer", "Designer", "Business", "Other"];
 const TEAM_STATUS_OPTIONS = ["All", "Has Team", "No Team"];
+const PARTICIPANT_TYPE_OPTIONS = ["All", "participant", "spectator", "walk_in"];
 
 type SortField = "full_name" | "school" | "created_at";
 type SortDir = "asc" | "desc";
@@ -25,6 +26,7 @@ export default function ParticipantsPage() {
   const [schoolFilter, setSchoolFilter] = useState("All");
   const [roleFilter, setRoleFilter] = useState("All");
   const [teamStatusFilter, setTeamStatusFilter] = useState("All");
+  const [typeFilter, setTypeFilter] = useState("All");
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(0);
@@ -103,6 +105,11 @@ export default function ParticipantsPage() {
       }
     }
 
+    // Participant type filter
+    if (typeFilter !== "All") {
+      result = result.filter((p) => p.participant_type === typeFilter);
+    }
+
     // Sort
     result.sort((a, b) => {
       let cmp = 0;
@@ -118,7 +125,7 @@ export default function ParticipantsPage() {
     });
 
     return result;
-  }, [participants, search, schoolFilter, roleFilter, teamStatusFilter, sortField, sortDir]);
+  }, [participants, search, schoolFilter, roleFilter, teamStatusFilter, typeFilter, sortField, sortDir]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -211,6 +218,20 @@ export default function ParticipantsPage() {
             {TEAM_STATUS_OPTIONS.map((t) => (
               <option key={t} value={t}>
                 Team: {t}
+              </option>
+            ))}
+          </select>
+          <select
+            value={typeFilter}
+            onChange={(e) => {
+              setTypeFilter(e.target.value);
+              setPage(0);
+            }}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241]"
+          >
+            {PARTICIPANT_TYPE_OPTIONS.map((t) => (
+              <option key={t} value={t}>
+                Type: {t === "All" ? "All" : t === "walk_in" ? "Walk-in" : t.charAt(0).toUpperCase() + t.slice(1)}
               </option>
             ))}
           </select>
