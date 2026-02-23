@@ -5,7 +5,7 @@ import { X, Scale, Wrench } from "lucide-react";
 
 const sidebarLinks = [
   { label: "Judging Rubric", href: "#judging", icon: Scale },
-  { label: "AI Tools & Resources", href: "#resources", icon: Wrench },
+  { label: "AI Tools & Resources", href: "/resources", icon: Wrench },
 ];
 
 interface SidebarProps {
