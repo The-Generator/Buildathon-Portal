@@ -1,30 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { headers } from "next/headers";
-
-async function verifyAdmin() {
-  const headersList = await headers();
-  const authHeader = headersList.get("authorization");
-
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return null;
-  }
-
-  const token = authHeader.split(" ")[1];
-  const supabase = createAdminClient();
-
-  const { data: admin, error } = await supabase
-    .from("admins")
-    .select("*")
-    .eq("email", token)
-    .single();
-
-  if (error || !admin) {
-    return null;
-  }
-
-  return admin;
-}
+import { verifyAdmin } from "@/lib/admin-auth";
+import type { TeamAuditEntry } from "@/types";
 
 export async function GET(
   _request: NextRequest,
@@ -89,6 +66,10 @@ export async function PATCH(
     const body = await request.json();
     const supabase = createAdminClient();
 
+    if (!body || typeof body !== "object" || Array.isArray(body)) {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
+
     // Only allow updating specific fields
     const allowedFields = [
       "name",
@@ -98,11 +79,12 @@ export async function PATCH(
       "project_description",
       "formation_type",
     ];
+    const bodyRecord = body as Record<string, unknown>;
 
     const updateData: Record<string, unknown> = {};
     for (const field of allowedFields) {
-      if (field in body) {
-        updateData[field] = body[field];
+      if (field in bodyRecord) {
+        updateData[field] = bodyRecord[field];
       }
     }
 
@@ -114,11 +96,15 @@ export async function PATCH(
     }
 
     // Fetch current team state for audit diff
-    const { data: currentTeam } = await supabase
+    const { data: currentTeam, error: currentTeamError } = await supabase
       .from("teams")
       .select("*")
       .eq("id", id)
       .single();
+
+    if (currentTeamError || !currentTeam) {
+      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+    }
 
     const { data: updatedTeam, error: updateError } = await supabase
       .from("teams")
@@ -134,19 +120,33 @@ export async function PATCH(
       );
     }
 
-    // Write audit log entry for each changed field
-    const auditEntries = Object.entries(updateData).map(([field, value]) => ({
-      team_id: id,
-      admin_id: admin.id,
-      action: field,
-      details: {
-        previous: currentTeam ? currentTeam[field] : null,
-        updated: value,
-      },
-    }));
+    // Write audit log entry for each actual field change.
+    const auditEntries: Omit<TeamAuditEntry, "id" | "created_at">[] =
+      Object.keys(updateData)
+        .filter((field) => currentTeam[field] !== updatedTeam[field])
+        .map((field) => ({
+          team_id: id,
+          admin_id: admin.id,
+          action: field,
+          details: {
+            previous: currentTeam[field],
+            updated: updatedTeam[field],
+          },
+        }));
 
     if (auditEntries.length > 0) {
-      await supabase.from("team_audit_log").insert(auditEntries);
+      const { error: auditError } = await supabase
+        .from("team_audit_log")
+        .insert(auditEntries);
+      if (auditError) {
+        return NextResponse.json(
+          {
+            error: "Team updated but failed to write audit log",
+            details: auditError.message,
+          },
+          { status: 500 }
+        );
+      }
     }
 
     // Fetch members to return complete team info
