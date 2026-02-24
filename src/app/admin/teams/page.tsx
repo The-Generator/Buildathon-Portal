@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,8 @@ export default function TeamsPage() {
     typeof window === "undefined" ? null : sessionStorage.getItem("admin_token")
   );
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [createToast, setCreateToast] = useState<string | null>(null);
+  const createToastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchData = useCallback(async (): Promise<TeamWithMembers[] | null> => {
     const supabase = createClient();
@@ -98,6 +100,20 @@ export default function TeamsPage() {
     void refresh();
   }, [fetchData]);
 
+  const handleCreateTeamCreated = useCallback(() => {
+    handleMatchingConfirmed();
+    setCreateToast("Team created");
+
+    if (createToastTimeout.current) clearTimeout(createToastTimeout.current);
+    createToastTimeout.current = setTimeout(() => setCreateToast(null), 3000);
+  }, [handleMatchingConfirmed]);
+
+  useEffect(() => {
+    return () => {
+      if (createToastTimeout.current) clearTimeout(createToastTimeout.current);
+    };
+  }, []);
+
   const filtered = teams.filter((t) => {
     if (filter === "complete") return t.is_complete;
     if (filter === "incomplete") return !t.is_complete;
@@ -133,6 +149,12 @@ export default function TeamsPage() {
 
   return (
     <div>
+      {createToast && (
+        <div className="fixed top-20 right-6 z-50 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg">
+          {createToast}
+        </div>
+      )}
+
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Teams</h2>
@@ -305,7 +327,7 @@ export default function TeamsPage() {
         <CreateTeamModal
           isOpen={createModalOpen}
           onClose={() => setCreateModalOpen(false)}
-          onCreated={handleMatchingConfirmed}
+          onCreated={handleCreateTeamCreated}
           adminToken={adminToken}
         />
       )}
