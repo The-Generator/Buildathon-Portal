@@ -30,8 +30,8 @@ export default function TeamsPage() {
     typeof window === "undefined" ? null : sessionStorage.getItem("admin_token")
   );
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [createToast, setCreateToast] = useState<string | null>(null);
-  const createToastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [actionToast, setActionToast] = useState<string | null>(null);
+  const actionToastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchData = useCallback(async (): Promise<TeamWithMembers[] | null> => {
     const supabase = createClient();
@@ -87,7 +87,13 @@ export default function TeamsPage() {
   const hasIncompleteTeams = teams.some((t) => !t.is_complete);
   const hasUnmatchedPotential = hasIncompleteTeams || teams.length === 0;
 
-  const handleMatchingConfirmed = useCallback(() => {
+  const showActionToast = useCallback((message: string) => {
+    setActionToast(message);
+    if (actionToastTimeout.current) clearTimeout(actionToastTimeout.current);
+    actionToastTimeout.current = setTimeout(() => setActionToast(null), 3000);
+  }, []);
+
+  const handleMatchingConfirmed = useCallback((toastMessage?: string) => {
     const refresh = async () => {
       setLoading(true);
       const data = await fetchData();
@@ -95,22 +101,21 @@ export default function TeamsPage() {
         setTeams(data);
       }
       setLoading(false);
+      if (toastMessage) {
+        showActionToast(toastMessage);
+      }
     };
 
     void refresh();
-  }, [fetchData]);
+  }, [fetchData, showActionToast]);
 
   const handleCreateTeamCreated = useCallback(() => {
-    handleMatchingConfirmed();
-    setCreateToast("Team created");
-
-    if (createToastTimeout.current) clearTimeout(createToastTimeout.current);
-    createToastTimeout.current = setTimeout(() => setCreateToast(null), 3000);
+    handleMatchingConfirmed("Team created");
   }, [handleMatchingConfirmed]);
 
   useEffect(() => {
     return () => {
-      if (createToastTimeout.current) clearTimeout(createToastTimeout.current);
+      if (actionToastTimeout.current) clearTimeout(actionToastTimeout.current);
     };
   }, []);
 
@@ -149,9 +154,9 @@ export default function TeamsPage() {
 
   return (
     <div>
-      {createToast && (
+      {actionToast && (
         <div className="fixed top-20 right-6 z-50 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg">
-          {createToast}
+          {actionToast}
         </div>
       )}
 

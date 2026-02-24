@@ -13,7 +13,7 @@ interface TeamActionsProps {
   isComplete: boolean;
   adminToken: string;
   members: Participant[];
-  onUpdated: () => void;
+  onUpdated: (toastMessage?: string) => void;
 }
 
 export function TeamActions({
@@ -72,7 +72,7 @@ export function TeamActions({
       }
 
       setConfirmDissolve(false);
-      onUpdated();
+      onUpdated("Team dissolved");
     } catch (err) {
       console.error("Team dissolve error:", err);
     } finally {
