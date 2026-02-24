@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/admin-auth";
-import type { TeamAuditEntry } from "@/types";
+import type { Team, TeamAuditEntry } from "@/types";
 
 export async function GET(
   _request: NextRequest,
@@ -164,6 +164,120 @@ export async function PATCH(
     );
   } catch (error) {
     console.error("Team PATCH error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const admin = await verifyAdmin();
+    if (!admin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const supabase = createAdminClient();
+
+    // Fetch team
+    const { data: team, error: teamError } = await supabase
+      .from("teams")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (teamError || !team) {
+      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+    }
+
+    const typedTeam = team as Team;
+
+    // Reject if locked
+    if (typedTeam.is_locked) {
+      return NextResponse.json(
+        { error: "Unlock team before dissolving" },
+        { status: 400 }
+      );
+    }
+
+    // Count members and collect IDs
+    const { data: members, error: membersError } = await supabase
+      .from("participants")
+      .select("id")
+      .eq("team_id", id);
+
+    if (membersError) {
+      return NextResponse.json(
+        { error: "Failed to fetch team members" },
+        { status: 500 }
+      );
+    }
+
+    const memberIds = (members ?? []).map((m: { id: string }) => m.id);
+    const memberCount = memberIds.length;
+
+    // Write audit entry before deletion
+    const auditEntry: Omit<TeamAuditEntry, "id" | "created_at"> = {
+      team_id: id,
+      admin_id: admin.id,
+      action: "team_dissolved",
+      details: {
+        team_name: typedTeam.name,
+        member_count: memberCount,
+        member_ids: memberIds,
+      },
+    };
+
+    const { error: auditError } = await supabase
+      .from("team_audit_log")
+      .insert(auditEntry);
+
+    if (auditError) {
+      return NextResponse.json(
+        { error: "Failed to write audit log", details: auditError.message },
+        { status: 500 }
+      );
+    }
+
+    // Reset team_id for all members
+    if (memberCount > 0) {
+      const { error: resetError } = await supabase
+        .from("participants")
+        .update({ team_id: null })
+        .eq("team_id", id);
+
+      if (resetError) {
+        return NextResponse.json(
+          { error: "Failed to reset participant team assignments", details: resetError.message },
+          { status: 500 }
+        );
+      }
+    }
+
+    // Delete the team
+    const { error: deleteError } = await supabase
+      .from("teams")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) {
+      return NextResponse.json(
+        { error: "Failed to delete team", details: deleteError.message },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      { success: true, freed_participants: memberCount },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("Team DELETE error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
