@@ -3,13 +3,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MatchingPreview } from "@/components/admin/MatchingPreview";
 import { TeamActions } from "@/components/admin/TeamActions";
 import { UnassignedQueue } from "@/components/admin/UnassignedQueue";
+import { CreateTeamModal } from "@/components/admin/CreateTeamModal";
 import {
   ChevronDown,
   ChevronUp,
+  Plus,
   Users,
 } from "lucide-react";
 import type { Team, Participant } from "@/types";
@@ -26,6 +29,7 @@ export default function TeamsPage() {
   const [adminToken] = useState<string | null>(() =>
     typeof window === "undefined" ? null : sessionStorage.getItem("admin_token")
   );
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const fetchData = useCallback(async (): Promise<TeamWithMembers[] | null> => {
     const supabase = createClient();
@@ -136,6 +140,12 @@ export default function TeamsPage() {
             {teams.length} total teams
           </p>
         </div>
+        {adminToken && (
+          <Button size="sm" onClick={() => setCreateModalOpen(true)}>
+            <Plus className="h-4 w-4 mr-1.5" />
+            Create Team
+          </Button>
+        )}
       </div>
 
       {/* Matching section - shown when there are incomplete teams or potential unmatched participants */}
@@ -287,6 +297,16 @@ export default function TeamsPage() {
         <UnassignedQueue
           adminToken={adminToken}
           onAssigned={handleMatchingConfirmed}
+        />
+      )}
+
+      {/* Create team modal */}
+      {adminToken && (
+        <CreateTeamModal
+          isOpen={createModalOpen}
+          onClose={() => setCreateModalOpen(false)}
+          onCreated={handleMatchingConfirmed}
+          adminToken={adminToken}
         />
       )}
     </div>
