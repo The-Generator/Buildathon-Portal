@@ -20,10 +20,14 @@ const removeMemberSchema = z.object({
 });
 
 async function recomputeAggregates(supabase: ReturnType<typeof createAdminClient>, teamId: string) {
-  const { data: members } = await supabase
+  const { data: members, error: membersError } = await supabase
     .from("participants")
     .select("primary_role, specific_skills")
     .eq("team_id", teamId);
+
+  if (membersError) {
+    return { error: membersError.message };
+  }
 
   const aggregateRoles = members
     ? [...new Set(members.map((m) => m.primary_role))]
@@ -34,7 +38,7 @@ async function recomputeAggregates(supabase: ReturnType<typeof createAdminClient
 
   const memberCount = members?.length ?? 0;
 
-  await supabase
+  const { error: updateError } = await supabase
     .from("teams")
     .update({
       aggregate_roles: aggregateRoles,
@@ -42,6 +46,12 @@ async function recomputeAggregates(supabase: ReturnType<typeof createAdminClient
       is_complete: memberCount >= 5,
     })
     .eq("id", teamId);
+
+  if (updateError) {
+    return { error: updateError.message };
+  }
+
+  return null;
 }
 
 export async function POST(
@@ -88,32 +98,6 @@ export async function POST(
       );
     }
 
-    // Check team capacity
-    const { count: currentCount, error: countError } = await supabase
-      .from("participants")
-      .select("*", { count: "exact", head: true })
-      .eq("team_id", id);
-
-    if (countError) {
-      return NextResponse.json(
-        { error: "Failed to count team members" },
-        { status: 500 }
-      );
-    }
-
-    const totalAfterAdd = (currentCount ?? 0) + participant_ids.length;
-    if (totalAfterAdd > 5) {
-      return NextResponse.json(
-        {
-          error: "Adding these participants would exceed the team size limit of 5",
-          current_members: currentCount ?? 0,
-          requested_additions: participant_ids.length,
-          max_team_size: 5,
-        },
-        { status: 400 }
-      );
-    }
-
     // Validate participants exist
     const { data: participants, error: fetchError } = await supabase
       .from("participants")
@@ -152,6 +136,33 @@ export async function POST(
       );
     }
 
+    // Check team capacity using only net-new additions.
+    const effectiveAdditions = participants.filter((p) => p.team_id !== id).length;
+    const { count: currentCount, error: countError } = await supabase
+      .from("participants")
+      .select("*", { count: "exact", head: true })
+      .eq("team_id", id);
+
+    if (countError) {
+      return NextResponse.json(
+        { error: "Failed to count team members" },
+        { status: 500 }
+      );
+    }
+
+    const totalAfterAdd = (currentCount ?? 0) + effectiveAdditions;
+    if (totalAfterAdd > 5) {
+      return NextResponse.json(
+        {
+          error: "Adding these participants would exceed the team size limit of 5",
+          current_members: currentCount ?? 0,
+          requested_additions: effectiveAdditions,
+          max_team_size: 5,
+        },
+        { status: 400 }
+      );
+    }
+
     // Assign participants to team
     const { error: assignError } = await supabase
       .from("participants")
@@ -166,7 +177,16 @@ export async function POST(
     }
 
     // Recompute aggregates
-    await recomputeAggregates(supabase, id);
+    const aggregateResult = await recomputeAggregates(supabase, id);
+    if (aggregateResult?.error) {
+      return NextResponse.json(
+        {
+          error: "Participants assigned but failed to recompute team aggregates",
+          details: aggregateResult.error,
+        },
+        { status: 500 }
+      );
+    }
 
     // Write audit entries
     const auditEntries = participant_ids.map((pid) => ({
@@ -185,7 +205,13 @@ export async function POST(
       .insert(auditEntries);
 
     if (auditError) {
-      console.error("Audit log write failed:", auditError.message);
+      return NextResponse.json(
+        {
+          error: "Participants assigned but failed to write audit log",
+          details: auditError.message,
+        },
+        { status: 500 }
+      );
     }
 
     // Return updated team with members
@@ -285,7 +311,16 @@ export async function DELETE(
     }
 
     // Recompute aggregates
-    await recomputeAggregates(supabase, id);
+    const aggregateResult = await recomputeAggregates(supabase, id);
+    if (aggregateResult?.error) {
+      return NextResponse.json(
+        {
+          error: "Participant removed but failed to recompute team aggregates",
+          details: aggregateResult.error,
+        },
+        { status: 500 }
+      );
+    }
 
     // Write audit entry
     const { error: auditError } = await supabase
@@ -301,7 +336,13 @@ export async function DELETE(
       });
 
     if (auditError) {
-      console.error("Audit log write failed:", auditError.message);
+      return NextResponse.json(
+        {
+          error: "Participant removed but failed to write audit log",
+          details: auditError.message,
+        },
+        { status: 500 }
+      );
     }
 
     // Return updated team with members
