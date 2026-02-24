@@ -27,9 +27,15 @@ export default function TeamsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterOption>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [adminToken] = useState<string | null>(() =>
-    typeof window === "undefined" ? null : sessionStorage.getItem("admin_token")
-  );
+  const [adminToken] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    return (
+      document.cookie
+        .split("; ")
+        .find((c) => c.startsWith("admin_token="))
+        ?.split("=")[1] ?? null
+    );
+  });
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [actionToast, setActionToast] = useState<string | null>(null);

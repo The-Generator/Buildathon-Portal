@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const router = useRouter();
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,23 +16,30 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
+    try {
+      const res = await fetch("/api/admin/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
 
-    const { error: authError } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/admin`,
-      },
-    });
+      if (!res.ok) {
+        const data = await res.json();
+        setError(data.error || "Login failed");
+        setLoading(false);
+        return;
+      }
 
-    if (authError) {
-      setError(authError.message);
+      const { token } = await res.json();
+
+      // Set cookie for middleware (server-side route protection)
+      document.cookie = `admin_token=${token}; path=/admin; SameSite=Lax; max-age=${60 * 60 * 24}`;
+
+      router.replace("/admin");
+    } catch {
+      setError("Network error. Please try again.");
       setLoading(false);
-      return;
     }
-
-    setSent(true);
-    setLoading(false);
   };
 
   return (
@@ -49,61 +56,25 @@ export default function AdminLoginPage() {
             </p>
           </div>
 
-          {sent ? (
-            <div className="text-center py-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 mb-4">
-                <svg
-                  className="w-8 h-8 text-green-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                Check your email
-              </h2>
-              <p className="text-sm text-gray-500">
-                We sent a magic link to <strong>{email}</strong>. Click the link
-                in the email to sign in.
-              </p>
-              <button
-                onClick={() => {
-                  setSent(false);
-                  setEmail("");
-                }}
-                className="mt-6 text-sm text-[#006241] hover:underline"
-              >
-                Use a different email
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                id="email"
-                label="Email address"
-                type="email"
-                placeholder="you@babson.edu"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                error={error ?? undefined}
-              />
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={loading || !email}
-              >
-                {loading ? "Sending..." : "Send Magic Link"}
-              </Button>
-            </form>
-          )}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              id="password"
+              label="Password"
+              type="password"
+              placeholder="Enter admin password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              error={error ?? undefined}
+            />
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={loading || !password}
+            >
+              {loading ? "Signing in..." : "Enter"}
+            </Button>
+          </form>
         </div>
       </div>
     </div>

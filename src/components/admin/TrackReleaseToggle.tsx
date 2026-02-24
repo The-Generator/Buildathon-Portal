@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { Loader2, Radio, Lock } from "lucide-react";
@@ -14,18 +13,18 @@ export function TrackReleaseToggle() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getAuthHeader = useCallback(async () => {
-    const supabase = createClient();
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session || !session.user.email) throw new Error("Not authenticated");
-    return `Bearer ${session.user.email}`;
+  const getAuthHeader = useCallback(() => {
+    const token = document.cookie
+      .split("; ")
+      .find((c) => c.startsWith("admin_token="))
+      ?.split("=")[1];
+    if (!token) throw new Error("Not authenticated");
+    return `Bearer ${token}`;
   }, []);
 
   const fetchState = useCallback(async () => {
     try {
-      const auth = await getAuthHeader();
+      const auth = getAuthHeader();
       const res = await fetch("/api/admin/tracks", {
         headers: { Authorization: auth },
       });
@@ -51,7 +50,7 @@ export function TrackReleaseToggle() {
     setError(null);
 
     try {
-      const auth = await getAuthHeader();
+      const auth = getAuthHeader();
       const res = await fetch("/api/admin/tracks", {
         method: "POST",
         headers: { Authorization: auth },

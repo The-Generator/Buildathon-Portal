@@ -42,12 +42,12 @@ export default function ExportPage() {
     setDownloading(true);
 
     try {
-      const supabase = createClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const token = document.cookie
+        .split("; ")
+        .find((c) => c.startsWith("admin_token="))
+        ?.split("=")[1];
 
-      if (!session) {
+      if (!token) {
         alert("You must be logged in to export data.");
         setDownloading(false);
         return;
@@ -55,7 +55,7 @@ export default function ExportPage() {
 
       const response = await fetch("/api/admin/export", {
         headers: {
-          Authorization: `Bearer ${session.user.email}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 

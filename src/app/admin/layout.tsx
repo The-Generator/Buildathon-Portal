@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import {
   LayoutDashboard,
@@ -32,48 +31,29 @@ export default function AdminLayout({
   const pathname = usePathname();
   const isLoginPage = pathname === "/admin/login";
   const [loading, setLoading] = useState(() => !isLoginPage);
-  const [adminName, setAdminName] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (isLoginPage) {
-      return;
-    }
+    if (isLoginPage) return;
 
     const checkAuth = async () => {
-      const supabase = createClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
+      const hasToken = document.cookie
+        .split("; ")
+        .some((c) => c.startsWith("admin_token="));
 
-      if (!session) {
+      if (!hasToken) {
         router.replace("/admin/login");
         return;
       }
 
-      // Verify user is an admin
-      const { data: admin, error } = await supabase
-        .from("admins")
-        .select("*")
-        .eq("email", session.user.email)
-        .single();
-
-      if (error || !admin) {
-        await supabase.auth.signOut();
-        router.replace("/admin/login");
-        return;
-      }
-
-      setAdminName(admin.name || session.user.email || "Admin");
       setLoading(false);
     };
 
     checkAuth();
   }, [isLoginPage, router]);
 
-  const handleLogout = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    document.cookie = "admin_token=; path=/admin; max-age=0; SameSite=Lax";
     router.replace("/admin/login");
   };
 
@@ -155,7 +135,7 @@ export default function AdminLayout({
             <div className="px-3 py-2 mb-2">
               <p className="text-xs text-gray-400">Signed in as</p>
               <p className="text-sm font-medium text-gray-700 truncate">
-                {adminName}
+                Admin
               </p>
             </div>
             <button
