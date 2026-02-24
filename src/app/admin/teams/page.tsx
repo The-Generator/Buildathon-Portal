@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ChevronUp,
   Plus,
+  RefreshCw,
   Users,
 } from "lucide-react";
 import type { Team, Participant } from "@/types";
@@ -30,8 +31,10 @@ export default function TeamsPage() {
     typeof window === "undefined" ? null : sessionStorage.getItem("admin_token")
   );
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
   const [actionToast, setActionToast] = useState<string | null>(null);
   const actionToastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchData = useCallback(async (): Promise<TeamWithMembers[] | null> => {
     const supabase = createClient();
@@ -81,6 +84,40 @@ export default function TeamsPage() {
 
     return () => {
       cancelled = true;
+    };
+  }, [fetchData]);
+
+  // Realtime subscription: teams + participants changes trigger debounced refetch
+  useEffect(() => {
+    const supabase = createClient();
+
+    const debouncedRefetch = () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(async () => {
+        setSyncing(true);
+        const data = await fetchData();
+        if (data) setTeams(data);
+        setSyncing(false);
+      }, 500);
+    };
+
+    const channel = supabase
+      .channel("admin-teams-sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "teams" },
+        debouncedRefetch
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "participants" },
+        debouncedRefetch
+      )
+      .subscribe();
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      supabase.removeChannel(channel);
     };
   }, [fetchData]);
 
@@ -163,8 +200,14 @@ export default function TeamsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">Teams</h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 mt-1 flex items-center gap-2">
             {teams.length} total teams
+            {syncing && (
+              <span className="inline-flex items-center gap-1 text-xs text-emerald-600">
+                <RefreshCw className="h-3 w-3 animate-spin" />
+                Syncing…
+              </span>
+            )}
           </p>
         </div>
         {adminToken && (
