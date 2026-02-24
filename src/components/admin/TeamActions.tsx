@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Lock, Unlock, CheckCircle, XCircle, ArrowRightLeft } from "lucide-react";
+import { Lock, Unlock, CheckCircle, XCircle, ArrowRightLeft, Trash2 } from "lucide-react";
 import { MoveParticipantModal } from "@/components/admin/MoveParticipantModal";
 import type { Participant } from "@/types";
 
@@ -29,6 +29,7 @@ export function TeamActions({
   const [moveParticipant, setMoveParticipant] = useState<Participant | null>(
     null
   );
+  const [confirmDissolve, setConfirmDissolve] = useState(false);
 
   const patchTeam = async (field: string, value: boolean) => {
     setLoading(field);
@@ -51,6 +52,29 @@ export function TeamActions({
       onUpdated();
     } catch (err) {
       console.error("Team update error:", err);
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  const dissolveTeam = async () => {
+    setLoading("dissolve");
+    try {
+      const res = await fetch(`/api/teams/${teamId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Team dissolve failed:", err);
+        return;
+      }
+
+      setConfirmDissolve(false);
+      onUpdated();
+    } catch (err) {
+      console.error("Team dissolve error:", err);
     } finally {
       setLoading(null);
     }
@@ -100,7 +124,57 @@ export function TeamActions({
             </>
           )}
         </Button>
+
+        <div className="relative">
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={loading !== null || isLocked}
+            onClick={() => setConfirmDissolve(true)}
+            className="border-red-300 text-red-600 hover:bg-red-50"
+            title={isLocked ? "Unlock first" : undefined}
+          >
+            {loading === "dissolve" ? (
+              <span className="animate-pulse">...</span>
+            ) : (
+              <>
+                <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                Dissolve
+              </>
+            )}
+          </Button>
+        </div>
       </div>
+
+      {/* Dissolve confirmation */}
+      {confirmDissolve && (
+        <div className="mt-2 p-3 rounded-lg border border-red-200 bg-red-50">
+          <p className="text-sm text-red-800 font-medium">
+            Dissolve {teamName}?
+          </p>
+          <p className="text-xs text-red-600 mt-1">
+            This frees {members.length} member{members.length !== 1 ? "s" : ""} to the unassigned queue.
+          </p>
+          <div className="flex gap-2 mt-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={loading !== null}
+              onClick={dissolveTeam}
+            >
+              {loading === "dissolve" ? "Dissolving..." : "Confirm"}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={loading !== null}
+              onClick={() => setConfirmDissolve(false)}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Per-member move buttons */}
       {members.length > 0 && (
