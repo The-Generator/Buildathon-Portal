@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { MatchingPreview } from "@/components/admin/MatchingPreview";
 import { TeamActions } from "@/components/admin/TeamActions";
+import { UnassignedQueue } from "@/components/admin/UnassignedQueue";
 import {
   ChevronDown,
   ChevronUp,
@@ -279,6 +280,14 @@ export default function TeamsPage() {
             );
           })}
         </div>
+      )}
+
+      {/* Unassigned participants queue */}
+      {adminToken && (
+        <UnassignedQueue
+          adminToken={adminToken}
+          onAssigned={handleMatchingConfirmed}
+        />
       )}
     </div>
   );
