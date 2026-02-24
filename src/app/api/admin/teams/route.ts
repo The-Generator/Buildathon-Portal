@@ -6,7 +6,13 @@ import { z } from "zod";
 
 const createTeamSchema = z.object({
   name: z.string().min(1).optional(),
-  participant_ids: z.array(z.string().uuid()).min(1, "At least one participant is required"),
+  participant_ids: z
+    .array(z.string().uuid())
+    .min(1, "At least one participant is required")
+    .refine(
+      (ids) => new Set(ids).size === ids.length,
+      "participant_ids must not contain duplicates"
+    ),
 });
 
 export async function POST(request: NextRequest) {
