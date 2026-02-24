@@ -111,7 +111,14 @@ export default function TeamsPage() {
       .on(
         "postgres_changes",
         { event: "UPDATE", schema: "public", table: "participants" },
-        debouncedRefetch
+        (payload) => {
+          const previousTeamId = (payload.old as { team_id?: string | null })
+            ?.team_id;
+          const nextTeamId = (payload.new as { team_id?: string | null })
+            ?.team_id;
+          if (previousTeamId === nextTeamId) return;
+          debouncedRefetch();
+        }
       )
       .subscribe();
 

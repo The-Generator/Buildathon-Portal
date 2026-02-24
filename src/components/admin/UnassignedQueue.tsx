@@ -3,7 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronUp, Users, UserPlus } from "lucide-react";
+import { ChevronDown, ChevronUp, Users, Zap } from "lucide-react";
+import { QuickAssign } from "@/components/admin/QuickAssign";
 import type { Participant, Team } from "@/types";
 
 interface UnassignedQueueProps {
@@ -13,7 +14,7 @@ interface UnassignedQueueProps {
 
 export function UnassignedQueue({ adminToken, onAssigned }: UnassignedQueueProps) {
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [teams, setTeams] = useState<(Team & { member_count: number })[]>([]);
+  const [teams, setTeams] = useState<(Team & { member_count: number; members: Participant[] })[]>([]);
   const [expanded, setExpanded] = useState(true);
   const [loading, setLoading] = useState(true);
   const [assigningId, setAssigningId] = useState<string | null>(null);
@@ -37,18 +38,21 @@ export function UnassignedQueue({ adminToken, onAssigned }: UnassignedQueueProps
 
     const { data: allParticipants } = await supabase
       .from("participants")
-      .select("id, team_id");
+      .select("*");
 
-    const memberCounts = new Map<string, number>();
-    for (const p of allParticipants ?? []) {
+    const membersByTeam = new Map<string, Participant[]>();
+    for (const p of (allParticipants ?? []) as Participant[]) {
       if (p.team_id) {
-        memberCounts.set(p.team_id, (memberCounts.get(p.team_id) ?? 0) + 1);
+        const existing = membersByTeam.get(p.team_id) ?? [];
+        existing.push(p);
+        membersByTeam.set(p.team_id, existing);
       }
     }
 
     const teamsWithCounts = (teamData ?? []).map((t) => ({
       ...t,
-      member_count: memberCounts.get(t.id) ?? 0,
+      member_count: membersByTeam.get(t.id)?.length ?? 0,
+      members: membersByTeam.get(t.id) ?? [],
     }));
 
     setParticipants(pData ?? []);
@@ -80,11 +84,18 @@ export function UnassignedQueue({ adminToken, onAssigned }: UnassignedQueueProps
         return;
       }
 
-      // Remove from local list and update team counts
+      // Remove from local list and update team counts + members
+      const assigned = participants.find((p) => p.id === participantId);
       setParticipants((prev) => prev.filter((p) => p.id !== participantId));
       setTeams((prev) =>
         prev.map((t) =>
-          t.id === teamId ? { ...t, member_count: t.member_count + 1 } : t
+          t.id === teamId
+            ? {
+                ...t,
+                member_count: t.member_count + 1,
+                members: assigned ? [...t.members, assigned] : t.members,
+              }
+            : t
         )
       );
       setOpenDropdownId(null);
@@ -180,58 +191,22 @@ export function UnassignedQueue({ adminToken, onAssigned }: UnassignedQueueProps
                             <span className="animate-pulse">Assigning...</span>
                           ) : (
                             <>
-                              <UserPlus className="h-3.5 w-3.5" />
-                              Assign
+                              <Zap className="h-3.5 w-3.5" />
+                              Quick Assign
                             </>
                           )}
                         </button>
 
-                        {/* Inline team dropdown */}
+                        {/* Ranked team dropdown */}
                         {isOpen && !isAssigning && (
-                          <div className="absolute right-0 top-full mt-1 z-10 w-64 max-h-60 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
-                            {teams.filter((t) => t.member_count < 5 && !t.is_locked).length === 0 ? (
-                              <div className="px-3 py-4 text-sm text-gray-400 text-center">
-                                No available teams
-                              </div>
-                            ) : (
-                              teams.map((team) => {
-                                const isFull = team.member_count >= 5;
-                                const isLocked = team.is_locked;
-                                const disabled = isFull || isLocked;
-
-                                return (
-                                  <button
-                                    key={team.id}
-                                    type="button"
-                                    disabled={disabled}
-                                    onClick={() => handleAssign(p.id, team.id)}
-                                    className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-                                      disabled
-                                        ? "opacity-40 cursor-not-allowed bg-gray-50"
-                                        : "hover:bg-emerald-50"
-                                    }`}
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      <span className="font-medium text-gray-900 truncate">
-                                        {team.name}
-                                      </span>
-                                      <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                                        <span className="text-xs text-gray-400 flex items-center gap-1">
-                                          <Users className="h-3 w-3" />
-                                          {team.member_count}/5
-                                        </span>
-                                        {isLocked && (
-                                          <Badge color="red">Locked</Badge>
-                                        )}
-                                        {isFull && !isLocked && (
-                                          <Badge color="yellow">Full</Badge>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </button>
-                                );
-                              })
-                            )}
+                          <div className="absolute right-0 top-full mt-1 z-10 w-72 max-h-60 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                            <QuickAssign
+                              participant={p}
+                              teams={teams}
+                              adminToken={adminToken}
+                              onAssigned={handleAssign}
+                              disabled={isAssigning}
+                            />
                           </div>
                         )}
                       </div>
