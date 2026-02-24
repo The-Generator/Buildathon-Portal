@@ -203,7 +203,6 @@ export function UnassignedQueue({ adminToken, onAssigned }: UnassignedQueueProps
                             <QuickAssign
                               participant={p}
                               teams={teams}
-                              adminToken={adminToken}
                               onAssigned={handleAssign}
                               disabled={isAssigning}
                             />

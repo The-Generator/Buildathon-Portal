@@ -16,8 +16,7 @@ interface TeamWithCount {
 interface QuickAssignProps {
   participant: Participant;
   teams: TeamWithCount[];
-  adminToken: string;
-  onAssigned: (participantId: string, teamId: string) => void;
+  onAssigned: (participantId: string, teamId: string) => Promise<void>;
   disabled?: boolean;
 }
 
@@ -97,7 +96,7 @@ export function QuickAssign({
     if (assigning || disabled) return;
     setAssigning(true);
     try {
-      onAssigned(participant.id, teamId);
+      await onAssigned(participant.id, teamId);
     } finally {
       setAssigning(false);
     }
