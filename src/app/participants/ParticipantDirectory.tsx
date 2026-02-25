@@ -4,7 +4,8 @@ import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SCHOOLS, PRIMARY_ROLES } from "@/lib/constants";
-import { Search, ArrowLeft, ExternalLink } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
+import { ParticipantCard } from "@/components/participants/ParticipantCard";
 import type { Participant } from "@/types";
 
 type DirectoryParticipant = Pick<
@@ -137,7 +138,7 @@ export function ParticipantDirectory({ participants }: Props) {
                   setRole("all");
                   updateParams("role", "all");
                 }}
-                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                className={`min-h-11 rounded-full px-3 py-2 text-xs font-medium transition-colors ${
                   role === "all"
                     ? "bg-[#00e87b] text-[#0a0f0d]"
                     : "border border-white/10 text-white/50 hover:text-white/80"
@@ -152,7 +153,7 @@ export function ParticipantDirectory({ participants }: Props) {
                     setRole(r);
                     updateParams("role", r);
                   }}
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                  className={`min-h-11 rounded-full px-3 py-2 text-xs font-medium transition-colors ${
                     role === r
                       ? "bg-[#00e87b] text-[#0a0f0d]"
                       : "border border-white/10 text-white/50 hover:text-white/80"
@@ -171,7 +172,7 @@ export function ParticipantDirectory({ participants }: Props) {
                 setRole("all");
                 updateParams("role", "all");
               }}
-              className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+              className={`min-h-11 rounded-full px-3 py-2 text-xs font-medium transition-colors ${
                 role === "all"
                   ? "bg-[#00e87b] text-[#0a0f0d]"
                   : "border border-white/10 text-white/50 hover:text-white/80"
@@ -186,7 +187,7 @@ export function ParticipantDirectory({ participants }: Props) {
                   setRole(r);
                   updateParams("role", r);
                 }}
-                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                className={`min-h-11 rounded-full px-3 py-2 text-xs font-medium transition-colors ${
                   role === r
                     ? "bg-[#00e87b] text-[#0a0f0d]"
                     : "border border-white/10 text-white/50 hover:text-white/80"
@@ -230,78 +231,3 @@ export function ParticipantDirectory({ participants }: Props) {
   );
 }
 
-function ParticipantCard({ participant: p }: { participant: DirectoryParticipant }) {
-  const displaySchool =
-    p.school === "Other" && p.school_other ? p.school_other : p.school;
-
-  return (
-    <div className="glass-card group rounded-2xl p-5 transition-colors hover:border-[#00e87b]/20">
-      {/* Name + school */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="font-body truncate text-base font-semibold text-white">
-            {p.full_name}
-          </h3>
-          <p className="font-body mt-0.5 text-sm text-white/40">
-            {displaySchool} &middot; {p.year}
-          </p>
-        </div>
-        {/* Links */}
-        <div className="flex shrink-0 items-center gap-2">
-          {p.linkedin_url && (
-            <a
-              href={p.linkedin_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/30 transition-colors hover:text-[#00e87b]"
-              aria-label={`${p.full_name} LinkedIn`}
-            >
-              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-              </svg>
-            </a>
-          )}
-          {p.portfolio_url && (
-            <a
-              href={p.portfolio_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/30 transition-colors hover:text-[#00e87b]"
-              aria-label={`${p.full_name} portfolio`}
-            >
-              <ExternalLink className="h-4 w-4" />
-            </a>
-          )}
-        </div>
-      </div>
-
-      {/* Role badge */}
-      <div className="mt-3">
-        <span className="inline-flex rounded-full bg-[#00e87b]/10 px-2.5 py-0.5 font-body text-xs font-medium text-[#00e87b]">
-          {p.primary_role}
-        </span>
-      </div>
-
-      {/* Bio */}
-      {p.bio && (
-        <p className="font-body mt-3 line-clamp-3 text-sm leading-relaxed text-white/50">
-          {p.bio}
-        </p>
-      )}
-
-      {/* Skills */}
-      {p.specific_skills && p.specific_skills.length > 0 && (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {p.specific_skills.map((skill) => (
-            <span
-              key={skill}
-              className="rounded-full border border-white/10 px-2 py-0.5 font-body text-[11px] text-white/40"
-            >
-              {skill}
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
