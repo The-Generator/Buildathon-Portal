@@ -82,15 +82,14 @@ export function ParticipantCard({
             >
               {p.bio}
             </p>
-            {p.bio.length > 100 && (
-              <button
-                type="button"
-                onClick={() => setBioExpanded(!bioExpanded)}
-                className="font-body mt-1 text-xs font-medium text-[#00e87b]/70"
-              >
-                {bioExpanded ? "Show less" : "Read more"}
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={() => setBioExpanded(!bioExpanded)}
+              className="font-body mt-1 text-xs font-medium text-[#00e87b]/70"
+              aria-expanded={bioExpanded}
+            >
+              {bioExpanded ? "Show less" : "Read more"}
+            </button>
           </div>
         )}
 
