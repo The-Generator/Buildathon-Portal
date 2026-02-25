@@ -2,14 +2,29 @@ import { headers } from "next/headers";
 
 // In-memory token store. Tokens do not survive server restarts.
 // Acceptable for a 2-day event admin tool.
-const validTokens = new Set<string>();
+const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
+const validTokens = new Map<string, number>();
 
-export function addToken(token: string) {
-  validTokens.add(token);
+export function addToken(token: string, ttlMs: number = TOKEN_TTL_MS) {
+  validTokens.set(token, Date.now() + ttlMs);
 }
 
 export function removeToken(token: string) {
   validTokens.delete(token);
+}
+
+export function isTokenValid(token: string): boolean {
+  const expiresAt = validTokens.get(token);
+  if (!expiresAt) {
+    return false;
+  }
+
+  if (Date.now() > expiresAt) {
+    validTokens.delete(token);
+    return false;
+  }
+
+  return true;
 }
 
 export async function verifyAdmin() {
@@ -22,7 +37,7 @@ export async function verifyAdmin() {
 
   const token = authHeader.split(" ")[1];
 
-  if (!validTokens.has(token)) {
+  if (!isTokenValid(token)) {
     return null;
   }
 
