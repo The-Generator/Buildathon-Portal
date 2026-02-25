@@ -53,6 +53,10 @@ export async function POST(request: NextRequest) {
           participant_type: "spectator",
           ai_tools: data.ai_tools ?? [],
           is_self_registered: true,
+          linkedin_url: data.linkedin_url || null,
+          portfolio_url: data.portfolio_url || null,
+          bio: data.bio || null,
+          profile_visible: data.profile_visible ?? false,
         })
         .select()
         .single();
@@ -135,6 +139,10 @@ export async function POST(request: NextRequest) {
         participant_type: "participant",
         ai_tools: data.ai_tools ?? [],
         is_self_registered: true,
+        linkedin_url: data.linkedin_url || null,
+        portfolio_url: data.portfolio_url || null,
+        bio: data.bio || null,
+        profile_visible: data.profile_visible ?? false,
       })
       .select()
       .single();

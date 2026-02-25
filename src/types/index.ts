@@ -16,6 +16,10 @@ export interface Participant {
   is_self_registered: boolean;
   registered_by?: string | null;
   team_id?: string | null;
+  linkedin_url?: string | null;
+  portfolio_url?: string | null;
+  bio?: string | null;
+  profile_visible: boolean;
   checked_in: boolean;
   checked_in_at?: string | null;
   created_at: string;
@@ -103,6 +107,12 @@ export interface RegistrationFormData {
 
   // AI Tools
   ai_tools: string[];
+
+  // Public Profile (optional)
+  linkedin_url?: string;
+  portfolio_url?: string;
+  bio?: string;
+  profile_visible?: boolean;
 
   // Partial team: need more members?
   needs_more_members?: "yes" | "no" | "";

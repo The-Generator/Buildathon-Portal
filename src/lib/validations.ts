@@ -23,6 +23,11 @@ export const stepPersonalInfoSchema = z
       .min(1, "Select at least one skill"),
     experience_level: z.enum([...EXPERIENCE_LEVELS]),
     ai_tools: z.array(z.string()).optional().default([]),
+    // Public Profile (optional)
+    linkedin_url: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")),
+    portfolio_url: z.string().url("Invalid portfolio URL").optional().or(z.literal("")),
+    bio: z.string().max(280, "Bio must be 280 characters or less").optional().or(z.literal("")),
+    profile_visible: z.boolean().optional().default(false),
   })
   .refine(
     (data) => {
@@ -109,6 +114,11 @@ export const fullRegistrationSchema = z
     specific_skills: z.array(z.enum([...SPECIFIC_SKILLS])).optional().default([]),
     experience_level: z.enum([...EXPERIENCE_LEVELS]).optional(),
     ai_tools: z.array(z.string()).optional().default([]),
+    // Public Profile (optional)
+    linkedin_url: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")),
+    portfolio_url: z.string().url("Invalid portfolio URL").optional().or(z.literal("")),
+    bio: z.string().max(280, "Bio must be 280 characters or less").optional().or(z.literal("")),
+    profile_visible: z.boolean().optional().default(false),
 
     // Step 2: Team Setup
     team_option: z.enum(["full_team", "partial_team", "solo", "spectator"]),

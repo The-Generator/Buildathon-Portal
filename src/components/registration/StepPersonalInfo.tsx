@@ -29,6 +29,7 @@ export function StepPersonalInfo({
   onNext,
 }: StepPersonalInfoProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const handleNext = () => {
     const result = stepPersonalInfoSchema.safeParse({
@@ -43,6 +44,10 @@ export function StepPersonalInfo({
       specific_skills: data.specific_skills,
       experience_level: data.experience_level,
       ai_tools: data.ai_tools,
+      linkedin_url: data.linkedin_url || "",
+      portfolio_url: data.portfolio_url || "",
+      bio: data.bio || "",
+      profile_visible: data.profile_visible ?? false,
     });
 
     if (!result.success) {
@@ -230,6 +235,81 @@ export function StepPersonalInfo({
           selectedTools={data.ai_tools ?? []}
           onChange={(tools) => onChange({ ai_tools: tools })}
         />
+      </div>
+
+      {/* Public Profile (Optional) */}
+      <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setProfileOpen((o) => !o)}
+          className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors"
+        >
+          <span className="text-sm font-medium text-gray-700">
+            Public Profile <span className="text-gray-400 font-normal">(Optional)</span>
+          </span>
+          <svg
+            className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`}
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
+          </svg>
+        </button>
+        {profileOpen && (
+          <div className="px-4 py-4 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Input
+                id="linkedin_url"
+                label="LinkedIn URL"
+                type="url"
+                placeholder="https://linkedin.com/in/yourname"
+                value={data.linkedin_url || ""}
+                onChange={(e) => onChange({ linkedin_url: e.target.value })}
+                error={errors.linkedin_url}
+              />
+              <Input
+                id="portfolio_url"
+                label="Portfolio URL"
+                type="url"
+                placeholder="https://yourportfolio.com"
+                value={data.portfolio_url || ""}
+                onChange={(e) => onChange({ portfolio_url: e.target.value })}
+                error={errors.portfolio_url}
+              />
+            </div>
+            <div>
+              <label htmlFor="bio" className="block text-sm font-medium text-gray-700 mb-1">
+                Short Bio
+              </label>
+              <textarea
+                id="bio"
+                rows={3}
+                maxLength={280}
+                placeholder="A quick intro about yourself (280 chars max)"
+                value={data.bio || ""}
+                onChange={(e) => onChange({ bio: e.target.value })}
+                className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-[#006241] focus:outline-none focus:ring-1 focus:ring-[#006241] resize-none"
+              />
+              <p className="mt-1 text-xs text-gray-400 text-right">
+                {(data.bio || "").length}/280
+              </p>
+              {errors.bio && (
+                <p className="mt-1 text-sm text-red-600">{errors.bio}</p>
+              )}
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={data.profile_visible ?? false}
+                onChange={(e) => onChange({ profile_visible: e.target.checked })}
+                className="h-4 w-4 rounded border-gray-300 text-[#006241] focus:ring-[#006241]"
+              />
+              <span className="text-sm text-gray-700">
+                Show my profile to other participants
+              </span>
+            </label>
+          </div>
+        )}
       </div>
 
       {/* Navigation */}
