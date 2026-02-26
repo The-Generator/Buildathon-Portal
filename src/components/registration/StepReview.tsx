@@ -98,8 +98,8 @@ export function StepReview({ data, onBack, onSubmit }: StepReviewProps) {
   const isSpectator = data.team_option === "spectator";
 
   const teamOptionLabels: Record<string, string> = {
-    partial_team: "I have teammates (trio max)",
-    solo: "Solo (looking for a team)",
+    partial_team: "I have teammates (group of 2-3)",
+    solo: "Solo (entering matching pool)",
     spectator: "Spectator",
   };
 

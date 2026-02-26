@@ -97,12 +97,12 @@ export function StepTeamSetup({
       <div>
         <h2 className="text-2xl font-bold text-gray-900">Team Setup</h2>
         <p className="mt-1 text-sm text-gray-500">
-          How would you like to participate? Teams are 5 people total.
+          How would you like to participate? Teams of 5 are formed by our matching algorithm.
         </p>
       </div>
 
       {/* Team Option Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         {TEAM_OPTIONS.map((option) => {
           const isSelected = data.team_option === option.value;
           const Icon = TEAM_ICONS[option.value] || User;
@@ -151,8 +151,11 @@ export function StepTeamSetup({
       {data.team_option === "partial_team" && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-800">
-            Your Teammates
+            Your Teammates (max 2)
           </h3>
+          <p className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2.5">
+            Your group will be combined with others to form a team of 5.
+          </p>
           {data.teammates.map((teammate, index) => (
             <div
               key={index}
