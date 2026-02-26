@@ -226,6 +226,7 @@ export async function POST(request: NextRequest) {
       .insert({
         registrant_id: registrant.id,
         group_size: incomingGroupSize,
+        members_requested: null,
         team_id: team.id,
         tagged_team_skills: data.tagged_team_skills,
       });
