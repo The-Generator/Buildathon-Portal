@@ -116,6 +116,7 @@ function removeAtIndices<T>(arr: T[], indices: number[]): T[] {
 
 /**
  * Phase 1: Greedy construction of teams.
+ * Registration caps at 3 members, so groups are sized 1-3 only.
  */
 function greedyConstruction(inputs: MatchInput[]): {
   teams: DraftTeam[];
@@ -131,22 +132,12 @@ function greedyConstruction(inputs: MatchInput[]): {
     (a, b) => b[1].length - a[1].length
   );
 
-  // Categorize groups by size
-  const groupsOf4: MatchInput[][] = [];
+  // Categorize groups by size (max 3 after registration cap)
   const groupsOf3: MatchInput[][] = [];
   const groupsOf2: MatchInput[][] = [];
-  const fullGroups: MatchInput[][] = []; // groups of 5
 
   for (const [, members] of groupEntries) {
-    if (members.length >= TEAM_SIZE) {
-      fullGroups.push(members.slice(0, TEAM_SIZE));
-      // If group > 5, overflow into solos (shouldn't happen by constraint)
-      if (members.length > TEAM_SIZE) {
-        solos.push(...members.slice(TEAM_SIZE));
-      }
-    } else if (members.length === 4) {
-      groupsOf4.push(members);
-    } else if (members.length === 3) {
+    if (members.length === 3) {
       groupsOf3.push(members);
     } else if (members.length === 2) {
       groupsOf2.push(members);
@@ -158,35 +149,6 @@ function greedyConstruction(inputs: MatchInput[]): {
 
   // Re-sort solos after potential additions
   solos = sortSolos(solos);
-
-  // Sort each group bucket so groups with membersRequested > 0 come first
-  // (they explicitly asked for more members and should get priority picking solos)
-  const prioritizeRequesting = (a: MatchInput[], b: MatchInput[]) => {
-    const aReq = Math.max(...a.map((m) => m.membersRequested));
-    const bReq = Math.max(...b.map((m) => m.membersRequested));
-    return bReq - aReq;
-  };
-  groupsOf4.sort(prioritizeRequesting);
-  groupsOf3.sort(prioritizeRequesting);
-  groupsOf2.sort(prioritizeRequesting);
-
-  // Full groups become teams directly
-  for (const members of fullGroups) {
-    teams.push(buildDraftTeam(makeTeamId(teamIndex++), members));
-  }
-
-  // Groups of 4: find 1 best solo to add
-  for (const group of groupsOf4) {
-    if (solos.length >= 1) {
-      const bestIndices = findBestCandidates(group, solos, 1);
-      const chosen = bestIndices.map((i) => solos[i]);
-      solos = removeAtIndices(solos, bestIndices);
-      teams.push(buildDraftTeam(makeTeamId(teamIndex++), [...group, ...chosen]));
-    } else {
-      // No solos available - form incomplete team
-      teams.push(buildDraftTeam(makeTeamId(teamIndex++), group));
-    }
-  }
 
   // Groups of 3: try to find a duo first, then fall back to 2 solos
   for (const group of groupsOf3) {
@@ -244,11 +206,10 @@ function greedyConstruction(inputs: MatchInput[]): {
     }
   }
 
-  // Groups of 2: try to find a trio (another group of 3), or duo+solo, or 3 solos
+  // Groups of 2: pair with 3 solos
   for (const group of groupsOf2) {
     const needed = TEAM_SIZE - group.length; // 3
 
-    // Just use best 3 solos (groups of 3 and other duos have been consumed above)
     if (solos.length >= needed) {
       const bestIndices = findBestCandidates(group, solos, needed);
       const chosen = bestIndices.map((i) => solos[i]);

@@ -14,7 +14,7 @@ export interface MatchInput {
   school: string;
   aiTools: string[];
   registrationGroupId: string | null;
-  groupSize: number; // 1 for solo
+  groupSize: number; // 1 for solo, 2 or 3 for registration group (max 3)
   membersRequested: number; // 0 if not requesting additional members
 }
 
