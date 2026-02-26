@@ -22,10 +22,9 @@ const INITIAL_FORM_DATA: RegistrationFormData = {
   specific_skills: [],
   experience_level: "",
   ai_tools: [],
+  ai_tools_used: [],
   team_option: "solo",
   teammates: [],
-  needs_more_members: "",
-  members_requested: null,
   tagged_team_skills: [],
 };
 

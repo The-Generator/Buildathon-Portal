@@ -7,6 +7,7 @@ interface SkillChipsProps {
   selectedSkills: string[];
   onChange: (skills: string[]) => void;
   disabledSkills?: string[];
+  labels?: Record<string, string>;
 }
 
 export function SkillChips({
@@ -14,6 +15,7 @@ export function SkillChips({
   selectedSkills,
   onChange,
   disabledSkills = [],
+  labels,
 }: SkillChipsProps) {
   const toggleSkill = (skill: string) => {
     if (disabledSkills.includes(skill)) return;
@@ -45,7 +47,7 @@ export function SkillChips({
                   : "bg-white text-gray-700 border-gray-300 hover:border-[#006241] hover:text-[#006241] cursor-pointer"
             )}
           >
-            {skill}
+            {labels?.[skill] ?? skill}
           </button>
         );
       })}

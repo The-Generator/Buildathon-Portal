@@ -3,14 +3,13 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { TEAM_OPTIONS, EVENT_CONFIG } from "@/lib/constants";
+import { TEAM_OPTIONS } from "@/lib/constants";
 import { stepTeamSetupSchema } from "@/lib/validations";
 import { cn } from "@/lib/utils";
-import { Users, UserPlus, User, Eye, Plus, Trash2 } from "lucide-react";
+import { UserPlus, User, Eye, Plus, Trash2 } from "lucide-react";
 import type { RegistrationFormData } from "@/types";
 
 const TEAM_ICONS: Record<string, React.ElementType> = {
-  full_team: Users,
   partial_team: UserPlus,
   solo: User,
   spectator: Eye,
@@ -33,15 +32,10 @@ export function StepTeamSetup({
 
   const handleOptionChange = (option: RegistrationFormData["team_option"]) => {
     let teammates: { full_name: string; email: string }[] = [];
-    if (option === "full_team") {
-      teammates = Array.from({ length: 4 }, () => ({
-        full_name: "",
-        email: "",
-      }));
-    } else if (option === "partial_team") {
+    if (option === "partial_team") {
       teammates = [{ full_name: "", email: "" }];
     }
-    onChange({ team_option: option, teammates, needs_more_members: "", members_requested: null });
+    onChange({ team_option: option, teammates });
     setErrors({});
   };
 
@@ -56,7 +50,7 @@ export function StepTeamSetup({
   };
 
   const addTeammate = () => {
-    if (data.teammates.length < 3) {
+    if (data.teammates.length < 2) {
       onChange({
         teammates: [...data.teammates, { full_name: "", email: "" }],
       });
@@ -76,8 +70,6 @@ export function StepTeamSetup({
     const result = stepTeamSetupSchema.safeParse({
       team_option: data.team_option,
       teammates: noTeammates ? [] : data.teammates,
-      needs_more_members: data.needs_more_members ?? "",
-      members_requested: data.members_requested ?? null,
     });
 
     if (!result.success) {
@@ -156,42 +148,6 @@ export function StepTeamSetup({
       )}
 
       {/* Teammate Inputs */}
-      {data.team_option === "full_team" && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-800">
-            Your 4 Teammates
-          </h3>
-          {data.teammates.map((teammate, index) => (
-            <div
-              key={index}
-              className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 bg-gray-50 rounded-lg"
-            >
-              <Input
-                id={`teammate-${index}-name`}
-                label={`Teammate ${index + 1} Name *`}
-                placeholder="Full name"
-                value={teammate.full_name}
-                onChange={(e) =>
-                  updateTeammate(index, "full_name", e.target.value)
-                }
-                error={errors[`teammates.${index}.full_name`]}
-              />
-              <Input
-                id={`teammate-${index}-email`}
-                label={`Teammate ${index + 1} Email *`}
-                type="email"
-                placeholder="teammate@school.edu"
-                value={teammate.email}
-                onChange={(e) =>
-                  updateTeammate(index, "email", e.target.value)
-                }
-                error={errors[`teammates.${index}.email`]}
-              />
-            </div>
-          ))}
-        </div>
-      )}
-
       {data.team_option === "partial_team" && (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-800">
@@ -237,7 +193,7 @@ export function StepTeamSetup({
               )}
             </div>
           ))}
-          {data.teammates.length < 3 && (
+          {data.teammates.length < 2 && (
             <button
               type="button"
               onClick={addTeammate}
@@ -247,77 +203,6 @@ export function StepTeamSetup({
               Add another teammate
             </button>
           )}
-
-          {/* Need more members? (Jotform Q26 / Q27, conditions #2 / #3) */}
-          <div className="mt-6 p-5 bg-white rounded-xl border border-gray-200 space-y-4">
-            <p className="text-sm font-semibold text-gray-800">
-              Does your team need additional members?
-            </p>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {(["yes", "no"] as const).map((val) => (
-                <button
-                  key={val}
-                  type="button"
-                  onClick={() => {
-                    onChange({
-                      needs_more_members: val,
-                      members_requested: val === "no" ? null : data.members_requested,
-                    });
-                  }}
-                  className={cn(
-                    "min-h-11 w-full rounded-lg border px-4 py-2.5 text-left text-sm font-medium leading-snug transition-all sm:text-center",
-                    data.needs_more_members === val
-                      ? "border-emerald-700 bg-emerald-50 text-emerald-800"
-                      : "border-gray-200 bg-white text-gray-600 hover:border-emerald-300"
-                  )}
-                >
-                  {val === "yes" ? "Yes, we could use more members" : "No, our team is complete"}
-                </button>
-              ))}
-            </div>
-
-            {/* Q27: How many more? -- only shown when "yes" (conditions #2/#3 hide when "no" or empty) */}
-            {data.needs_more_members === "yes" && (() => {
-              const groupSize = 1 + data.teammates.length;
-              const maxRequestable = EVENT_CONFIG.teamSize - groupSize;
-              return (
-                <div className="space-y-2">
-                  <label
-                    htmlFor="members-requested"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    How many more team members do you want to be matched with?
-                  </label>
-                  <select
-                    id="members-requested"
-                    value={data.members_requested ?? ""}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      onChange({
-                        members_requested: val ? Number(val) : null,
-                      });
-                    }}
-                    className="block w-full max-w-[120px] rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-800 transition-colors focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700"
-                  >
-                    <option value="">Select</option>
-                    {Array.from({ length: maxRequestable }, (_, i) => i + 1).map(
-                      (n) => (
-                        <option key={n} value={n}>
-                          {n}
-                        </option>
-                      )
-                    )}
-                  </select>
-                  <p className="text-xs text-gray-500">
-                    Your group has {groupSize} {groupSize === 1 ? "person" : "people"} (including you). Teams are {EVENT_CONFIG.teamSize} max.
-                  </p>
-                  {errors.members_requested && (
-                    <p className="text-sm text-red-600">{errors.members_requested}</p>
-                  )}
-                </div>
-              );
-            })()}
-          </div>
         </div>
       )}
 

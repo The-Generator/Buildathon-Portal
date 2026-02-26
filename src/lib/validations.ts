@@ -23,6 +23,7 @@ export const stepPersonalInfoSchema = z
       .min(1, "Select at least one skill"),
     experience_level: z.enum([...EXPERIENCE_LEVELS]),
     ai_tools: z.array(z.string()).optional().default([]),
+    ai_tools_used: z.array(z.string()).optional().default([]),
     // Public Profile (optional)
     linkedin_url: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")),
     portfolio_url: z.string().url("Invalid portfolio URL").optional().or(z.literal("")),
@@ -50,18 +51,13 @@ const teammateSchema = z.object({
 
 export const stepTeamSetupSchema = z
   .object({
-    team_option: z.enum(["full_team", "partial_team", "solo", "spectator"]),
+    team_option: z.enum(["partial_team", "solo", "spectator"]),
     teammates: z.array(teammateSchema),
-    needs_more_members: z.enum(["yes", "no", ""]).optional().default(""),
-    members_requested: z.number().int().min(1).max(4).nullable().optional().default(null),
   })
   .refine(
     (data) => {
-      if (data.team_option === "full_team") {
-        return data.teammates.length === 4;
-      }
       if (data.team_option === "partial_team") {
-        return data.teammates.length >= 1 && data.teammates.length <= 3;
+        return data.teammates.length >= 1 && data.teammates.length <= 2;
       }
       if (data.team_option === "solo" || data.team_option === "spectator") {
         return data.teammates.length === 0;
@@ -70,23 +66,8 @@ export const stepTeamSetupSchema = z
     },
     {
       message:
-        "Invalid number of teammates for the selected team option. Full team requires exactly 4 teammates, partial team requires 1-3, solo/spectator requires 0.",
+        "Invalid number of teammates for the selected team option. Partial team requires 1-2 teammates, solo/spectator requires 0.",
       path: ["teammates"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.team_option !== "partial_team") return true;
-      if (data.needs_more_members !== "yes") return true;
-      if (!data.members_requested || data.members_requested < 1) return false;
-      // Total = registrant (1) + teammates + requested must not exceed 5
-      const groupSize = 1 + data.teammates.length;
-      return groupSize + data.members_requested <= 5;
-    },
-    {
-      message:
-        "Total team size (you + teammates + requested members) cannot exceed 5.",
-      path: ["members_requested"],
     }
   );
 
@@ -114,6 +95,7 @@ export const fullRegistrationSchema = z
     specific_skills: z.array(z.enum([...SPECIFIC_SKILLS])).optional().default([]),
     experience_level: z.enum([...EXPERIENCE_LEVELS]).optional(),
     ai_tools: z.array(z.string()).optional().default([]),
+    ai_tools_used: z.array(z.string()).optional().default([]),
     // Public Profile (optional)
     linkedin_url: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")),
     portfolio_url: z.string().url("Invalid portfolio URL").optional().or(z.literal("")),
@@ -121,10 +103,8 @@ export const fullRegistrationSchema = z
     profile_visible: z.boolean().optional().default(false),
 
     // Step 2: Team Setup
-    team_option: z.enum(["full_team", "partial_team", "solo", "spectator"]),
+    team_option: z.enum(["partial_team", "solo", "spectator"]),
     teammates: z.array(teammateSchema),
-    needs_more_members: z.enum(["yes", "no", ""]).optional().default(""),
-    members_requested: z.number().int().min(1).max(4).nullable().optional().default(null),
 
     // Step 3: Team Skills
     tagged_team_skills: z.array(z.enum([...SPECIFIC_SKILLS])),
@@ -173,11 +153,8 @@ export const fullRegistrationSchema = z
   )
   .refine(
     (data) => {
-      if (data.team_option === "full_team") {
-        return data.teammates.length === 4;
-      }
       if (data.team_option === "partial_team") {
-        return data.teammates.length >= 1 && data.teammates.length <= 3;
+        return data.teammates.length >= 1 && data.teammates.length <= 2;
       }
       if (data.team_option === "solo" || data.team_option === "spectator") {
         return data.teammates.length === 0;
@@ -186,7 +163,7 @@ export const fullRegistrationSchema = z
     },
     {
       message:
-        "Invalid number of teammates for the selected team option. Full team requires exactly 4 teammates, partial team requires 1-3, solo/spectator requires 0.",
+        "Invalid number of teammates for the selected team option. Partial team requires 1-2 teammates, solo/spectator requires 0.",
       path: ["teammates"],
     }
   )
@@ -199,20 +176,6 @@ export const fullRegistrationSchema = z
       message:
         "Select at least one team skill for team registrations. Spectator registrations should not include team skills.",
       path: ["tagged_team_skills"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.team_option !== "partial_team") return true;
-      if (data.needs_more_members !== "yes") return true;
-      if (!data.members_requested || data.members_requested < 1) return false;
-      const groupSize = 1 + data.teammates.length;
-      return groupSize + data.members_requested <= 5;
-    },
-    {
-      message:
-        "Total team size (you + teammates + requested members) cannot exceed 5.",
-      path: ["members_requested"],
     }
   );
 

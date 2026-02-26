@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // --- Participant branch (solo, partial_team, full_team) ---
+    // --- Participant branch (solo, partial_team) ---
 
     // 3. Check total participant count against capacity (spectators excluded)
     const { count: participantCount, error: countError } = await supabase
@@ -183,7 +183,7 @@ export async function POST(request: NextRequest) {
 
     // 6. Determine team formation_type and is_complete
     const formationType = "algorithm_matched";
-    const isComplete = data.team_option === "full_team";
+    const isComplete = false;
 
     // 7. Create team
     const { data: team, error: teamError } = await supabase
@@ -219,18 +219,11 @@ export async function POST(request: NextRequest) {
     }
 
     // 9. Create registration_group record
-    // Compute members_requested: only for partial_team with "yes" answer
-    const membersRequested =
-      data.team_option === "partial_team" && data.needs_more_members === "yes"
-        ? data.members_requested ?? null
-        : null;
-
     const { error: groupError } = await supabase
       .from("registration_groups")
       .insert({
         registrant_id: registrant.id,
         group_size: incomingGroupSize,
-        members_requested: membersRequested,
         team_id: team.id,
         tagged_team_skills: data.tagged_team_skills,
       });

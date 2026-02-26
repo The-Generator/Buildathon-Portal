@@ -104,21 +104,18 @@ export interface RegistrationFormData {
   experience_level?: string;
 
   // Step 2: Team Setup
-  team_option: "full_team" | "partial_team" | "solo" | "spectator";
+  team_option: "partial_team" | "solo" | "spectator";
   teammates: { full_name: string; email: string }[];
 
   // AI Tools
   ai_tools: string[];
+  ai_tools_used: string[];
 
   // Public Profile (optional)
   linkedin_url?: string;
   portfolio_url?: string;
   bio?: string;
   profile_visible?: boolean;
-
-  // Partial team: need more members?
-  needs_more_members?: "yes" | "no" | "";
-  members_requested?: number | null;
 
   // Step 3: Team Skills
   tagged_team_skills: string[];
