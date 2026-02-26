@@ -11,7 +11,6 @@ import {
   PRIMARY_ROLES,
   SPECIFIC_SKILLS,
   EXPERIENCE_LEVELS,
-  AI_TOOLS_EXPERIENCE,
   SCHOOLS,
   YEARS,
 } from "@/lib/constants";
@@ -31,12 +30,6 @@ export function StepPersonalInfo({
 }: StepPersonalInfoProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profileOpen, setProfileOpen] = useState(false);
-
-  const toolToCategory = Object.fromEntries(
-    AI_TOOLS_EXPERIENCE.flatMap((category) =>
-      category.tools.map((tool) => [tool.id, category.id])
-    )
-  ) as Record<string, string>;
 
   const handleNext = () => {
     const result = stepPersonalInfoSchema.safeParse({
@@ -240,16 +233,10 @@ export function StepPersonalInfo({
           AI Tools Experience <span className="text-gray-400 font-normal">(select all that apply)</span>
         </label>
         <AiToolsSelector
+          selectedCategories={data.ai_tools ?? []}
           selectedTools={data.ai_tools_used ?? []}
-          onChange={(selectedToolIds) => {
-            const ai_tools = Array.from(
-              new Set(
-                selectedToolIds
-                  .map((toolId) => toolToCategory[toolId])
-                  .filter((categoryId): categoryId is string => Boolean(categoryId))
-              )
-            );
-            onChange({ ai_tools, ai_tools_used: selectedToolIds });
+          onChange={(categories, tools) => {
+            onChange({ ai_tools: categories, ai_tools_used: tools });
           }}
         />
       </div>

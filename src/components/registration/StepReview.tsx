@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AI_TOOLS_EXPERIENCE } from "@/lib/constants";
 import type { RegistrationFormData } from "@/types";
 
 interface StepReviewProps {
@@ -132,10 +133,37 @@ export function StepReview({ data, onBack, onSubmit }: StepReviewProps) {
           <dt className="text-sm text-gray-500 mb-1.5">Your Skills</dt>
           <Chips items={data.specific_skills ?? []} />
         </div>
-        {data.ai_tools_used && data.ai_tools_used.length > 0 && (
+        {data.ai_tools && data.ai_tools.length > 0 && (
           <div className="pt-1">
-            <dt className="text-sm text-gray-500 mb-1.5">AI Tools Used</dt>
-            <Chips items={data.ai_tools_used} />
+            <dt className="text-sm text-gray-500 mb-1.5">AI Tools Experience</dt>
+            <div className="space-y-2">
+              {AI_TOOLS_EXPERIENCE.filter((cat) =>
+                data.ai_tools.includes(cat.id)
+              ).map((cat) => {
+                const toolsInCategory = cat.tools.filter(
+                  (t) => data.ai_tools_used?.includes(t.id)
+                );
+                return (
+                  <div key={cat.id}>
+                    <span className="text-sm font-medium text-gray-900">
+                      {cat.label}
+                    </span>
+                    {toolsInCategory.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-1">
+                        {toolsInCategory.map((tool) => (
+                          <span
+                            key={tool.id}
+                            className="px-2.5 py-1 rounded-full text-xs font-medium bg-[#006241]/10 text-[#006241] border border-[#006241]/20"
+                          >
+                            {tool.label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
