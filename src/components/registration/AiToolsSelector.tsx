@@ -60,19 +60,17 @@ export function AiToolsSelector({
         return (
           <div key={category.id}>
             {/* Category checkbox */}
-            <label
-              className="flex items-center gap-3 cursor-pointer group"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleCategoryToggle(category.id);
-                }
-              }}
-            >
+            <label className="flex items-center gap-3 cursor-pointer group">
               <input
                 type="checkbox"
                 checked={isExpanded}
                 onChange={() => handleCategoryToggle(category.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleCategoryToggle(category.id);
+                  }
+                }}
                 className="h-4 w-4 rounded border-gray-300 text-[#006241] focus:ring-[#006241]"
               />
               <span className="text-sm font-semibold text-gray-700 group-hover:text-gray-900 transition-colors">
@@ -87,17 +85,17 @@ export function AiToolsSelector({
                   <label
                     key={tool.id}
                     className="flex items-center gap-3 cursor-pointer group"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleToolToggle(category.id, tool.id);
-                      }
-                    }}
                   >
                     <input
                       type="checkbox"
                       checked={selectedTools.includes(tool.id)}
                       onChange={() => handleToolToggle(category.id, tool.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          handleToolToggle(category.id, tool.id);
+                        }
+                      }}
                       className="h-3.5 w-3.5 rounded border-gray-300 text-[#006241] focus:ring-[#006241]"
                     />
                     <span className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
@@ -113,19 +111,17 @@ export function AiToolsSelector({
 
       {/* No experience option */}
       <div className="pt-2 border-t border-gray-200">
-        <label
-          className="flex items-center gap-3 cursor-pointer group"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              handleNoExperience();
-            }
-          }}
-        >
+        <label className="flex items-center gap-3 cursor-pointer group">
           <input
             type="checkbox"
             checked={noExperience}
             onChange={handleNoExperience}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                handleNoExperience();
+              }
+            }}
             className="h-4 w-4 rounded border-gray-300 text-[#006241] focus:ring-[#006241]"
           />
           <span className="text-sm text-gray-600 group-hover:text-gray-800 transition-colors">
