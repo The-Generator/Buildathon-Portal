@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/admin-auth";
-import type { Team, TeamAuditEntry } from "@/types";
+import type { Team } from "@/types";
 
 export async function GET(
   _request: NextRequest,
@@ -120,23 +120,58 @@ export async function PATCH(
       );
     }
 
-    // Write audit log entry for each actual field change.
-    const auditEntries: Omit<TeamAuditEntry, "id" | "created_at">[] =
-      Object.keys(updateData)
-        .filter((field) => currentTeam[field] !== updatedTeam[field])
-        .map((field) => ({
-          team_id: id,
-          admin_id: admin.id,
-          action: field,
-          details: {
-            previous: currentTeam[field],
-            updated: updatedTeam[field],
-          },
-        }));
+    // Write admin action entries for supported actions.
+    const auditEntries = Object.keys(updateData)
+      .filter((field) => currentTeam[field] !== updatedTeam[field])
+      .map((field) => {
+        if (field === "is_locked") {
+          return {
+            admin_email: admin.email,
+            action_type: updatedTeam.is_locked ? "locked_team" : "unlocked_team",
+            team_id: id,
+            details: {
+              field,
+              previous: currentTeam[field],
+              updated: updatedTeam[field],
+            },
+          };
+        }
+
+        if (field === "is_complete") {
+          return {
+            admin_email: admin.email,
+            action_type: updatedTeam.is_complete
+              ? "marked_complete"
+              : "marked_incomplete",
+            team_id: id,
+            details: {
+              field,
+              previous: currentTeam[field],
+              updated: updatedTeam[field],
+            },
+          };
+        }
+
+        if (field === "formation_type" && updatedTeam.formation_type === "algorithm_matched") {
+          return {
+            admin_email: admin.email,
+            action_type: "confirmed_matching",
+            team_id: id,
+            details: {
+              field,
+              previous: currentTeam[field],
+              updated: updatedTeam[field],
+            },
+          };
+        }
+
+        return null;
+      })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null);
 
     if (auditEntries.length > 0) {
       const { error: auditError } = await supabase
-        .from("team_audit_log")
+        .from("admin_actions")
         .insert(auditEntries);
       if (auditError) {
         return NextResponse.json(
@@ -222,10 +257,10 @@ export async function DELETE(
     const memberCount = memberIds.length;
 
     // Write audit entry before deletion
-    const auditEntry: Omit<TeamAuditEntry, "id" | "created_at"> = {
+    const auditEntry = {
+      admin_email: admin.email,
+      action_type: "dissolved_team",
       team_id: id,
-      admin_id: admin.id,
-      action: "team_dissolved",
       details: {
         team_name: typedTeam.name,
         member_count: memberCount,
@@ -234,7 +269,7 @@ export async function DELETE(
     };
 
     const { error: auditError } = await supabase
-      .from("team_audit_log")
+      .from("admin_actions")
       .insert(auditEntry);
 
     if (auditError) {

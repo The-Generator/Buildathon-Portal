@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/admin-auth";
 import { z } from "zod";
-import { generateInviteCode } from "@/lib/utils";
 
 const confirmMatchesSchema = z.object({
   matches: z.array(
@@ -52,7 +51,6 @@ export async function POST(request: NextRequest) {
           .from("teams")
           .insert({
             name: teamName,
-            invite_code: generateInviteCode(),
             formation_type: "algorithm_matched",
             is_complete: match.participant_ids.length >= 5,
             is_locked: true,

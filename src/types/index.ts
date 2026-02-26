@@ -13,6 +13,7 @@ export interface Participant {
   experience_level: string;
   participant_type: string;
   ai_tools: string[];
+  ai_tools_used?: string[] | null;
   is_self_registered: boolean;
   registered_by?: string | null;
   team_id?: string | null;
@@ -29,10 +30,11 @@ export interface Participant {
 export interface Team {
   id: string;
   name: string;
-  invite_code: string;
-  formation_type: "pre_formed" | "algorithm_matched" | "admin_assigned";
+  formation_type: "algorithm_matched" | "admin_assigned";
   is_complete: boolean;
   is_locked: boolean;
+  locked_by?: string | null;
+  locked_at?: string | null;
   aggregate_roles: string[];
   aggregate_skills: string[];
   project_name?: string | null;

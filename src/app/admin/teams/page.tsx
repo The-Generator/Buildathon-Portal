@@ -178,7 +178,6 @@ export default function TeamsPage() {
 
   const formationLabel = (type: string) => {
     const labels: Record<string, string> = {
-      pre_formed: "Pre-formed",
       algorithm_matched: "Matched",
       admin_assigned: "Admin Assigned",
     };
@@ -187,7 +186,6 @@ export default function TeamsPage() {
 
   const formationColor = (type: string): "blue" | "purple" | "yellow" => {
     const colors: Record<string, "blue" | "purple" | "yellow"> = {
-      pre_formed: "blue",
       algorithm_matched: "purple",
       admin_assigned: "yellow",
     };

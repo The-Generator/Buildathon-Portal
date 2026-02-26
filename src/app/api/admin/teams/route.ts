@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/admin-auth";
-import { generateInviteCode } from "@/lib/utils";
 import { z } from "zod";
 
 const createTeamSchema = z.object({
@@ -91,7 +90,6 @@ export async function POST(request: NextRequest) {
       .from("teams")
       .insert({
         name: teamName,
-        invite_code: generateInviteCode(),
         formation_type: "admin_assigned",
         is_complete: participant_ids.length >= 5,
         is_locked: false,
@@ -143,11 +141,11 @@ export async function POST(request: NextRequest) {
 
     // Write audit log entry
     const { error: auditError } = await supabase
-      .from("team_audit_log")
+      .from("admin_actions")
       .insert({
+        admin_email: admin.email,
+        action_type: "created_team",
         team_id: team.id,
-        admin_id: admin.id,
-        action: "create_team",
         details: {
           team_name: teamName,
           participant_ids,

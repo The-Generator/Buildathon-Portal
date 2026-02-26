@@ -160,7 +160,6 @@ export function StatsOverview({ stats }: { stats: StatsData }) {
           <div className="space-y-3">
             {Object.entries(stats.formationBreakdown).map(([type, count]) => {
               const labels: Record<string, string> = {
-                pre_formed: "Pre-formed",
                 algorithm_matched: "Algorithm Matched",
                 admin_assigned: "Admin Assigned",
               };

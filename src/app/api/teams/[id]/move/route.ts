@@ -178,12 +178,13 @@ export async function POST(
 
     // Write audit log entry
     const { error: auditError } = await supabase
-      .from("team_audit_log")
+      .from("admin_actions")
       .insert([
         {
+          admin_email: admin.email,
+          action_type: "moved_participant",
           team_id: sourceTeamId,
-          admin_id: admin.id,
-          action: "move_participant_out",
+          participant_id,
           details: {
             participant_id,
             participant_name: participant.full_name,
@@ -192,9 +193,10 @@ export async function POST(
           },
         },
         {
+          admin_email: admin.email,
+          action_type: "moved_participant",
           team_id: target_team_id,
-          admin_id: admin.id,
-          action: "move_participant_in",
+          participant_id,
           details: {
             participant_id,
             participant_name: participant.full_name,

@@ -53,7 +53,6 @@ async function getStats() {
 
   // Formation type breakdown - based on team formation_type
   const formationBreakdown: Record<string, number> = {
-    pre_formed: 0,
     algorithm_matched: 0,
     admin_assigned: 0,
   };

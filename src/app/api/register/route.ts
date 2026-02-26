@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fullRegistrationSchema } from "@/lib/validations";
-import { generateInviteCode } from "@/lib/utils";
 import { EVENT_CONFIG } from "@/lib/constants";
 
 export async function POST(request: NextRequest) {
@@ -183,8 +182,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 6. Determine team formation_type and is_complete
-    const formationType =
-      data.team_option === "full_team" ? "pre_formed" : "algorithm_matched";
+    const formationType = "algorithm_matched";
     const isComplete = data.team_option === "full_team";
 
     // 7. Create team
@@ -192,7 +190,6 @@ export async function POST(request: NextRequest) {
       .from("teams")
       .insert({
         name: `${data.full_name}'s Team`,
-        invite_code: generateInviteCode(),
         formation_type: formationType,
         is_complete: isComplete,
       })
@@ -271,7 +268,6 @@ export async function POST(request: NextRequest) {
         team: {
           id: team.id,
           name: team.name,
-          invite_code: team.invite_code,
           is_complete: team.is_complete,
         },
         registrant: {

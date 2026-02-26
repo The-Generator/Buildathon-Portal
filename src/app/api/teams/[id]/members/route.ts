@@ -190,9 +190,10 @@ export async function POST(
 
     // Write audit entries
     const auditEntries = participant_ids.map((pid) => ({
+      admin_email: admin.email,
+      action_type: "added_participant",
       team_id: id,
-      admin_id: admin.id,
-      action: "member_added",
+      participant_id: pid,
       details: {
         participant_id: pid,
         participant_name: participants.find((p) => p.id === pid)?.full_name ?? null,
@@ -201,7 +202,7 @@ export async function POST(
     }));
 
     const { error: auditError } = await supabase
-      .from("team_audit_log")
+      .from("admin_actions")
       .insert(auditEntries);
 
     if (auditError) {
@@ -324,11 +325,12 @@ export async function DELETE(
 
     // Write audit entry
     const { error: auditError } = await supabase
-      .from("team_audit_log")
+      .from("admin_actions")
       .insert({
+        admin_email: admin.email,
+        action_type: "removed_participant",
         team_id: id,
-        admin_id: admin.id,
-        action: "member_removed",
+        participant_id,
         details: {
           participant_id,
           participant_name: participant.full_name,
