@@ -138,7 +138,27 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // TODO: Send email notifications to matched participants (will be integrated later)
+    // Write audit entry for matching confirmation
+    const successfulTeamIds = results
+      .filter((r) => r.success)
+      .map((r) => r.team_id);
+
+    if (successfulTeamIds.length > 0) {
+      const { error: auditError } = await supabase
+        .from("admin_actions")
+        .insert({
+          admin_email: admin.email,
+          action_type: "confirmed_matching",
+          details: {
+            teams_confirmed: successfulTeamIds.length,
+            team_ids: successfulTeamIds,
+          },
+        });
+
+      if (auditError) {
+        console.error("Audit log write failed:", auditError.message);
+      }
+    }
 
     return NextResponse.json(
       {

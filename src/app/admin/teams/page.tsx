@@ -135,6 +135,7 @@ export default function TeamsPage() {
   }, [fetchData]);
 
   const hasIncompleteTeams = teams.some((t) => !t.is_complete);
+  const hasLockedTeams = teams.some((t) => t.is_locked);
   const hasUnmatchedPotential = hasIncompleteTeams || teams.length === 0;
 
   const showActionToast = useCallback((message: string) => {
@@ -233,6 +234,7 @@ export default function TeamsPage() {
       {adminToken && hasUnmatchedPotential && (
         <MatchingPreview
           adminToken={adminToken}
+          hasLockedTeams={hasLockedTeams}
           onConfirmed={handleMatchingConfirmed}
         />
       )}
@@ -360,6 +362,8 @@ export default function TeamsPage() {
                         teamName={team.name}
                         isLocked={team.is_locked}
                         isComplete={team.is_complete}
+                        lockedBy={team.locked_by}
+                        lockedAt={team.locked_at}
                         adminToken={adminToken}
                         members={team.members}
                         onUpdated={handleMatchingConfirmed}

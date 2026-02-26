@@ -176,35 +176,22 @@ export async function POST(
       );
     }
 
-    // Write audit log entry
+    // Write single audit log entry with source/target info
     const { error: auditError } = await supabase
       .from("admin_actions")
-      .insert([
-        {
-          admin_email: admin.email,
-          action_type: "moved_participant",
-          team_id: sourceTeamId,
-          participant_id,
-          details: {
-            participant_id,
-            participant_name: participant.full_name,
-            target_team_id,
-            target_team_name: targetTeam.name,
-          },
+      .insert({
+        admin_email: admin.email,
+        action_type: "moved_participant",
+        team_id: sourceTeamId,
+        participant_id,
+        details: {
+          participant_name: participant.full_name,
+          source_team_id: sourceTeamId,
+          source_team_name: sourceTeam.name,
+          target_team_id,
+          target_team_name: targetTeam.name,
         },
-        {
-          admin_email: admin.email,
-          action_type: "moved_participant",
-          team_id: target_team_id,
-          participant_id,
-          details: {
-            participant_id,
-            participant_name: participant.full_name,
-            source_team_id: sourceTeamId,
-            source_team_name: sourceTeam.name,
-          },
-        },
-      ]);
+      });
 
     if (auditError) {
       return NextResponse.json(

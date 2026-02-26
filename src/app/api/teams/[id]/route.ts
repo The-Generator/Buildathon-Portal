@@ -106,6 +106,17 @@ export async function PATCH(
       return NextResponse.json({ error: "Team not found" }, { status: 404 });
     }
 
+    // Server-side locked_by / locked_at when toggling is_locked
+    if ("is_locked" in updateData) {
+      if (updateData.is_locked) {
+        updateData.locked_by = admin.email;
+        updateData.locked_at = new Date().toISOString();
+      } else {
+        updateData.locked_by = null;
+        updateData.locked_at = null;
+      }
+    }
+
     const { data: updatedTeam, error: updateError } = await supabase
       .from("teams")
       .update(updateData)

@@ -11,6 +11,8 @@ interface TeamActionsProps {
   teamName: string;
   isLocked: boolean;
   isComplete: boolean;
+  lockedBy?: string | null;
+  lockedAt?: string | null;
   adminToken: string;
   members: Participant[];
   onUpdated: (toastMessage?: string) => void;
@@ -21,6 +23,8 @@ export function TeamActions({
   teamName,
   isLocked,
   isComplete,
+  lockedBy,
+  lockedAt,
   adminToken,
   members,
   onUpdated,
@@ -145,6 +149,15 @@ export function TeamActions({
           </Button>
         </div>
       </div>
+
+      {/* Locked-by info */}
+      {isLocked && lockedBy && (
+        <p className="text-xs text-gray-500 mt-1.5">
+          Locked by {lockedBy}
+          {lockedAt &&
+            ` at ${new Date(lockedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`}
+        </p>
+      )}
 
       {/* Dissolve confirmation */}
       {confirmDissolve && (
