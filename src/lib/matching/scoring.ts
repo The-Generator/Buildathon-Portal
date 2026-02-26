@@ -64,7 +64,7 @@ function experienceBalanceScore(members: MatchInput[]): number {
   }
 
   const uniqueLevels = levelCounts.size;
-  const totalLevels = EXPERIENCE_LEVELS.length; // 3
+  const totalLevels = EXPERIENCE_LEVELS.length;
 
   // Base score from diversity scaled to total available levels
   const diversityBase = Math.min(uniqueLevels / totalLevels + 0.1, 1.0);

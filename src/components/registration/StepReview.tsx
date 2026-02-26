@@ -132,10 +132,10 @@ export function StepReview({ data, onBack, onSubmit }: StepReviewProps) {
           <dt className="text-sm text-gray-500 mb-1.5">Your Skills</dt>
           <Chips items={data.specific_skills ?? []} />
         </div>
-        {data.ai_tools && data.ai_tools.length > 0 && (
+        {data.ai_tools_used && data.ai_tools_used.length > 0 && (
           <div className="pt-1">
-            <dt className="text-sm text-gray-500 mb-1.5">AI Tools</dt>
-            <Chips items={data.ai_tools} />
+            <dt className="text-sm text-gray-500 mb-1.5">AI Tools Used</dt>
+            <Chips items={data.ai_tools_used} />
           </div>
         )}
       </div>
