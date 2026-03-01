@@ -172,7 +172,7 @@ export function StepPersonalInfo({
       {/* Specific Skills */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Your Skills * <span className="text-gray-400 font-normal">(select all that apply)</span>
+          Your Skills <span className="text-gray-400 font-normal">(optional — select all that apply)</span>
         </label>
         <SkillChips
           skills={SPECIFIC_SKILLS}

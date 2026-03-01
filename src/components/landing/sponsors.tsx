@@ -1,15 +1,19 @@
+import Image from "next/image";
+
 const sponsors = [
-  { name: "Babson College", tier: "Host", href: "https://www.babson.edu/" },
+  { name: "Babson College", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/butler-institute.png" },
   {
     name: "Bentley University",
     tier: "Partner",
     href: "https://www.bentley.edu/",
+    logo: "/sponsors/bentley-university.png",
   },
-  { name: "Bryant University", tier: "Partner", href: "https://www.bryant.edu/" },
+  { name: "Bryant University", tier: "Partner", href: "https://www.bryant.edu/", logo: "/sponsors/bryant-university.png" },
   {
     name: "Microsoft Research",
     tier: "Sponsor",
     href: "https://www.microsoft.com/en-us/research/",
+    logo: "/sponsors/microsoft-research.png",
   },
 ];
 
@@ -79,7 +83,7 @@ export function Sponsors() {
         </div>
 
         {/* Sponsor grid */}
-        <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-6 sm:grid-cols-4">
+        <div className="mx-auto mt-14 grid max-w-3xl grid-cols-3 items-center gap-10 sm:gap-12">
           {sponsors.map((sponsor) => (
             <a
               key={sponsor.name}
@@ -87,14 +91,15 @@ export function Sponsors() {
               target="_blank"
               rel="noreferrer"
               aria-label={`Visit ${sponsor.name}`}
-              className="glass-card glass-card-shimmer flex min-h-44 flex-col items-center justify-center rounded-2xl p-8 transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400/60"
+              className="flex items-center justify-center px-4"
             >
-              <span className="font-body text-center text-lg font-bold tracking-tight text-white sm:text-xl">
-                {sponsor.name}
-              </span>
-              <span className="font-data mt-2 text-xs font-medium uppercase tracking-widest text-emerald-300/60">
-                {sponsor.tier}
-              </span>
+              <Image
+                src={sponsor.logo}
+                alt={sponsor.name}
+                width={200}
+                height={100}
+                className="h-auto max-h-24 w-auto object-contain opacity-80 transition-opacity hover:opacity-100"
+              />
             </a>
           ))}
         </div>

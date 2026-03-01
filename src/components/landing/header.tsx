@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X } from "lucide-react";
 import { Sidebar } from "./Sidebar";
 
@@ -35,9 +36,16 @@ export function Header() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <Link
             href="/"
-            className="font-display text-xl font-bold tracking-tight text-white"
+            className="flex items-center"
           >
-            Generator
+            <Image
+              src="/sponsors/generator-ai-lab.png"
+              alt="The Generator AI Lab"
+              width={160}
+              height={40}
+              className="h-8 w-auto object-contain"
+              priority
+            />
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">

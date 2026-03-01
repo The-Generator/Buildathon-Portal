@@ -20,7 +20,8 @@ export const stepPersonalInfoSchema = z
     primary_role: z.enum([...PRIMARY_ROLES]),
     specific_skills: z
       .array(z.enum([...SPECIFIC_SKILLS]))
-      .min(1, "Select at least one skill"),
+      .optional()
+      .default([]),
     experience_level: z.enum([...EXPERIENCE_LEVELS]),
     ai_tools: z.array(z.string()).optional().default([]),
     ai_tools_used: z.array(z.string()).optional().default([]),
