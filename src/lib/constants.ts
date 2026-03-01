@@ -1,4 +1,4 @@
-export const DISCORD_URL = "https://discord.gg/babson-generator";
+export const DISCORD_URL = "https://discord.gg/6RNCt46u9q";
 export const WHATSAPP_URL = "https://chat.whatsapp.com/babson-generator";
 
 export const EVENT_CONFIG = {
