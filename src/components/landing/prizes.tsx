@@ -1,29 +1,21 @@
-import { Award, Crown, Medal, Star, Trophy } from "lucide-react";
+import { Crown, Trophy } from "lucide-react";
 
 const tiers = [
   {
     place: "1st Place",
+    description: "Awarded to the top team in each track",
     icon: Crown,
     accent: "text-yellow-400",
     accentBg: "bg-yellow-400/10 group-hover:bg-yellow-400/20",
     borderGlow: "group-hover:border-yellow-400/30",
-    items: ["3D Printer", "Meta Quest 3S", "iPad"],
   },
   {
     place: "2nd Place",
+    description: "Awarded to the runner-up in each track",
     icon: Trophy,
     accent: "text-gray-300",
     accentBg: "bg-gray-300/10 group-hover:bg-gray-300/20",
     borderGlow: "group-hover:border-gray-300/30",
-    items: ["Meta Ray-Ban Smart Glasses", "Smart Watch"],
-  },
-  {
-    place: "3rd Place",
-    icon: Medal,
-    accent: "text-amber-600",
-    accentBg: "bg-amber-600/10 group-hover:bg-amber-600/20",
-    borderGlow: "group-hover:border-amber-600/30",
-    items: ["Smart Watch", "Premium Accessories"],
   },
 ];
 
@@ -43,16 +35,16 @@ export function Prizes() {
             Prizes
           </p>
           <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
-            $5,000+ in Prizes
+            Prizes for Every Track
           </h2>
           <p className="font-body mt-6 text-lg leading-relaxed text-white/60">
-            Compete for top-tier prizes across all tracks. Every winning team
-            member takes home hardware.
+            First and second place prizes will be awarded for each of the three
+            competition tracks. Details coming soon.
           </p>
         </div>
 
         {/* Prize tiers */}
-        <div className="mx-auto mt-14 grid max-w-5xl gap-6 sm:grid-cols-3">
+        <div className="mx-auto mt-14 grid max-w-3xl gap-6 sm:grid-cols-2">
           {tiers.map((tier) => (
             <div
               key={tier.place}
@@ -66,37 +58,11 @@ export function Prizes() {
               <h3 className="font-body text-xl font-bold text-white">
                 {tier.place}
               </h3>
-              <ul className="font-body mt-4 space-y-2">
-                {tier.items.map((item) => (
-                  <li
-                    key={item}
-                    className="text-sm leading-relaxed text-white/50"
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <p className="font-body mt-3 text-sm leading-relaxed text-white/50">
+                {tier.description}
+              </p>
             </div>
           ))}
-        </div>
-
-        {/* Special award */}
-        <div className="mx-auto mt-10 max-w-2xl">
-          <div className="glass-card glass-card-shimmer group rounded-2xl p-8 text-center">
-            <div className="mx-auto mb-4 inline-flex items-center gap-3">
-              <Star className="h-5 w-5 text-[#00e87b]" />
-              <Award className="h-6 w-6 text-[#00e87b]" />
-              <Star className="h-5 w-5 text-[#00e87b]" />
-            </div>
-            <h3 className="font-body text-lg font-bold text-white">
-              Creative AI Thinking Award
-            </h3>
-            <p className="font-body mt-2 text-sm leading-relaxed text-white/50">
-              A special recognition for the team that demonstrates the most
-              innovative and creative application of AI — regardless of
-              technical complexity.
-            </p>
-          </div>
         </div>
       </div>
     </section>

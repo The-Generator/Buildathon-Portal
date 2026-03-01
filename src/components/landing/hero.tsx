@@ -244,21 +244,18 @@ export function Hero() {
           <StatItem value="5" label="Per Team" />
         </div>
 
-        {/* Video embed placeholder */}
+        {/* Promo Video */}
         <div className="mx-auto mt-12 max-w-2xl sm:mt-16">
           <div className="glass-card overflow-hidden rounded-2xl">
-            <div className="relative aspect-video w-full bg-black/40">
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#00e87b]/30 bg-[#00e87b]/10 sm:h-16 sm:w-16">
-                  <svg className="ml-1 h-6 w-6 text-[#00e87b] sm:h-7 sm:w-7" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-                <p className="font-body text-sm font-medium text-white/50 sm:text-base">
-                  Build-a-thon Recap Video
-                </p>
-              </div>
-            </div>
+            <video
+              className="aspect-video w-full bg-black"
+              controls
+              preload="metadata"
+              poster=""
+            >
+              <source src="/buildathon-promo.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 const sponsors = [
-  { name: "Babson College", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/butler-institute.png" },
+  { name: "Butler Institute", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/butler-institute.png" },
   {
     name: "Bentley University",
     tier: "Partner",
@@ -9,12 +9,6 @@ const sponsors = [
     logo: "/sponsors/bentley-university.png",
   },
   { name: "Bryant University", tier: "Partner", href: "https://www.bryant.edu/", logo: "/sponsors/bryant-university.png" },
-  {
-    name: "Microsoft Research",
-    tier: "Sponsor",
-    href: "https://www.microsoft.com/en-us/research/",
-    logo: "/sponsors/microsoft-research.png",
-  },
 ];
 
 /* Decorative DNA helix SVG */
