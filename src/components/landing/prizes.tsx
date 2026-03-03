@@ -1,34 +1,38 @@
+"use client";
+
 import { Crown, Trophy } from "lucide-react";
+import { useInView } from "@/hooks/useInView";
 
 const tiers = [
   {
     place: "1st Place",
     description: "Awarded to the top team in each track",
     icon: Crown,
-    accent: "text-yellow-400",
-    accentBg: "bg-yellow-400/10 group-hover:bg-yellow-400/20",
-    borderGlow: "group-hover:border-yellow-400/30",
+    tint: "text-yellow-400",
   },
   {
     place: "2nd Place",
     description: "Awarded to the runner-up in each track",
     icon: Trophy,
-    accent: "text-gray-300",
-    accentBg: "bg-gray-300/10 group-hover:bg-gray-300/20",
-    borderGlow: "group-hover:border-gray-300/30",
+    tint: "text-gray-300",
   },
 ];
 
 export function Prizes() {
+  const { ref, hasEntered } = useInView();
+
   return (
     <section
       id="prizes"
-      className="relative overflow-hidden bg-[#0a0f0d] py-24 sm:py-32"
+      className="relative overflow-hidden py-24 sm:py-32"
+      style={{ background: "linear-gradient(to bottom, #070a09, #0d1f18)" }}
     >
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(0,232,123,0.04)_0%,_transparent_70%)]" />
-
-      <div className="relative mx-auto max-w-7xl px-6">
+      <div
+        ref={ref}
+        className={`relative mx-auto max-w-7xl px-6 transition-all duration-700 ease-out ${
+          hasEntered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
         {/* Section header */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="font-data text-sm font-medium uppercase tracking-widest text-[#00e87b]">
@@ -43,24 +47,26 @@ export function Prizes() {
           </p>
         </div>
 
-        {/* Prize tiers */}
-        <div className="mx-auto mt-14 grid max-w-3xl gap-6 sm:grid-cols-2">
-          {tiers.map((tier) => (
+        {/* Prize rows */}
+        <div className="mx-auto mt-14 max-w-3xl">
+          {tiers.map((tier, i) => (
             <div
               key={tier.place}
-              className={`glass-card glass-card-shimmer group rounded-2xl p-8 text-center ${tier.borderGlow}`}
+              className={`flex items-center gap-5 py-6 sm:gap-6 ${
+                i < tiers.length - 1 ? "border-b border-white/[0.08]" : ""
+              }`}
             >
-              <div
-                className={`mx-auto mb-5 inline-flex rounded-xl p-3 transition-colors ${tier.accentBg}`}
-              >
-                <tier.icon className={`h-8 w-8 ${tier.accent}`} />
+              <div className={`shrink-0 ${tier.tint}`}>
+                <tier.icon className="h-7 w-7 sm:h-8 sm:w-8" />
               </div>
-              <h3 className="font-body text-xl font-bold text-white">
-                {tier.place}
-              </h3>
-              <p className="font-body mt-3 text-sm leading-relaxed text-white/50">
-                {tier.description}
-              </p>
+              <div className="min-w-0">
+                <h3 className={`font-body text-lg font-bold ${tier.tint}`}>
+                  {tier.place}
+                </h3>
+                <p className="font-body mt-1 text-sm leading-relaxed text-white/50">
+                  {tier.description}
+                </p>
+              </div>
             </div>
           ))}
         </div>

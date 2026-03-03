@@ -66,7 +66,7 @@ export function Header() {
             </button>
             <Link
               href="/register"
-              className="shimmer-border rounded-full bg-[#00e87b] px-6 py-2.5 text-sm font-bold text-[#0a0f0d] transition-all hover:bg-[#00ff88] hover:shadow-lg hover:shadow-[#00e87b]/25"
+              className="rounded-xl bg-[#006241] px-6 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#007a52] hover:shadow-lg hover:shadow-[#006241]/25"
             >
               Register Now
             </Link>
@@ -110,7 +110,7 @@ export function Header() {
               <Link
                 href="/register"
                 onClick={() => setMobileOpen(false)}
-                className="mt-2 inline-block rounded-full bg-[#00e87b] px-6 py-2.5 text-center text-sm font-bold text-[#0a0f0d] transition-all hover:bg-[#00ff88]"
+                className="mt-2 inline-block rounded-xl bg-[#006241] px-6 py-2.5 text-center text-sm font-bold text-white transition-all hover:bg-[#007a52]"
               >
                 Register Now
               </Link>

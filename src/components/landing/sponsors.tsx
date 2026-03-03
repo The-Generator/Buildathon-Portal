@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useInView } from "@/hooks/useInView";
 
 const sponsors = [
   { name: "Butler Institute", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/butler-institute.png" },
@@ -11,60 +14,24 @@ const sponsors = [
   { name: "Bryant University", tier: "Partner", href: "https://www.bryant.edu/", logo: "/sponsors/bryant-university.png" },
 ];
 
-/* Decorative DNA helix SVG */
-function DNADecorationSVG() {
-  return (
-    <svg
-      className="absolute left-8 top-1/3 h-48 w-12 text-emerald-400 opacity-[0.06]"
-      viewBox="0 0 40 200"
-      fill="none"
-    >
-      <path
-        d="M5 0 Q20 25 35 50 Q20 75 5 100 Q20 125 35 150 Q20 175 5 200"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-        className="svg-draw"
-      />
-      <path
-        d="M35 0 Q20 25 5 50 Q20 75 35 100 Q20 125 5 150 Q20 175 35 200"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        fill="none"
-        className="svg-draw svg-draw-delay-2"
-      />
-      {[25, 75, 125, 175].map((y, i) => (
-        <line
-          key={i}
-          x1="12"
-          y1={y}
-          x2="28"
-          y2={y}
-          stroke="currentColor"
-          strokeWidth="1"
-          opacity="0.4"
-          className="svg-draw"
-          style={{ animationDelay: `${1 + i * 0.2}s` }}
-        />
-      ))}
-    </svg>
-  );
-}
-
 export function Sponsors() {
+  const { ref, hasEntered } = useInView();
+
   return (
     <section
       id="sponsors"
-      className="relative overflow-hidden bg-emerald-950/40 py-24 sm:py-32"
+      className="relative overflow-hidden py-24 sm:py-32"
+      style={{ background: "linear-gradient(to bottom, #0f1210, #070a09)" }}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgb(16_185_129_/_0.08)_0%,_transparent_70%)]" />
-
-      <DNADecorationSVG />
-
-      <div className="relative mx-auto max-w-7xl px-6">
+      <div
+        ref={ref}
+        className={`relative mx-auto max-w-7xl px-6 transition-all duration-700 ease-out ${
+          hasEntered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
         {/* Section header */}
         <div className="mx-auto max-w-2xl text-center">
-          <p className="font-data text-sm font-medium uppercase tracking-widest text-emerald-400">
+          <p className="font-data text-sm font-medium uppercase tracking-widest text-[#00e87b]">
             Partners & Sponsors
           </p>
           <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
@@ -102,7 +69,7 @@ export function Sponsors() {
           Interested in sponsoring?{" "}
           <a
             href="mailto:generator@babson.edu"
-            className="font-medium text-emerald-400 underline underline-offset-4 transition-colors hover:text-emerald-300"
+            className="font-medium text-[#00e87b] underline underline-offset-4 transition-colors hover:text-[#00ff88]"
           >
             Get in touch
           </a>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useInView } from "@/hooks/useInView";
 
 const faqs = [
   {
@@ -56,25 +57,6 @@ const faqs = [
   },
 ];
 
-/* Brain wave decoration for FAQ section */
-function BrainWaveDecoration() {
-  return (
-    <svg
-      className="absolute right-0 top-1/3 h-16 w-48 opacity-[0.06] sm:w-64"
-      viewBox="0 0 300 60"
-      fill="none"
-    >
-      <path
-        d="M0 30 L30 30 L45 10 L60 50 L75 10 L90 50 L105 30 L150 30 L165 15 L180 45 L195 15 L210 45 L225 30 L300 30"
-        stroke="#00e87b"
-        strokeWidth="2"
-        fill="none"
-        className="animate-brain-wave"
-      />
-    </svg>
-  );
-}
-
 function FaqItem({
   question,
   answer,
@@ -85,26 +67,26 @@ function FaqItem({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="glass-card rounded-xl mb-3 overflow-hidden">
+    <div className="border-b border-white/[0.08]">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-6 py-5 text-left transition-colors hover:bg-white/[0.02]"
+        className="flex w-full items-center justify-between py-6 text-left transition-colors hover:text-white"
       >
-        <span className="font-body pr-4 text-base font-semibold text-white sm:text-lg">
+        <span className="font-body pr-4 text-base font-semibold text-white/80 sm:text-lg">
           {question}
         </span>
         <ChevronDown
-          className={`h-5 w-5 shrink-0 transition-all duration-200 ${
-            open ? "rotate-180 text-[#00e87b] drop-shadow-[0_0_6px_rgba(0,232,123,0.5)]" : "text-white/30"
+          className={`h-5 w-5 shrink-0 text-white/30 transition-transform duration-200 ${
+            open ? "rotate-180" : ""
           }`}
         />
       </button>
       <div
         className={`overflow-hidden transition-all duration-200 ${
-          open ? "max-h-96 pb-5" : "max-h-0"
+          open ? "max-h-96 pb-6" : "max-h-0"
         }`}
       >
-        <p className="font-body px-6 text-sm leading-relaxed text-white/50 sm:text-base">
+        <p className="font-body text-sm leading-relaxed text-white/50 sm:text-base">
           {answer}
         </p>
       </div>
@@ -113,13 +95,18 @@ function FaqItem({
 }
 
 export function FAQ() {
-  return (
-    <section id="faq" className="relative bg-[#0a0f0d] py-24 sm:py-32 overflow-hidden">
-      <BrainWaveDecoration />
+  const { ref, hasEntered } = useInView();
 
-      <div className="relative mx-auto max-w-3xl px-6">
-        {/* Section header */}
-        <div className="text-center">
+  return (
+    <section id="faq" className="relative py-24 sm:py-32 overflow-hidden" style={{ background: "linear-gradient(to bottom, #0a1210, #070a09)" }}>
+      <div
+        ref={ref}
+        className={`relative mx-auto max-w-3xl px-6 transition-all duration-700 ease-out ${
+          hasEntered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
+        {/* Section header — left-aligned */}
+        <div>
           <p className="font-data text-sm font-medium uppercase tracking-widest text-[#00e87b]">
             FAQ
           </p>

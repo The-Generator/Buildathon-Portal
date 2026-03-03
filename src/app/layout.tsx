@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Syne, Space_Grotesk, JetBrains_Mono } from "next/font/google";
+import { Outfit, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const syne = Syne({
-  variable: "--font-syne",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-  weight: ["700", "800"],
+  weight: ["600", "700", "800"],
   display: "swap",
 });
 
@@ -42,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${syne.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}
+        className={`${outfit.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}
       >
         {children}
       </body>

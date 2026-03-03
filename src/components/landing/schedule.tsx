@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Award,
   Coffee,
@@ -17,6 +19,7 @@ import {
 } from "lucide-react";
 import { SCHEDULE_BLOCKS, type ScheduleBlock } from "@/data/schedule";
 import type { LucideIcon } from "lucide-react";
+import { useInView } from "@/hooks/useInView";
 
 const TYPE_STYLES: Record<
   ScheduleBlock["type"],
@@ -112,15 +115,23 @@ function BlockRow({ block }: { block: ScheduleBlock }) {
 }
 
 export function Schedule() {
+  const { ref, hasEntered } = useInView();
+
   return (
     <section
       id="schedule"
-      className="relative overflow-hidden bg-zinc-950 py-24 sm:py-32"
+      className="relative overflow-hidden py-24 sm:py-32"
+      style={{ background: "linear-gradient(to bottom, #0d1f18, #0f1210)" }}
     >
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-emerald-400/5 via-transparent to-transparent" />
 
-      <div className="relative mx-auto max-w-7xl px-6">
+      <div
+        ref={ref}
+        className={`relative mx-auto max-w-7xl px-6 transition-all duration-700 ease-out ${
+          hasEntered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+        }`}
+      >
         {/* Section header */}
         <div className="mx-auto max-w-2xl text-center">
           <p className="font-data text-sm font-medium uppercase tracking-widest text-emerald-400">

@@ -96,7 +96,7 @@ export function RegistrationInfo() {
         <div className="mt-14 text-center">
           <Link
             href="/register"
-            className="shimmer-border inline-block rounded-full bg-emerald-400 px-10 py-4 text-base font-bold text-neutral-950 shadow-lg shadow-emerald-400/20 transition-all hover:bg-emerald-300 hover:shadow-xl hover:shadow-emerald-400/30"
+            className="inline-block rounded-xl bg-[#006241] px-10 py-4 text-base font-bold text-white shadow-lg shadow-[#006241]/20 transition-all hover:bg-[#007a52] hover:shadow-xl hover:shadow-[#006241]/30"
           >
             Register Now
           </Link>

@@ -1,5 +1,5 @@
 export const DISCORD_URL = "https://discord.gg/6RNCt46u9q";
-export const WHATSAPP_URL = "https://chat.whatsapp.com/babson-generator";
+export const WHATSAPP_URL = "https://chat.whatsapp.com/F4VWZc09KuABjhbGC8ldpQ";
 
 export const EVENT_CONFIG = {
   name: "Babson Generator Build-a-thon 2026",
