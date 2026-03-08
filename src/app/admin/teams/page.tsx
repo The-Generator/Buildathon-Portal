@@ -12,8 +12,11 @@ import { CreateTeamModal } from "@/components/admin/CreateTeamModal";
 import {
   ChevronDown,
   ChevronUp,
+  Mail,
   Plus,
   RefreshCw,
+  Trash2,
+  Unlock,
   Users,
 } from "lucide-react";
 import type { Team, Participant } from "@/types";
@@ -134,6 +137,12 @@ export default function TeamsPage() {
     };
   }, [fetchData]);
 
+  const [unlockingAll, setUnlockingAll] = useState(false);
+  const [dissolvingAll, setDissolvingAll] = useState(false);
+  const [confirmDissolveAll, setConfirmDissolveAll] = useState(false);
+  const [notifyingAll, setNotifyingAll] = useState(false);
+  const [confirmNotifyAll, setConfirmNotifyAll] = useState(false);
+
   const hasIncompleteTeams = teams.some((t) => !t.is_complete);
   const hasLockedTeams = teams.some((t) => t.is_locked);
   const hasUnmatchedPotential = hasIncompleteTeams || teams.length === 0;
@@ -143,6 +152,94 @@ export default function TeamsPage() {
     if (actionToastTimeout.current) clearTimeout(actionToastTimeout.current);
     actionToastTimeout.current = setTimeout(() => setActionToast(null), 3000);
   }, []);
+
+  const unlockAll = useCallback(async () => {
+    if (!adminToken) return;
+    setUnlockingAll(true);
+    const lockedTeams = teams.filter((t) => t.is_locked);
+    await Promise.all(
+      lockedTeams.map((t) =>
+        fetch(`/api/teams/${t.id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${adminToken}`,
+          },
+          body: JSON.stringify({ is_locked: false }),
+        })
+      )
+    );
+    const data = await fetchData();
+    if (data) setTeams(data);
+    setUnlockingAll(false);
+    showActionToast(`Unlocked ${lockedTeams.length} teams`);
+  }, [adminToken, teams, fetchData, showActionToast]);
+
+  const dissolveAll = useCallback(async () => {
+    if (!adminToken) return;
+    setDissolvingAll(true);
+    // Unlock all locked teams first
+    const lockedTeams = teams.filter((t) => t.is_locked);
+    if (lockedTeams.length > 0) {
+      await Promise.all(
+        lockedTeams.map((t) =>
+          fetch(`/api/teams/${t.id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${adminToken}`,
+            },
+            body: JSON.stringify({ is_locked: false }),
+          })
+        )
+      );
+    }
+    // Now dissolve all teams
+    const count = teams.length;
+    for (const t of teams) {
+      await fetch(`/api/teams/${t.id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${adminToken}` },
+      });
+    }
+    const data = await fetchData();
+    if (data) setTeams(data);
+    setDissolvingAll(false);
+    setConfirmDissolveAll(false);
+    showActionToast(`Dissolved ${count} teams`);
+  }, [adminToken, teams, fetchData, showActionToast]);
+
+  const notifyAllLocked = useCallback(async () => {
+    if (!adminToken) return;
+    setNotifyingAll(true);
+    try {
+      const res = await fetch("/api/admin/notify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify({ all_locked: true }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        showActionToast(`Notify failed: ${data.error}`);
+        return;
+      }
+
+      const data = await res.json();
+      showActionToast(
+        `Sent ${data.sent} email${data.sent !== 1 ? "s" : ""}${data.failed > 0 ? `, ${data.failed} failed` : ""}`
+      );
+    } catch (err) {
+      console.error("Notify all error:", err);
+      showActionToast("Failed to send notifications");
+    } finally {
+      setNotifyingAll(false);
+      setConfirmNotifyAll(false);
+    }
+  }, [adminToken, showActionToast]);
 
   const handleMatchingConfirmed = useCallback((toastMessage?: string) => {
     const refresh = async () => {
@@ -204,7 +301,7 @@ export default function TeamsPage() {
   return (
     <div>
       {actionToast && (
-        <div className="fixed top-20 right-6 z-50 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg">
+        <div className="fixed top-20 left-4 right-4 sm:left-auto sm:right-6 z-50 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-lg">
           {actionToast}
         </div>
       )}
@@ -223,12 +320,112 @@ export default function TeamsPage() {
           </p>
         </div>
         {adminToken && (
-          <Button size="sm" onClick={() => setCreateModalOpen(true)}>
-            <Plus className="h-4 w-4 mr-1.5" />
-            Create Team
-          </Button>
+          <div className="flex flex-wrap gap-2 sm:justify-end">
+            {hasLockedTeams && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={unlockAll}
+                disabled={unlockingAll}
+              >
+                <Unlock className="h-4 w-4 mr-1.5" />
+                {unlockingAll ? "Unlocking..." : "Unlock All"}
+              </Button>
+            )}
+            {teams.length > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-red-300 text-red-600 hover:bg-red-50"
+                onClick={() => setConfirmDissolveAll(true)}
+                disabled={dissolvingAll}
+              >
+                <Trash2 className="h-4 w-4 mr-1.5" />
+                {dissolvingAll ? "Dissolving..." : "Dissolve All"}
+              </Button>
+            )}
+            {hasLockedTeams && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setConfirmNotifyAll(true)}
+                disabled={notifyingAll}
+              >
+                <Mail className="h-4 w-4 mr-1.5" />
+                {notifyingAll ? "Sending..." : "Notify All"}
+              </Button>
+            )}
+            <Button size="sm" onClick={() => setCreateModalOpen(true)}>
+              <Plus className="h-4 w-4 mr-1.5" />
+              Create Team
+            </Button>
+          </div>
+        )}
+
+        {/* Dissolve all confirmation */}
+        {confirmDissolveAll && (
+          <div className="w-full rounded-lg border border-red-200 bg-red-50 p-4">
+            <p className="text-sm font-medium text-red-800">
+              Dissolve all {teams.length} teams?
+            </p>
+            <p className="text-xs text-red-600 mt-1">
+              All participants will be moved to the unassigned queue. You can re-run matching afterward.
+            </p>
+            <div className="flex gap-2 mt-3">
+              <Button
+                size="sm"
+                variant="destructive"
+                onClick={dissolveAll}
+                disabled={dissolvingAll}
+              >
+                {dissolvingAll ? "Dissolving..." : "Confirm Dissolve All"}
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setConfirmDissolveAll(false)}
+                disabled={dissolvingAll}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
         )}
       </div>
+
+      {/* Notify all confirmation */}
+      {confirmNotifyAll && (
+        <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-4">
+          <p className="text-sm font-medium text-blue-800">
+            Notify all locked teams?
+          </p>
+          <p className="text-xs text-blue-600 mt-1">
+            This will send team assignment emails to{" "}
+            {teams
+              .filter((t) => t.is_locked)
+              .reduce((sum, t) => sum + t.members.length, 0)}{" "}
+            participants across{" "}
+            {teams.filter((t) => t.is_locked).length} locked teams.
+          </p>
+          <div className="flex gap-2 mt-3">
+            <Button
+              size="sm"
+              onClick={notifyAllLocked}
+              disabled={notifyingAll}
+            >
+              {notifyingAll ? "Sending..." : "Send Emails"}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setConfirmNotifyAll(false)}
+              disabled={notifyingAll}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Matching section - shown when there are incomplete teams or potential unmatched participants */}
       {adminToken && hasUnmatchedPotential && (

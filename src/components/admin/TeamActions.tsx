@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Lock, Unlock, CheckCircle, XCircle, ArrowRightLeft, Trash2 } from "lucide-react";
+import { Lock, Unlock, CheckCircle, XCircle, ArrowRightLeft, Trash2, UserMinus, Mail } from "lucide-react";
 import { MoveParticipantModal } from "@/components/admin/MoveParticipantModal";
 import type { Participant } from "@/types";
 
@@ -34,6 +34,10 @@ export function TeamActions({
     null
   );
   const [confirmDissolve, setConfirmDissolve] = useState(false);
+  const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
+  const [notifying, setNotifying] = useState(false);
+  const [showPostEditNotifyPrompt, setShowPostEditNotifyPrompt] = useState(false);
+  const [notifyResult, setNotifyResult] = useState<{ sent: number; failed: number } | null>(null);
 
   const patchTeam = async (field: string, value: boolean) => {
     setLoading(field);
@@ -53,6 +57,7 @@ export function TeamActions({
         return;
       }
 
+      setShowPostEditNotifyPrompt(true);
       onUpdated();
     } catch (err) {
       console.error("Team update error:", err);
@@ -81,6 +86,64 @@ export function TeamActions({
       console.error("Team dissolve error:", err);
     } finally {
       setLoading(null);
+    }
+  };
+
+  const removeMember = async (participantId: string) => {
+    setRemovingMemberId(participantId);
+    try {
+      const res = await fetch(`/api/teams/${teamId}/members`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify({ participant_id: participantId }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Remove member failed:", err);
+        return;
+      }
+
+      onUpdated("Member removed to unassigned queue");
+    } catch (err) {
+      console.error("Remove member error:", err);
+    } finally {
+      setRemovingMemberId(null);
+    }
+  };
+
+  const notifyTeam = async () => {
+    setNotifying(true);
+    setNotifyResult(null);
+    try {
+      const res = await fetch("/api/admin/notify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify({ team_ids: [teamId] }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        console.error("Notify failed:", err);
+        onUpdated("Failed to send notifications");
+        return;
+      }
+
+      const data = await res.json();
+      setNotifyResult({ sent: data.sent, failed: data.failed });
+      setShowPostEditNotifyPrompt(false);
+      onUpdated(`Notified ${data.sent} member${data.sent !== 1 ? "s" : ""}`);
+    } catch (err) {
+      console.error("Notify error:", err);
+      onUpdated("Failed to send notifications");
+    } finally {
+      setNotifying(false);
     }
   };
 
@@ -148,6 +211,23 @@ export function TeamActions({
             )}
           </Button>
         </div>
+
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={loading !== null || notifying || members.length === 0}
+          onClick={notifyTeam}
+          title={members.length === 0 ? "No members to notify" : undefined}
+        >
+          {notifying ? (
+            <span className="animate-pulse">Sending...</span>
+          ) : (
+            <>
+              <Mail className="h-3.5 w-3.5 mr-1.5" />
+              Notify Team
+            </>
+          )}
+        </Button>
       </div>
 
       {/* Locked-by info */}
@@ -157,6 +237,42 @@ export function TeamActions({
           {lockedAt &&
             ` at ${new Date(lockedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`}
         </p>
+      )}
+
+      {/* Notify result */}
+      {notifyResult && (
+        <p className="text-xs text-gray-500 mt-1.5">
+          Emails sent: {notifyResult.sent}
+          {notifyResult.failed > 0 && (
+            <span className="text-red-500 ml-1">({notifyResult.failed} failed)</span>
+          )}
+        </p>
+      )}
+
+      {/* Post-edit notify confirmation */}
+      {showPostEditNotifyPrompt && members.length > 0 && (
+        <div className="mt-2 p-3 rounded-lg border border-blue-200 bg-blue-50">
+          <p className="text-sm text-blue-800 font-medium">
+            Send notification email to team members?
+          </p>
+          <div className="flex gap-2 mt-2">
+            <Button
+              size="sm"
+              disabled={notifying}
+              onClick={notifyTeam}
+            >
+              {notifying ? "Sending..." : "Yes, send"}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={notifying}
+              onClick={() => setShowPostEditNotifyPrompt(false)}
+            >
+              No
+            </Button>
+          </div>
+        </div>
       )}
 
       {/* Dissolve confirmation */}
@@ -189,23 +305,44 @@ export function TeamActions({
         </div>
       )}
 
-      {/* Per-member move buttons */}
+      {/* Per-member actions */}
       {members.length > 0 && (
         <div className="mt-3 pt-3 border-t border-gray-100">
           <p className="text-xs text-gray-400 uppercase font-medium mb-2">
-            Move Member
+            Manage Members
           </p>
           <div className="space-y-1">
             {members.map((m) => (
-              <button
+              <div
                 key={m.id}
-                type="button"
-                onClick={() => setMoveParticipant(m)}
-                className="w-full flex items-center justify-between text-sm px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                className="flex items-center justify-between text-sm px-2 py-1.5 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                <span className="text-gray-700 truncate">{m.full_name}</span>
-                <ArrowRightLeft className="h-3.5 w-3.5 text-gray-400 flex-shrink-0 ml-2" />
-              </button>
+                <span className="text-gray-700 truncate flex-1">{m.full_name}</span>
+                <div className="flex items-center gap-1 ml-2 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setMoveParticipant(m)}
+                    disabled={loading !== null || removingMemberId !== null}
+                    className="p-1 rounded hover:bg-gray-200 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+                    title="Move to another team"
+                  >
+                    <ArrowRightLeft className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeMember(m.id)}
+                    disabled={loading !== null || removingMemberId !== null}
+                    className="p-1 rounded hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50"
+                    title="Remove from team"
+                  >
+                    {removingMemberId === m.id ? (
+                      <span className="block h-3.5 w-3.5 animate-pulse text-center text-xs">...</span>
+                    ) : (
+                      <UserMinus className="h-3.5 w-3.5" />
+                    )}
+                  </button>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -222,6 +359,7 @@ export function TeamActions({
           adminToken={adminToken}
           onMoved={() => {
             setMoveParticipant(null);
+            setShowPostEditNotifyPrompt(true);
             onUpdated();
           }}
         />
