@@ -1,35 +1,35 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
+import { render } from "@react-email/render";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_FROM,
+    pass: process.env.GMAIL_APP_PASSWORD,
+  },
+});
 
 interface SendEmailOptions {
   to: string;
   subject: string;
   react: React.ReactElement;
-  attachments?: Array<{
-    filename: string;
-    content: string; // base64
-  }>;
 }
 
-export async function sendEmail({ to, subject, react, attachments }: SendEmailOptions) {
+export async function sendEmail({ to, subject, react }: SendEmailOptions) {
   try {
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || "Build-a-thon <noreply@babsongenerator.com>",
+    const html = await render(react);
+
+    await transporter.sendMail({
+      from: `"Babson Generator (no-reply)" <${process.env.EMAIL_FROM}>`,
+      replyTo: "alaraia1@babson.edu",
       to,
       subject,
-      react,
-      attachments,
+      html,
     });
 
-    if (error) {
-      console.error("Email send error:", error);
-      return { success: false, error };
-    }
-
-    return { success: true, data };
+    return { success: true };
   } catch (error) {
-    console.error("Email send exception:", error);
+    console.error("Email send error:", error);
     return { success: false, error };
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Linkedin, Globe } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +17,7 @@ export interface PublicParticipant {
   bio?: string | null;
   linkedin_url?: string | null;
   portfolio_url?: string | null;
+  photo_url?: string | null;
 }
 
 function getSafeExternalUrl(url?: string | null): string | null {
@@ -52,14 +54,35 @@ export function ParticipantCard({
   return (
     <Card className="border-white/10 bg-white/[0.03] shadow-none">
       <CardContent className="border-none p-5">
-        {/* Name + school + year */}
-        <div className="min-w-0">
-          <h3 className="font-body truncate text-base font-semibold text-white">
-            {p.full_name}
-          </h3>
-          <p className="font-body mt-0.5 text-sm text-white/40">
-            {displaySchool} &middot; {p.year}
-          </p>
+        {/* Avatar + Name */}
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-white/10">
+            {p.photo_url ? (
+              <Image
+                src={p.photo_url}
+                alt={p.full_name}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-sm font-bold text-[#00e87b]/70">
+                {p.full_name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")
+                  .slice(0, 2)
+                  .toUpperCase()}
+              </div>
+            )}
+          </div>
+          <div className="min-w-0">
+            <h3 className="font-body truncate text-base font-semibold text-white">
+              {p.full_name}
+            </h3>
+            <p className="font-body mt-0.5 text-sm text-white/40">
+              {displaySchool} &middot; {p.year}
+            </p>
+          </div>
         </div>
 
         {/* Role badge */}

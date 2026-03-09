@@ -305,6 +305,24 @@ export async function DELETE(
       }
     }
 
+    // Nullify team_id in audit entries so the FK doesn't block deletion
+    await supabase
+      .from("admin_actions")
+      .update({ team_id: null })
+      .eq("team_id", id);
+
+    // Also clear legacy audit log references
+    await supabase
+      .from("team_audit_log")
+      .delete()
+      .eq("team_id", id);
+
+    // Nullify registration_groups team references
+    await supabase
+      .from("registration_groups")
+      .update({ team_id: null })
+      .eq("team_id", id);
+
     // Delete the team
     const { error: deleteError } = await supabase
       .from("teams")

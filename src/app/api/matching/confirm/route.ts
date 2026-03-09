@@ -160,6 +160,41 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Clean up empty teams left behind after reassignment
+    const { data: allTeams } = await supabase.from("teams").select("id");
+    if (allTeams) {
+      const { data: assignedParticipants } = await supabase
+        .from("participants")
+        .select("team_id")
+        .not("team_id", "is", null);
+
+      const teamsWithMembers = new Set(
+        (assignedParticipants ?? []).map((p) => p.team_id)
+      );
+
+      const emptyTeamIds = allTeams
+        .map((t) => t.id)
+        .filter((id) => !teamsWithMembers.has(id));
+
+      if (emptyTeamIds.length > 0) {
+        // Clear FK references before deleting
+        await supabase
+          .from("admin_actions")
+          .update({ team_id: null })
+          .in("team_id", emptyTeamIds);
+        await supabase
+          .from("team_audit_log")
+          .delete()
+          .in("team_id", emptyTeamIds);
+        await supabase
+          .from("registration_groups")
+          .update({ team_id: null })
+          .in("team_id", emptyTeamIds);
+
+        await supabase.from("teams").delete().in("id", emptyTeamIds);
+      }
+    }
+
     return NextResponse.json(
       {
         message: "Matches confirmed successfully",

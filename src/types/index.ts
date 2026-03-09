@@ -20,6 +20,7 @@ export interface Participant {
   linkedin_url?: string | null;
   portfolio_url?: string | null;
   bio?: string | null;
+  photo_url?: string | null;
   profile_visible: boolean;
   checked_in: boolean;
   checked_in_at?: string | null;
@@ -115,6 +116,7 @@ export interface RegistrationFormData {
   linkedin_url?: string;
   portfolio_url?: string;
   bio?: string;
+  photo_url?: string;
   profile_visible?: boolean;
 
   // Step 3: Team Skills

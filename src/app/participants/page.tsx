@@ -14,9 +14,8 @@ export default async function ParticipantsPage() {
   const { data, error } = await supabase
     .from("participants")
     .select(
-      "id, full_name, school, school_other, year, primary_role, specific_skills, bio, linkedin_url, portfolio_url"
+      "id, full_name, school, school_other, year, primary_role, specific_skills, bio, linkedin_url, portfolio_url, photo_url"
     )
-    .eq("profile_visible", true)
     .neq("participant_type", "spectator")
     .order("full_name", { ascending: true });
 
@@ -32,6 +31,7 @@ export default async function ParticipantsPage() {
     | "bio"
     | "linkedin_url"
     | "portfolio_url"
+    | "photo_url"
   >[] = error ? [] : (data ?? []);
 
   return <ParticipantDirectory participants={participants} />;

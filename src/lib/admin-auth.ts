@@ -1,32 +1,47 @@
 import { headers } from "next/headers";
+import { SignJWT, jwtVerify } from "jose";
 
-// In-memory token store. Tokens do not survive server restarts.
-// Acceptable for a 2-day event admin tool.
-const TOKEN_TTL_MS = 24 * 60 * 60 * 1000;
-const validTokens = new Map<string, number>();
+const TOKEN_TTL_S = 24 * 60 * 60; // 24 hours
 
-export function addToken(token: string, ttlMs: number = TOKEN_TTL_MS) {
-  validTokens.set(token, Date.now() + ttlMs);
+/**
+ * Derive the signing key from ADMIN_PASSWORD.
+ * Uses the password itself as the HMAC secret so no extra env var is needed.
+ */
+function getSecret() {
+  const password = process.env.ADMIN_PASSWORD;
+  if (!password) throw new Error("ADMIN_PASSWORD env var is not set");
+  return new TextEncoder().encode(password);
 }
 
-export function removeToken(token: string) {
-  validTokens.delete(token);
+/**
+ * Create a signed JWT token for an authenticated admin.
+ */
+export async function createToken(): Promise<string> {
+  const token = await new SignJWT({ role: "super_admin" })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime(`${TOKEN_TTL_S}s`)
+    .sign(getSecret());
+
+  return token;
 }
 
-export function isTokenValid(token: string): boolean {
-  const expiresAt = validTokens.get(token);
-  if (!expiresAt) {
+/**
+ * Verify a JWT token. Returns true if valid and not expired.
+ */
+export async function isTokenValid(token: string): Promise<boolean> {
+  try {
+    await jwtVerify(token, getSecret());
+    return true;
+  } catch {
     return false;
   }
-
-  if (Date.now() > expiresAt) {
-    validTokens.delete(token);
-    return false;
-  }
-
-  return true;
 }
 
+/**
+ * Verify the admin from the Authorization header.
+ * Returns a synthetic admin record or null if unauthorized.
+ */
 export async function verifyAdmin() {
   const headersList = await headers();
   const authHeader = headersList.get("authorization");
@@ -37,12 +52,10 @@ export async function verifyAdmin() {
 
   const token = authHeader.split(" ")[1];
 
-  if (!isTokenValid(token)) {
+  if (!(await isTokenValid(token))) {
     return null;
   }
 
-  // Return a synthetic admin record so existing audit log writes
-  // (which use admin.id, admin.name) continue to work.
   return {
     id: "shared-admin",
     email: "admin",

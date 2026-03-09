@@ -29,6 +29,7 @@ export const stepPersonalInfoSchema = z
     linkedin_url: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")),
     portfolio_url: z.string().url("Invalid portfolio URL").optional().or(z.literal("")),
     bio: z.string().max(280, "Bio must be 280 characters or less").optional().or(z.literal("")),
+    photo_url: z.string().optional(),
     profile_visible: z.boolean().optional().default(false),
   })
   .refine(
@@ -92,15 +93,17 @@ export const fullRegistrationSchema = z
     year: z.enum([...YEARS]),
     dietary_restrictions: z.string().optional(),
     // Optional for spectators (Jotform condition #1 disables these)
-    primary_role: z.enum([...PRIMARY_ROLES]).optional(),
+    // Accept empty string so base parsing passes; refinements enforce for non-spectators.
+    primary_role: z.enum([...PRIMARY_ROLES]).optional().or(z.literal("")),
     specific_skills: z.array(z.enum([...SPECIFIC_SKILLS])).optional().default([]),
-    experience_level: z.enum([...EXPERIENCE_LEVELS]).optional(),
+    experience_level: z.enum([...EXPERIENCE_LEVELS]).optional().or(z.literal("")),
     ai_tools: z.array(z.string()).optional().default([]),
     ai_tools_used: z.array(z.string()).optional().default([]),
     // Public Profile (optional)
     linkedin_url: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")),
     portfolio_url: z.string().url("Invalid portfolio URL").optional().or(z.literal("")),
     bio: z.string().max(280, "Bio must be 280 characters or less").optional().or(z.literal("")),
+    photo_url: z.string().optional(),
     profile_visible: z.boolean().optional().default(false),
 
     // Step 2: Team Setup
@@ -130,16 +133,6 @@ export const fullRegistrationSchema = z
     {
       message: "Primary role is required for participants",
       path: ["primary_role"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.team_option === "spectator") return true;
-      return data.specific_skills && data.specific_skills.length >= 1;
-    },
-    {
-      message: "Select at least one skill",
-      path: ["specific_skills"],
     }
   )
   .refine(

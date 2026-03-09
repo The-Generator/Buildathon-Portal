@@ -28,7 +28,6 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
 
 const VALID_PARTICIPANT_TYPES = ["participant", "spectator", "walk_in"];
 const VALID_FORMATION_TYPES = [
-  "pre_formed",
   "algorithm_matched",
   "admin_assigned",
 ];
@@ -234,17 +233,6 @@ async function main() {
   );
   if (badComplete.length === 0) {
     pass("is_complete consistency");
-  }
-
-  // ── 11. Unique invite codes ────────────────────────────────────────
-  const codes = teams.map((t: { invite_code: string }) => t.invite_code);
-  const dupeCodes = codes.filter(
-    (c: string, i: number) => codes.indexOf(c) !== i
-  );
-  if (dupeCodes.length > 0) {
-    fail("Unique invite codes", `${dupeCodes.length} duplicate codes`);
-  } else {
-    pass("Unique invite codes");
   }
 
   // ── Summary ────────────────────────────────────────────────────────

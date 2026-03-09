@@ -199,10 +199,10 @@ export function UnassignedQueue({ adminToken, onAssigned }: UnassignedQueueProps
 
                         {/* Ranked team dropdown */}
                         {isOpen && !isAssigning && (
-                          <div className="absolute right-0 top-full mt-1 z-10 w-72 max-h-60 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
+                          <div className="absolute right-0 top-full mt-1 z-10 w-80 max-h-80 overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg">
                             <QuickAssign
                               participant={p}
-                              teams={teams}
+                              teams={teams.filter((t) => !t.is_locked && t.member_count < 5)}
                               onAssigned={handleAssign}
                               disabled={isAssigning}
                             />

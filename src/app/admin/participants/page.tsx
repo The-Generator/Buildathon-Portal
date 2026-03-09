@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ParticipantRow } from "@/components/admin/ParticipantRow";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { AddWalkinModal } from "@/components/admin/AddWalkinModal";
+import { EditParticipantModal } from "@/components/admin/EditParticipantModal";
+import { AssignTeamModal } from "@/components/admin/AssignTeamModal";
+import { Search, ChevronLeft, ChevronRight, UserPlus } from "lucide-react";
 import type { Participant } from "@/types";
 
 type ParticipantWithTeam = Participant & { team_name?: string };
@@ -31,47 +34,72 @@ export default function ParticipantsPage() {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(0);
 
+  // Modal state
+  const [addWalkinOpen, setAddWalkinOpen] = useState(false);
+  const [editingParticipant, setEditingParticipant] = useState<Participant | null>(null);
+  const [assigningParticipant, setAssigningParticipant] = useState<Participant | null>(null);
+
+  const [adminToken] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
+    return (
+      document.cookie
+        .split("; ")
+        .find((c) => c.startsWith("admin_token="))
+        ?.split("=")[1] ?? null
+    );
+  });
+
+  const fetchData = useCallback(async () => {
+    const supabase = createClient();
+
+    const { data: pData, error: pError } = await supabase
+      .from("participants")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (pError) {
+      console.error("Failed to fetch participants:", pError);
+      return null;
+    }
+
+    const { data: tData } = await supabase
+      .from("teams")
+      .select("id, name");
+
+    const teamMap = new Map(
+      (tData ?? []).map((t) => [t.id, t.name])
+    );
+
+    const withTeams: ParticipantWithTeam[] = (pData ?? []).map((p) => ({
+      ...p,
+      team_name: p.team_id ? teamMap.get(p.team_id) ?? undefined : undefined,
+    }));
+
+    return withTeams;
+  }, []);
+
   useEffect(() => {
-    const fetchData = async () => {
-      const supabase = createClient();
+    let cancelled = false;
 
-      // Fetch participants
-      const { data: pData, error: pError } = await supabase
-        .from("participants")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (pError) {
-        console.error("Failed to fetch participants:", pError);
-        setLoading(false);
-        return;
+    const load = async () => {
+      const data = await fetchData();
+      if (cancelled) return;
+      if (data) {
+        setParticipants(data);
       }
-
-      // Fetch teams for name lookup
-      const { data: tData } = await supabase
-        .from("teams")
-        .select("id, name");
-
-      const teamMap = new Map(
-        (tData ?? []).map((t) => [t.id, t.name])
-      );
-
-      const withTeams: ParticipantWithTeam[] = (pData ?? []).map((p) => ({
-        ...p,
-        team_name: p.team_id ? teamMap.get(p.team_id) ?? undefined : undefined,
-      }));
-
-      setParticipants(withTeams);
       setLoading(false);
     };
 
-    fetchData();
-  }, []);
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchData]);
 
   const filtered = useMemo(() => {
     let result = [...participants];
 
-    // Search
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(
@@ -81,7 +109,6 @@ export default function ParticipantsPage() {
       );
     }
 
-    // School filter
     if (schoolFilter !== "All") {
       result = result.filter((p) => {
         if (schoolFilter === "Other") {
@@ -91,12 +118,10 @@ export default function ParticipantsPage() {
       });
     }
 
-    // Role filter
     if (roleFilter !== "All") {
       result = result.filter((p) => p.primary_role === roleFilter);
     }
 
-    // Team status filter
     if (teamStatusFilter !== "All") {
       if (teamStatusFilter === "Has Team") {
         result = result.filter((p) => p.team_id);
@@ -105,12 +130,10 @@ export default function ParticipantsPage() {
       }
     }
 
-    // Participant type filter
     if (typeFilter !== "All") {
       result = result.filter((p) => p.participant_type === typeFilter);
     }
 
-    // Sort
     result.sort((a, b) => {
       let cmp = 0;
       if (sortField === "full_name") {
@@ -144,6 +167,18 @@ export default function ParticipantsPage() {
     return sortDir === "asc" ? " \u2191" : " \u2193";
   };
 
+  const handleRefresh = () => {
+    setLoading(true);
+    const refresh = async () => {
+      const data = await fetchData();
+      if (data) {
+        setParticipants(data);
+      }
+      setLoading(false);
+    };
+    void refresh();
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -156,11 +191,19 @@ export default function ParticipantsPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Participants</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          {participants.length} total registered participants
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Participants</h2>
+          <p className="text-sm text-gray-500 mt-1">
+            {participants.length} total registered participants
+          </p>
+        </div>
+        {adminToken && (
+          <Button size="sm" onClick={() => setAddWalkinOpen(true)}>
+            <UserPlus className="h-4 w-4 mr-1.5" />
+            Add Walk-in
+          </Button>
+        )}
       </div>
 
       {/* Filters */}
@@ -288,7 +331,12 @@ export default function ParticipantsPage() {
                 </tr>
               ) : (
                 paged.map((p) => (
-                  <ParticipantRow key={p.id} participant={p} />
+                  <ParticipantRow
+                    key={p.id}
+                    participant={p}
+                    onEdit={adminToken ? (participant) => setEditingParticipant(participant) : undefined}
+                    onQuickAssign={adminToken ? (participant) => setAssigningParticipant(participant) : undefined}
+                  />
                 ))
               )}
             </tbody>
@@ -325,6 +373,38 @@ export default function ParticipantsPage() {
           </div>
         </div>
       </div>
+
+      {/* Add Walk-in Modal */}
+      {adminToken && (
+        <AddWalkinModal
+          open={addWalkinOpen}
+          onClose={() => setAddWalkinOpen(false)}
+          onCreated={handleRefresh}
+          adminToken={adminToken}
+        />
+      )}
+
+      {/* Edit Participant Modal */}
+      {adminToken && editingParticipant && (
+        <EditParticipantModal
+          open={!!editingParticipant}
+          onClose={() => setEditingParticipant(null)}
+          onUpdated={handleRefresh}
+          participant={editingParticipant}
+          adminToken={adminToken}
+        />
+      )}
+
+      {/* Assign to Team Modal */}
+      {adminToken && assigningParticipant && (
+        <AssignTeamModal
+          open={!!assigningParticipant}
+          onClose={() => setAssigningParticipant(null)}
+          onAssigned={handleRefresh}
+          participant={assigningParticipant}
+          adminToken={adminToken}
+        />
+      )}
     </div>
   );
 }

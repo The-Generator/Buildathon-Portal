@@ -20,6 +20,7 @@ type DirectoryParticipant = Pick<
   | "bio"
   | "linkedin_url"
   | "portfolio_url"
+  | "photo_url"
 >;
 
 interface Props {

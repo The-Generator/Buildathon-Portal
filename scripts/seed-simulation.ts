@@ -74,6 +74,13 @@ const EXPERIENCE = [
   "Advanced (I've built or modified AI models)",
   "Expert (I've developed custom AI solutions)",
 ] as const;
+const AI_TOOL_CATEGORIES = [
+  "coding_dev",
+  "image_gen",
+  "data_research",
+  "hardware_iot",
+  "business_productivity",
+] as const;
 
 const pick = <T>(arr: readonly T[]): T =>
   arr[Math.floor(Math.random() * arr.length)];
@@ -100,7 +107,7 @@ function makeParticipant(
     specific_skills: type === "spectator" ? [] : pickN(SKILLS, 2),
     experience_level: pick(EXPERIENCE),
     participant_type: type,
-    ai_tools: [],
+    ai_tools: pickN(AI_TOOL_CATEGORIES, 1 + Math.floor(Math.random() * 3)),
     is_self_registered: type !== "walk_in",
     team_id: teamId,
     checked_in: false,
@@ -166,14 +173,13 @@ async function main() {
   console.log("Seeding teams...");
 
   // ── Full teams (10 teams x 5 members = 50 participants) ────────────
-  const fullTeams: { id: string; name: string; invite_code: string }[] = [];
+  const fullTeams: { id: string; name: string }[] = [];
   for (let t = 1; t <= 10; t++) {
     const { data: team, error } = await supabase
       .from("teams")
       .insert({
         name: `Seed Team Full-${t}`,
-        invite_code: `SEEDF${String(t).padStart(3, "0")}`,
-        formation_type: "pre_formed",
+        formation_type: "algorithm_matched",
         is_complete: true,
         is_locked: false,
         aggregate_roles: pickN(ROLES, 3),
@@ -189,17 +195,15 @@ async function main() {
   const partialTeams: {
     id: string;
     name: string;
-    invite_code: string;
     size: number;
   }[] = [];
   for (let t = 1; t <= 8; t++) {
-    const size = 2 + (t % 3); // cycles 3, 4, 2
+    const size = [2, 3, 2, 3, 2, 3, 2, 3][t - 1]; // alternate 2s and 3s
     const { data: team, error } = await supabase
       .from("teams")
       .insert({
         name: `Seed Team Partial-${t}`,
-        invite_code: `SEEDP${String(t).padStart(3, "0")}`,
-        formation_type: "pre_formed",
+        formation_type: "algorithm_matched",
         is_complete: false,
         is_locked: false,
         aggregate_roles: pickN(ROLES, 2),
@@ -233,7 +237,8 @@ async function main() {
         .single();
       if (error) throw new Error(`Full member ${slug}: ${error.message}`);
       if (m === 1) {
-        fullTeamRegistrants.push({ id: p.id, teamId: team.id, groupSize: 5 });
+        // group_size capped at 3 by DB constraint; registrant came as a trio
+        fullTeamRegistrants.push({ id: p.id, teamId: team.id, groupSize: 3 });
       }
     }
   }
@@ -243,6 +248,7 @@ async function main() {
     const { error } = await supabase.from("registration_groups").insert({
       registrant_id: reg.id,
       group_size: reg.groupSize,
+      members_requested: 5 - reg.groupSize,
       team_id: reg.teamId,
       tagged_team_skills: pickN(SKILLS, 3),
     });

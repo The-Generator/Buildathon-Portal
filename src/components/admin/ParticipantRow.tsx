@@ -2,11 +2,14 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import type { Participant } from "@/types";
+import { ChevronDown, ChevronUp, Pencil, Users } from "lucide-react";
+import type { Participant, Team } from "@/types";
 
 interface ParticipantRowProps {
   participant: Participant & { team_name?: string };
+  onEdit?: (participant: Participant) => void;
+  onQuickAssign?: (participant: Participant) => void;
+  teams?: (Team & { member_count: number })[];
 }
 
 const typeConfig: Record<string, { label: string; color: "green" | "gray" | "orange" }> = {
@@ -15,7 +18,7 @@ const typeConfig: Record<string, { label: string; color: "green" | "gray" | "ora
   walk_in: { label: "Walk-in", color: "orange" },
 };
 
-export function ParticipantRow({ participant }: ParticipantRowProps) {
+export function ParticipantRow({ participant, onEdit, onQuickAssign }: ParticipantRowProps) {
   const [expanded, setExpanded] = useState(false);
 
   const schoolDisplay =
@@ -54,7 +57,7 @@ export function ParticipantRow({ participant }: ParticipantRowProps) {
         </td>
         <td className="px-4 py-3 text-sm text-gray-600">{schoolDisplay}</td>
         <td className="px-4 py-3 text-sm text-gray-600">
-          {participant.primary_role}
+          {participant.primary_role || <span className="text-gray-400">—</span>}
         </td>
         <td className="px-4 py-3 text-sm text-gray-600">
           {participant.team_name || (
@@ -90,7 +93,9 @@ export function ParticipantRow({ participant }: ParticipantRowProps) {
                 <p className="text-gray-400 text-xs uppercase font-medium mb-1">
                   Experience Level
                 </p>
-                <p className="text-gray-700">{participant.experience_level}</p>
+                <p className="text-gray-700">
+                  {participant.experience_level || <span className="text-gray-400">Not set</span>}
+                </p>
               </div>
               <div>
                 <p className="text-gray-400 text-xs uppercase font-medium mb-1">
@@ -137,6 +142,38 @@ export function ParticipantRow({ participant }: ParticipantRowProps) {
                 </p>
               </div>
             </div>
+
+            {/* Action buttons */}
+            {(onEdit || onQuickAssign) && (
+              <div className="ml-8 mt-4 pt-3 border-t border-gray-200 flex gap-2">
+                {onEdit && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEdit(participant);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    Edit
+                  </button>
+                )}
+                {onQuickAssign && !participant.team_id && participant.participant_type !== "spectator" && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onQuickAssign(participant);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors"
+                  >
+                    <Users className="h-3.5 w-3.5" />
+                    Assign to Team
+                  </button>
+                )}
+              </div>
+            )}
           </td>
         </tr>
       )}

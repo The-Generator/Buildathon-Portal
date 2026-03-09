@@ -9,7 +9,7 @@ import {
   Heading,
   Hr,
   Link,
-  Button,
+  Img,
 } from "@react-email/components";
 import { EVENT_CONFIG } from "@/lib/constants";
 
@@ -37,7 +37,10 @@ export default function RegistrationConfirmation({
 
   return (
     <Html>
-      <Head />
+      <Head>
+        <meta name="color-scheme" content="light" />
+        <meta name="supported-color-schemes" content="light" />
+      </Head>
       <Preview>
         You&apos;re registered for {EVENT_CONFIG.shortName}! Join us on{" "}
         {formattedDate}.
@@ -46,60 +49,112 @@ export default function RegistrationConfirmation({
         <Container style={container}>
           {/* Header */}
           <Section style={header}>
-            <Heading style={headerHeading}>
-              {EVENT_CONFIG.shortName}
-            </Heading>
-            <Text style={headerTheme}>{EVENT_CONFIG.theme}</Text>
+            <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
+              <tbody>
+                <tr>
+                  <td style={{ textAlign: "center" as const }}>
+                    <Img
+                      src="https://babsonbuildathon.com/sponsors/generator-ai-lab.png"
+                      alt="Babson Generator"
+                      width="180"
+                      height="56"
+                      style={{ margin: "0 auto" }}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ textAlign: "center" as const, paddingTop: "16px" }}>
+                    <Text style={headerEventName}>{EVENT_CONFIG.shortName}</Text>
+                    <Text style={headerTheme}>{EVENT_CONFIG.theme}</Text>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </Section>
+
+          {/* Success Banner */}
+          <Section style={successBanner}>
+            <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
+              <tbody>
+                <tr>
+                  <td>
+                    <Img
+                      src="https://em-content.zobj.net/source/apple/391/check-mark-button_2705.png"
+                      alt="check"
+                      width="48"
+                      height="48"
+                      style={{ margin: "0 auto" }}
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td style={{ paddingTop: "12px" }}>
+                    <Heading as="h1" style={successHeading}>
+                      Registration Confirmed
+                    </Heading>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </Section>
 
           {/* Main Content */}
           <Section style={content}>
-            <Heading as="h1" style={h1}>
-              You&apos;re registered!
-            </Heading>
-
-            <Text style={paragraph}>
-              Hi {participantName},
-            </Text>
+            <Text style={greeting}>Hi {participantName},</Text>
 
             {isRegisteredByOther && registeredByName ? (
               <Text style={paragraph}>
-                Great news! {registeredByName} has registered you for{" "}
-                {EVENT_CONFIG.name}. You&apos;re all set to participate.
+                {registeredByName} has registered you for{" "}
+                {EVENT_CONFIG.name}. You&apos;re all set to participate on April 11th.
               </Text>
             ) : (
               <Text style={paragraph}>
-                Thank you for registering for {EVENT_CONFIG.name}. We&apos;re
+                Thank you for registering for {EVENT_CONFIG.name}! We&apos;re
                 excited to have you join us for a day of building, learning,
                 and innovation.
               </Text>
             )}
 
-            {/* Event Details Card */}
-            <Section style={detailsCard}>
-              <Heading as="h2" style={h2}>
-                Event Details
-              </Heading>
-              <table
-                cellPadding="0"
-                cellSpacing="0"
-                style={{ width: "100%" }}
-              >
+            {/* Event Details */}
+            <Section style={card}>
+              <Text style={cardLabel}>EVENT DETAILS</Text>
+              <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
                 <tbody>
                   <tr>
-                    <td style={detailLabel}>Date</td>
-                    <td style={detailValue}>{formattedDate}</td>
+                    <td style={iconCell}>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/calendar_1f4c5.png"
+                        alt="date"
+                        width="18"
+                        height="18"
+                      />
+                    </td>
+                    <td style={detailText}>{formattedDate}</td>
                   </tr>
                   <tr>
-                    <td style={detailLabel}>Time</td>
-                    <td style={detailValue}>9:00 AM - 9:00 PM ET</td>
+                    <td style={iconCell}>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/clock_1f552.png"
+                        alt="time"
+                        width="18"
+                        height="18"
+                      />
+                    </td>
+                    <td style={detailText}>9:00 AM &ndash; 9:00 PM ET</td>
                   </tr>
                   <tr>
-                    <td style={detailLabel}>Location</td>
-                    <td style={detailValue}>
+                    <td style={iconCell}>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/round-pushpin_1f4cd.png"
+                        alt="location"
+                        width="18"
+                        height="18"
+                      />
+                    </td>
+                    <td style={detailText}>
                       {EVENT_CONFIG.location}
                       <br />
-                      {EVENT_CONFIG.address}
+                      <span style={{ color: "#9ca3af" }}>{EVENT_CONFIG.address}</span>
                     </td>
                   </tr>
                 </tbody>
@@ -107,47 +162,33 @@ export default function RegistrationConfirmation({
             </Section>
 
             {/* Team Status */}
-            <Section style={detailsCard}>
-              <Heading as="h2" style={h2}>
-                Team Status
-              </Heading>
-              <table
-                cellPadding="0"
-                cellSpacing="0"
-                style={{ width: "100%" }}
-              >
+            <Section style={card}>
+              <Text style={cardLabel}>TEAM STATUS</Text>
+              <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
                 <tbody>
                   <tr>
-                    <td style={detailLabel}>Team</td>
-                    <td style={detailValue}>{teamName}</td>
+                    <td style={teamInfoLabel}>Team</td>
+                    <td style={teamInfoValue}>{teamName}</td>
                   </tr>
                   <tr>
-                    <td style={detailLabel}>Members</td>
-                    <td style={detailValue}>
-                      {teamSize} / {EVENT_CONFIG.teamSize}
-                    </td>
+                    <td style={teamInfoLabel}>Members</td>
+                    <td style={teamInfoValue}>{teamSize} / {EVENT_CONFIG.teamSize}</td>
                   </tr>
                   <tr>
-                    <td style={detailLabel}>Status</td>
-                    <td style={detailValue}>
-                      {isComplete ? (
-                        <span style={statusComplete}>
-                          Team Complete
-                        </span>
-                      ) : (
-                        <span style={statusPending}>
-                          Awaiting Matching
-                        </span>
-                      )}
+                    <td style={teamInfoLabel}>Status</td>
+                    <td style={teamInfoValue}>
+                      <span style={isComplete ? statusComplete : statusPending}>
+                        {isComplete ? "Complete" : "Awaiting Matching"}
+                      </span>
                     </td>
                   </tr>
                 </tbody>
               </table>
               {!isComplete && (
-                <Text style={mutedText}>
+                <Text style={cardNote}>
                   Your team isn&apos;t full yet. We&apos;ll match you with
-                  additional teammates before the event and notify you once
-                  your team is finalized.
+                  additional teammates before the event and notify you by email
+                  once your team is finalized.
                 </Text>
               )}
             </Section>
@@ -155,69 +196,75 @@ export default function RegistrationConfirmation({
             <Hr style={hr} />
 
             {/* What's Next */}
-            <Heading as="h2" style={h2}>
+            <Heading as="h2" style={sectionTitle}>
               What&apos;s Next
             </Heading>
+
             <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
               <tbody>
-                <tr>
-                  <td style={stepNumber}>1</td>
-                  <td style={stepText}>
-                    <strong>Save the date</strong> — Add April 11, 2026 to
-                    your calendar. We&apos;ve attached an ICS file to this
-                    email for easy import.
-                  </td>
-                </tr>
-                <tr>
-                  <td style={stepNumber}>2</td>
-                  <td style={stepText}>
-                    <strong>Connect with your team</strong> — Once your team
-                    is finalized, you&apos;ll receive an email with your
-                    teammates&apos; details.
-                  </td>
-                </tr>
-                <tr>
-                  <td style={stepNumber}>3</td>
-                  <td style={stepText}>
-                    <strong>Prepare your tools</strong> — Make sure your
-                    laptop is ready and your dev environment is set up.
-                  </td>
-                </tr>
-                <tr>
-                  <td style={stepNumber}>4</td>
-                  <td style={stepText}>
-                    <strong>Show up ready to build</strong> — Arrive at
-                    Knight Auditorium by 9:00 AM on event day.
-                  </td>
-                </tr>
+                {[
+                  { num: "1", title: "Save the date", desc: "Add April 11, 2026 to your calendar." },
+                  { num: "2", title: "Wait for your team", desc: "Once finalized, you'll get an email with your teammates' details." },
+                  { num: "3", title: "Prepare your tools", desc: "Make sure your laptop is ready and your dev environment is set up." },
+                  { num: "4", title: "Show up ready to build", desc: `Arrive at ${EVENT_CONFIG.location} by 9:00 AM.` },
+                ].map((step) => (
+                  <tr key={step.num}>
+                    <td style={stepNumCell}>
+                      <table cellPadding="0" cellSpacing="0">
+                        <tbody>
+                          <tr>
+                            <td style={stepNumBadge}>{step.num}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                    <td style={stepContent}>
+                      <Text style={stepTitle}>{step.title}</Text>
+                      <Text style={stepDesc}>{step.desc}</Text>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
 
+            {/* CTA */}
             <Section style={ctaSection}>
-              <Button style={ctaButton} href="https://babsongenerator.com">
-                Visit Event Website
-              </Button>
+              <table cellPadding="0" cellSpacing="0" style={{ margin: "0 auto" }}>
+                <tbody>
+                  <tr>
+                    <td style={ctaButton}>
+                      <Link href="https://babsonbuildathon.com" style={ctaLink}>
+                        Visit Event Website
+                      </Link>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </Section>
 
             <Hr style={hr} />
 
-            <Text style={mutedText}>
-              Questions? Reply to this email or reach out to us at{" "}
-              <Link href="mailto:generator@babson.edu" style={link}>
-                generator@babson.edu
+            <Text style={contactText}>
+              Questions? Reach out to{" "}
+              <Link href="mailto:alaraia1@babson.edu" style={link}>
+                alaraia1@babson.edu
               </Link>
-              .
             </Text>
           </Section>
 
           {/* Footer */}
           <Section style={footer}>
-            <Text style={footerText}>
-              Babson Generator &middot; {EVENT_CONFIG.name}
-            </Text>
-            <Text style={footerText}>
-              {EVENT_CONFIG.address}
-            </Text>
+            <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
+              <tbody>
+                <tr>
+                  <td>
+                    <Text style={footerBrand}>Babson Generator</Text>
+                    <Text style={footerDetail}>{EVENT_CONFIG.name}</Text>
+                    <Text style={footerDetail}>{EVENT_CONFIG.address}</Text>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </Section>
         </Container>
       </Body>
@@ -230,155 +277,222 @@ export default function RegistrationConfirmation({
 // ---------------------------------------------------------------------------
 
 const main: React.CSSProperties = {
-  backgroundColor: "#f6f6f6",
+  backgroundColor: "#f3f4f6",
   fontFamily:
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  padding: "20px 0",
 };
 
 const container: React.CSSProperties = {
-  maxWidth: "600px",
+  maxWidth: "560px",
   margin: "0 auto",
   backgroundColor: "#ffffff",
+  borderRadius: "12px",
+  overflow: "hidden",
+  boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
 };
 
 const header: React.CSSProperties = {
-  backgroundColor: "#006241",
-  padding: "32px 40px",
+  backgroundColor: "#0a0f0d",
+  padding: "28px 32px 24px",
   textAlign: "center" as const,
 };
 
-const headerHeading: React.CSSProperties = {
+const headerEventName: React.CSSProperties = {
   color: "#ffffff",
-  fontSize: "24px",
+  fontSize: "22px",
   fontWeight: "700",
-  margin: "0 0 4px",
+  margin: "0",
+  lineHeight: "1.3",
 };
 
 const headerTheme: React.CSSProperties = {
-  color: "#b8dbc9",
-  fontSize: "14px",
+  color: "#34d399",
+  fontSize: "13px",
+  fontWeight: "500",
+  margin: "4px 0 0",
+  letterSpacing: "0.5px",
+};
+
+const successBanner: React.CSSProperties = {
+  backgroundColor: "#ecfdf5",
+  borderBottom: "1px solid #d1fae5",
+  padding: "24px 32px",
+  textAlign: "center" as const,
+};
+
+const successHeading: React.CSSProperties = {
+  color: "#065f46",
+  fontSize: "24px",
+  fontWeight: "700",
   margin: "0",
 };
 
 const content: React.CSSProperties = {
-  padding: "32px 40px",
+  padding: "28px 32px 32px",
 };
 
-const h1: React.CSSProperties = {
-  color: "#006241",
-  fontSize: "28px",
-  fontWeight: "700",
-  margin: "0 0 24px",
-  lineHeight: "1.3",
-};
-
-const h2: React.CSSProperties = {
-  color: "#333333",
-  fontSize: "18px",
+const greeting: React.CSSProperties = {
+  color: "#111827",
+  fontSize: "15px",
   fontWeight: "600",
-  margin: "0 0 16px",
+  margin: "0 0 8px",
 };
 
 const paragraph: React.CSSProperties = {
-  color: "#444444",
-  fontSize: "15px",
+  color: "#4b5563",
+  fontSize: "14px",
   lineHeight: "1.6",
-  margin: "0 0 16px",
-};
-
-const detailsCard: React.CSSProperties = {
-  backgroundColor: "#f9fafb",
-  border: "1px solid #e5e7eb",
-  borderRadius: "8px",
-  padding: "20px 24px",
   margin: "0 0 24px",
 };
 
-const detailLabel: React.CSSProperties = {
-  color: "#6b7280",
-  fontSize: "13px",
-  fontWeight: "600",
-  textTransform: "uppercase" as const,
-  letterSpacing: "0.5px",
-  paddingBottom: "12px",
-  paddingRight: "16px",
-  verticalAlign: "top",
-  width: "90px",
+const card: React.CSSProperties = {
+  backgroundColor: "#f9fafb",
+  border: "1px solid #e5e7eb",
+  borderRadius: "10px",
+  padding: "20px",
+  margin: "0 0 16px",
 };
 
-const detailValue: React.CSSProperties = {
-  color: "#111827",
-  fontSize: "15px",
-  paddingBottom: "12px",
+const cardLabel: React.CSSProperties = {
+  color: "#6b7280",
+  fontSize: "11px",
+  fontWeight: "700",
+  letterSpacing: "1.5px",
+  margin: "0 0 14px",
+};
+
+const iconCell: React.CSSProperties = {
+  width: "30px",
   verticalAlign: "top",
+  paddingBottom: "10px",
+  paddingRight: "4px",
+};
+
+const detailText: React.CSSProperties = {
+  color: "#111827",
+  fontSize: "14px",
+  lineHeight: "1.5",
+  verticalAlign: "top",
+  paddingBottom: "10px",
+};
+
+const teamInfoLabel: React.CSSProperties = {
+  color: "#6b7280",
+  fontSize: "13px",
+  fontWeight: "500",
+  paddingBottom: "8px",
+  paddingRight: "16px",
+  verticalAlign: "middle",
+  width: "80px",
+};
+
+const teamInfoValue: React.CSSProperties = {
+  color: "#111827",
+  fontSize: "14px",
+  fontWeight: "500",
+  paddingBottom: "8px",
+  verticalAlign: "middle",
 };
 
 const statusComplete: React.CSSProperties = {
   backgroundColor: "#dcfce7",
   color: "#166534",
-  padding: "2px 10px",
-  borderRadius: "12px",
-  fontSize: "13px",
+  padding: "3px 10px",
+  borderRadius: "100px",
+  fontSize: "12px",
   fontWeight: "600",
 };
 
 const statusPending: React.CSSProperties = {
-  backgroundColor: "#fef9c3",
-  color: "#854d0e",
-  padding: "2px 10px",
-  borderRadius: "12px",
-  fontSize: "13px",
+  backgroundColor: "#fef3c7",
+  color: "#92400e",
+  padding: "3px 10px",
+  borderRadius: "100px",
+  fontSize: "12px",
   fontWeight: "600",
 };
 
-const mutedText: React.CSSProperties = {
+const cardNote: React.CSSProperties = {
   color: "#6b7280",
   fontSize: "13px",
   lineHeight: "1.5",
   margin: "12px 0 0",
+  borderTop: "1px solid #e5e7eb",
+  paddingTop: "12px",
 };
 
 const hr: React.CSSProperties = {
   borderColor: "#e5e7eb",
+  borderWidth: "1px 0 0",
   margin: "24px 0",
 };
 
-const stepNumber: React.CSSProperties = {
+const sectionTitle: React.CSSProperties = {
+  color: "#111827",
+  fontSize: "17px",
+  fontWeight: "700",
+  margin: "0 0 20px",
+};
+
+const stepNumCell: React.CSSProperties = {
+  width: "40px",
+  verticalAlign: "top",
+  paddingBottom: "20px",
+};
+
+const stepNumBadge: React.CSSProperties = {
   backgroundColor: "#006241",
   color: "#ffffff",
   width: "28px",
   height: "28px",
   borderRadius: "50%",
   textAlign: "center" as const,
-  fontSize: "14px",
+  fontSize: "13px",
   fontWeight: "700",
   lineHeight: "28px",
-  verticalAlign: "top",
-  paddingRight: "0",
+  display: "block",
 };
 
-const stepText: React.CSSProperties = {
-  color: "#444444",
-  fontSize: "14px",
-  lineHeight: "1.5",
-  paddingLeft: "12px",
-  paddingBottom: "16px",
+const stepContent: React.CSSProperties = {
   verticalAlign: "top",
+  paddingBottom: "20px",
+  paddingLeft: "4px",
+};
+
+const stepTitle: React.CSSProperties = {
+  color: "#111827",
+  fontSize: "14px",
+  fontWeight: "600",
+  margin: "0 0 2px",
+  lineHeight: "28px",
+};
+
+const stepDesc: React.CSSProperties = {
+  color: "#6b7280",
+  fontSize: "13px",
+  lineHeight: "1.5",
+  margin: "0",
 };
 
 const ctaSection: React.CSSProperties = {
   textAlign: "center" as const,
-  margin: "28px 0 8px",
+  margin: "8px 0 0",
 };
 
 const ctaButton: React.CSSProperties = {
   backgroundColor: "#006241",
+  borderRadius: "8px",
+  textAlign: "center" as const,
+};
+
+const ctaLink: React.CSSProperties = {
   color: "#ffffff",
-  padding: "12px 28px",
-  borderRadius: "6px",
-  fontSize: "15px",
+  fontSize: "14px",
   fontWeight: "600",
   textDecoration: "none",
+  display: "inline-block",
+  padding: "12px 32px",
 };
 
 const link: React.CSSProperties = {
@@ -386,15 +500,28 @@ const link: React.CSSProperties = {
   textDecoration: "underline",
 };
 
-const footer: React.CSSProperties = {
-  backgroundColor: "#f9fafb",
-  padding: "20px 40px",
+const contactText: React.CSSProperties = {
+  color: "#9ca3af",
+  fontSize: "13px",
   textAlign: "center" as const,
-  borderTop: "1px solid #e5e7eb",
+  margin: "0",
 };
 
-const footerText: React.CSSProperties = {
+const footer: React.CSSProperties = {
+  backgroundColor: "#f9fafb",
+  borderTop: "1px solid #e5e7eb",
+  padding: "20px 32px",
+};
+
+const footerBrand: React.CSSProperties = {
+  color: "#6b7280",
+  fontSize: "13px",
+  fontWeight: "600",
+  margin: "0 0 2px",
+};
+
+const footerDetail: React.CSSProperties = {
   color: "#9ca3af",
   fontSize: "12px",
-  margin: "0 0 4px",
+  margin: "0 0 2px",
 };

@@ -62,14 +62,22 @@ function experienceBalanceScore(members: MatchInput[]): number {
  * School mix score (0-1).
  * Tiered scoring to strongly reward cross-school mixing.
  * 3+ schools = 1.0, 2 schools = 0.7, 1 school = 0.2.
+ * Penalty: if no Babson student is present, score is halved.
  */
 function schoolMixScore(members: MatchInput[]): number {
   if (members.length === 0) return 0;
   const uniqueSchools = new Set(members.map((m) => m.school));
   const count = uniqueSchools.size;
-  if (count >= 3) return 1.0;
-  if (count === 2) return 0.7;
-  return 0.2;
+  let base: number;
+  if (count >= 3) base = 1.0;
+  else if (count === 2) base = 0.7;
+  else base = 0.2;
+
+  // Babson anchor: heavily penalize teams without a Babson student
+  const hasBabson = members.some((m) => m.school === "Babson");
+  if (!hasBabson) base *= 0.3;
+
+  return base;
 }
 
 /**

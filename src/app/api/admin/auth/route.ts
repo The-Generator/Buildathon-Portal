@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
-import { addToken } from "@/lib/admin-auth";
+import { createToken } from "@/lib/admin-auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,8 +39,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const token = crypto.randomUUID();
-    addToken(token);
+    const token = await createToken();
 
     return NextResponse.json({ token });
   } catch {

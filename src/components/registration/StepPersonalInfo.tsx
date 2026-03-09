@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { RoleSelector } from "./RoleSelector";
 import { SkillChips } from "./SkillChips";
 import { AiToolsSelector } from "./AiToolsSelector";
+import { PhotoUpload } from "./PhotoUpload";
 import {
   PRIMARY_ROLES,
   SPECIFIC_SKILLS,
@@ -48,7 +49,7 @@ export function StepPersonalInfo({
       linkedin_url: data.linkedin_url || "",
       portfolio_url: data.portfolio_url || "",
       bio: data.bio || "",
-      profile_visible: data.profile_visible ?? false,
+      profile_visible: true,
     });
 
     if (!result.success) {
@@ -261,6 +262,13 @@ export function StepPersonalInfo({
         </button>
         {profileOpen && (
           <div className="px-4 py-4 space-y-4">
+            <p className="text-xs text-gray-500">
+              Your name, school, role, skills, and links below will be visible on the participant directory so other builders can find you.
+            </p>
+            <PhotoUpload
+              value={data.photo_url}
+              onChange={(url) => onChange({ photo_url: url })}
+            />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 id="linkedin_url"
@@ -301,17 +309,6 @@ export function StepPersonalInfo({
                 <p className="mt-1 text-sm text-red-600">{errors.bio}</p>
               )}
             </div>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={data.profile_visible ?? false}
-                onChange={(e) => onChange({ profile_visible: e.target.checked })}
-                className="h-4 w-4 rounded border-gray-300 text-[#006241] focus:ring-[#006241]"
-              />
-              <span className="text-sm text-gray-700">
-                Show my profile to other participants
-              </span>
-            </label>
           </div>
         )}
       </div>

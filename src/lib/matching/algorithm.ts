@@ -225,10 +225,12 @@ function greedyConstruction(inputs: MatchInput[]): {
   }
 
   // Remaining solos: group into teams of 5
+  // Prefer a Babson student as the seed for each team
   while (solos.length >= TEAM_SIZE) {
-    // Take the first solo as seed, greedily find best 4 from rest
-    const seed = solos[0];
-    const rest = solos.slice(1);
+    const babsonIdx = solos.findIndex((s) => s.school === "Babson");
+    const seedIdx = babsonIdx >= 0 ? babsonIdx : 0;
+    const seed = solos[seedIdx];
+    const rest = solos.filter((_, i) => i !== seedIdx);
     const bestIndices = findBestCandidates([seed], rest, TEAM_SIZE - 1);
     const chosen = bestIndices.map((i) => rest[i]);
     const team = [seed, ...chosen];
@@ -305,6 +307,15 @@ function swapOptimization(teams: DraftTeam[]): DraftTeam[] {
           const temp = newWorstMembers[mi];
           newWorstMembers[mi] = newOtherMembers[oi];
           newOtherMembers[oi] = temp;
+
+          // Babson anchor: don't remove the last Babson student from a team
+          const worstLosesBabson =
+            temp.school === "Babson" &&
+            !newWorstMembers.some((m) => m.school === "Babson");
+          const otherLosesBabson =
+            teams[ti].members[oi].school === "Babson" &&
+            !newOtherMembers.some((m) => m.school === "Babson");
+          if (worstLosesBabson || otherLosesBabson) continue;
 
           const newWorstScore = calculateTeamScore(newWorstMembers);
           const newOtherScore = calculateTeamScore(newOtherMembers);

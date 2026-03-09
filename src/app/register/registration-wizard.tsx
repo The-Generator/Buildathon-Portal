@@ -78,9 +78,14 @@ export function RegistrationWizard({
 
     if (!res.ok) {
       const body = await res.json().catch(() => null);
-      throw new Error(
-        body?.error || `Registration failed (${res.status})`
-      );
+      let message = body?.error || `Registration failed (${res.status})`;
+      if (body?.details?.fieldErrors) {
+        const fields = Object.entries(body.details.fieldErrors)
+          .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
+          .join("; ");
+        message += ` (${fields})`;
+      }
+      throw new Error(message);
     }
   };
 

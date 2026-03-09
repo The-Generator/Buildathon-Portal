@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
 
     const { data: participants, error: pError } = await supabase
       .from("participants")
-      .select("id, team_id, full_name, email, school, primary_role")
+      .select("id, team_id, full_name, email, phone, school, primary_role")
       .in("team_id", teamIds);
 
     if (pError) {
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     // Group participants by team
     const membersByTeam = new Map<
       string,
-      Array<{ id: string; full_name: string; email: string; school: string; primary_role: string }>
+      Array<{ id: string; full_name: string; email: string; phone: string; school: string; primary_role: string }>
     >();
     for (const p of participants ?? []) {
       if (!p.team_id) continue;
@@ -137,6 +137,8 @@ export async function POST(request: NextRequest) {
             name: m.full_name,
             school: m.school || "Unknown",
             role: m.primary_role || "Participant",
+            email: m.email,
+            phone: m.phone || "",
           }));
 
         const emailElement = createElement(TeamAssignment, {

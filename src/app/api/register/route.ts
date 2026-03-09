@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createElement } from "react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fullRegistrationSchema } from "@/lib/validations";
 import { EVENT_CONFIG } from "@/lib/constants";
+import { sendEmail } from "@/lib/email/send";
+import RegistrationConfirmation from "@/lib/email/templates/RegistrationConfirmation";
 
 export async function POST(request: NextRequest) {
   try {
@@ -10,6 +13,7 @@ export async function POST(request: NextRequest) {
     // 1. Validate request body
     const result = fullRegistrationSchema.safeParse(body);
     if (!result.success) {
+      console.error("Registration validation failed:", JSON.stringify(result.error.flatten(), null, 2));
       return NextResponse.json(
         { error: "Validation failed", details: result.error.flatten() },
         { status: 400 }
@@ -56,7 +60,8 @@ export async function POST(request: NextRequest) {
           linkedin_url: data.linkedin_url || null,
           portfolio_url: data.portfolio_url || null,
           bio: data.bio || null,
-          profile_visible: data.profile_visible ?? false,
+          photo_url: data.photo_url || null,
+          profile_visible: true,
         })
         .select()
         .single();
@@ -67,6 +72,19 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
+
+      // Send confirmation email (fire-and-forget)
+      sendEmail({
+        to: spectator.email,
+        subject: `You're registered for ${EVENT_CONFIG.shortName}!`,
+        react: createElement(RegistrationConfirmation, {
+          participantName: spectator.full_name,
+          teamName: "Spectator",
+          teamSize: 0,
+          isComplete: true,
+          isRegisteredByOther: false,
+        }),
+      }).catch((err) => console.error("Spectator confirmation email failed:", err));
 
       return NextResponse.json(
         {
@@ -143,7 +161,8 @@ export async function POST(request: NextRequest) {
         linkedin_url: data.linkedin_url || null,
         portfolio_url: data.portfolio_url || null,
         bio: data.bio || null,
-        profile_visible: data.profile_visible ?? false,
+        photo_url: data.photo_url || null,
+        profile_visible: true,
       })
       .select()
       .single();
@@ -256,7 +275,34 @@ export async function POST(request: NextRequest) {
       console.error("Failed to aggregate team data:", aggregateError.message);
     }
 
-    // TODO: Send confirmation email to registrant and notification emails to teammates (will be integrated later)
+    // Send confirmation email to registrant
+    sendEmail({
+      to: registrant.email,
+      subject: `You're registered for ${EVENT_CONFIG.shortName}!`,
+      react: createElement(RegistrationConfirmation, {
+        participantName: registrant.full_name,
+        teamName: team.name,
+        teamSize: incomingGroupSize,
+        isComplete: isComplete,
+        isRegisteredByOther: false,
+      }),
+    }).catch((err) => console.error("Registration confirmation email failed:", err));
+
+    // Send notification emails to teammates registered by this person
+    for (const teammate of teammateRecords) {
+      sendEmail({
+        to: teammate.email,
+        subject: `You're registered for ${EVENT_CONFIG.shortName}!`,
+        react: createElement(RegistrationConfirmation, {
+          participantName: teammate.full_name,
+          teamName: team.name,
+          teamSize: incomingGroupSize,
+          isComplete: isComplete,
+          isRegisteredByOther: true,
+          registeredByName: registrant.full_name,
+        }),
+      }).catch((err) => console.error("Teammate confirmation email failed:", err));
+    }
 
     return NextResponse.json(
       {
