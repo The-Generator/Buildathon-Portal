@@ -19,21 +19,6 @@ export default function Home() {
       <main className="noise-bg">
         <Hero />
         <About />
-        {/* Promo video — relocated from hero */}
-        <div className="py-16 sm:py-20" style={{ background: "#0a1a14" }}>
-          <div className="mx-auto max-w-3xl px-6">
-            <div className="overflow-hidden rounded-xl border border-white/8">
-              <video
-                className="aspect-video w-full bg-black"
-                controls
-                preload="metadata"
-              >
-                <source src="/buildathon-promo.mp4" type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          </div>
-        </div>
         <RegistrationInfo />
         <Tracks />
         <Prizes />
