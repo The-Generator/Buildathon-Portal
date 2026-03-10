@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useInView } from "@/hooks/useInView";
 
 const sponsors = [
+  { name: "Babson College", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/babson-college.jpg" },
+  { name: "The Generator", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/generator-ai-lab.png" },
   { name: "Butler Institute", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/butler-institute.png" },
   {
     name: "Bentley University",
@@ -44,7 +46,7 @@ export function Sponsors() {
         </div>
 
         {/* Sponsor grid */}
-        <div className="mx-auto mt-14 grid max-w-3xl grid-cols-3 items-center gap-10 sm:gap-12">
+        <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 items-center gap-10 sm:grid-cols-3 md:grid-cols-5 sm:gap-12">
           {sponsors.map((sponsor) => (
             <a
               key={sponsor.name}
@@ -68,7 +70,7 @@ export function Sponsors() {
         <p className="font-body mt-12 text-center text-sm text-white/40">
           Interested in sponsoring?{" "}
           <a
-            href="mailto:generator@babson.edu"
+            href="mailto:alaraia1@babson.edu"
             className="font-medium text-[#00e87b] underline underline-offset-4 transition-colors hover:text-[#00ff88]"
           >
             Get in touch
