@@ -13,6 +13,12 @@ const sponsors: Array<{ name: string; tier: string; href: string; logo: string; 
     href: "https://www.bentley.edu/",
     logo: "/sponsors/bentley-university.png",
   },
+  {
+    name: "Bentley E-Hub",
+    tier: "Partner",
+    href: "https://www.bentley.edu/",
+    logo: "/sponsors/bentley-ehub.png",
+  },
   { name: "Bryant University", tier: "Partner", href: "https://www.bryant.edu/", logo: "/sponsors/bryant-university.png" },
 ];
 
