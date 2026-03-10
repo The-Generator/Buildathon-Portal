@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { randomUUID } from "crypto";
 import { render } from "@react-email/render";
 
 const transporter = nodemailer.createTransport({
@@ -25,6 +26,10 @@ export async function sendEmail({ to, subject, react }: SendEmailOptions) {
       to,
       subject,
       html,
+      headers: {
+        // Unique ref prevents Gmail from threading separate notification emails
+        "X-Entity-Ref-ID": randomUUID(),
+      },
     });
 
     return { success: true };

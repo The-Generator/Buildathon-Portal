@@ -6,16 +6,12 @@ import {
   Mic,
   Rocket,
   UtensilsCrossed,
-  Users,
   Upload,
   Scale,
-  Lightbulb,
   MapPin,
-  Cookie,
-  Presentation,
-  MessageCircle,
-  Timer,
   DoorOpen,
+  Trophy,
+  Clock,
 } from "lucide-react";
 import { SCHEDULE_BLOCKS, type ScheduleBlock } from "@/data/schedule";
 import type { LucideIcon } from "lucide-react";
@@ -52,22 +48,17 @@ const TYPE_STYLES: Record<
 };
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  "Doors Open & Check-In": DoorOpen,
-  Breakfast: Coffee,
+  "Registration & Breakfast": Coffee,
   "Opening Ceremony": Mic,
-  "Team Formation & Matching": Users,
-  "Hacking Begins": Rocket,
-  "Workshop: AI Tools Crash Course": Lightbulb,
-  "Workshop: Pitching Your Project": Presentation,
-  Lunch: UtensilsCrossed,
-  "Sponsor Lightning Talks": Presentation,
-  "Mentor Office Hours": MessageCircle,
-  "Snack Break": Cookie,
-  Dinner: UtensilsCrossed,
-  "Final Sprint": Timer,
-  "Submissions Due": Upload,
-  "Judging & Demos": Scale,
-  "Awards Ceremony & Closing": Award,
+  "Buildathon Begins": Rocket,
+  "Grab-and-Go Lunch": UtensilsCrossed,
+  "Submissions Open": Upload,
+  "Submissions Close": Clock,
+  "First Round Judging": Scale,
+  "Substantial Snack / Dinner": UtensilsCrossed,
+  "Final Round Judging": Trophy,
+  "Award Ceremony": Award,
+  "Event Ends": DoorOpen,
 };
 
 function BlockRow({ block }: { block: ScheduleBlock }) {
