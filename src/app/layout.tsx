@@ -31,6 +31,20 @@ export const metadata: Metadata = {
     title: "Babson Generator Build-a-thon 2026",
     description: "AI x Body & Mind — April 11, 2026 at Babson College",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 1200,
+        alt: "Babson College",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Babson Generator Build-a-thon 2026",
+    description: "AI x Body & Mind — April 11, 2026 at Babson College",
+    images: ["/og-image.png"],
   },
 };
 
