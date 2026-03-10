@@ -3,8 +3,8 @@
 import Image from "next/image";
 import { useInView } from "@/hooks/useInView";
 
-const sponsors = [
-  { name: "Babson College", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/babson-college.jpg" },
+const sponsors: Array<{ name: string; tier: string; href: string; logo: string; round?: boolean }> = [
+  { name: "Babson College", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/babson-college.jpg", round: true },
   { name: "The Generator", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/generator-ai-lab.png" },
   { name: "Butler Institute", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/butler-institute.png" },
   {
@@ -46,7 +46,7 @@ export function Sponsors() {
         </div>
 
         {/* Sponsor grid */}
-        <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 items-center gap-10 sm:grid-cols-3 md:grid-cols-5 sm:gap-12">
+        <div className="mx-auto mt-14 grid max-w-3xl grid-cols-2 items-center justify-items-center gap-10 sm:grid-cols-3 sm:gap-12">
           {sponsors.map((sponsor) => (
             <a
               key={sponsor.name}
@@ -61,7 +61,9 @@ export function Sponsors() {
                 alt={sponsor.name}
                 width={200}
                 height={100}
-                className="h-auto max-h-24 w-auto object-contain opacity-80 transition-opacity hover:opacity-100"
+                className={`h-auto max-h-24 w-auto object-contain opacity-80 transition-opacity hover:opacity-100 ${
+                  sponsor.round ? "rounded-full" : ""
+                }`}
               />
             </a>
           ))}
