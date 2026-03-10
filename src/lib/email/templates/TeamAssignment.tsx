@@ -214,7 +214,7 @@ export default function TeamAssignment({
                         height="18"
                       />
                     </td>
-                    <td style={detailText}>9:00 AM &ndash; 9:00 PM ET</td>
+                    <td style={detailText}>8:00 AM &ndash; 8:30 PM ET</td>
                   </tr>
                   <tr>
                     <td style={iconCell}>
@@ -248,7 +248,7 @@ export default function TeamAssignment({
                   { num: "1", title: "Introduce yourself", desc: "Reach out to your teammates before the event. Discuss ideas and strengths." },
                   { num: "2", title: "Brainstorm early", desc: `The theme is "${EVENT_CONFIG.theme}". Start thinking about problems worth solving.` },
                   { num: "3", title: "Set up your environment", desc: "Make sure your laptop, accounts, and dev tools are ready to go." },
-                  { num: "4", title: "Arrive together", desc: `Coordinate with your team to arrive at ${EVENT_CONFIG.location} by 9:00 AM.` },
+                  { num: "4", title: "Arrive together", desc: `Coordinate with your team to arrive at ${EVENT_CONFIG.location} by 8:00 AM for registration & breakfast.` },
                 ].map((step) => (
                   <tr key={step.num}>
                     <td style={stepNumCell}>

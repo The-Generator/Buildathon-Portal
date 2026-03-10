@@ -140,7 +140,7 @@ export default function RegistrationConfirmation({
                         height="18"
                       />
                     </td>
-                    <td style={detailText}>9:00 AM &ndash; 9:00 PM ET</td>
+                    <td style={detailText}>8:00 AM &ndash; 8:30 PM ET</td>
                   </tr>
                   <tr>
                     <td style={iconCell}>
@@ -206,7 +206,7 @@ export default function RegistrationConfirmation({
                   { num: "1", title: "Save the date", desc: "Add April 11, 2026 to your calendar." },
                   { num: "2", title: "Wait for your team", desc: "Once finalized, you'll get an email with your teammates' details." },
                   { num: "3", title: "Prepare your tools", desc: "Make sure your laptop is ready and your dev environment is set up." },
-                  { num: "4", title: "Show up ready to build", desc: `Arrive at ${EVENT_CONFIG.location} by 9:00 AM.` },
+                  { num: "4", title: "Show up ready to build", desc: `Arrive at ${EVENT_CONFIG.location} by 8:00 AM for registration & breakfast.` },
                 ].map((step) => (
                   <tr key={step.num}>
                     <td style={stepNumCell}>
