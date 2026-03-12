@@ -3,10 +3,10 @@
 import Image from "next/image";
 import { useInView } from "@/hooks/useInView";
 
-const sponsors: Array<{ name: string; tier: string; href: string; logo: string; round?: boolean }> = [
+const sponsors: Array<{ name: string; tier: string; href: string; logo: string; round?: boolean; invert?: boolean }> = [
   { name: "Babson College", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/babson-college.jpg", round: true },
-  { name: "The Generator", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/generator-ai-lab.png" },
-  { name: "Butler Institute", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/butler-institute.png" },
+  { name: "The Generator", tier: "Host", href: "https://www.babson.edu/thegenerator/", logo: "/sponsors/generator-ai-lab.png" },
+  { name: "Butler Institute", tier: "Host", href: "https://www.babson.edu/entrepreneurship-center/thought-leadership/butler-institute-for-free-enterprise-through-entrepreneurship/", logo: "/sponsors/butler-institute.png" },
   {
     name: "Bentley University",
     tier: "Partner",
@@ -20,6 +20,7 @@ const sponsors: Array<{ name: string; tier: string; href: string; logo: string; 
     logo: "/sponsors/bentley-ehub.png",
   },
   { name: "Bryant University", tier: "Partner", href: "https://www.bryant.edu/", logo: "/sponsors/bryant-university.png" },
+  { name: "ElevenLabs", tier: "Sponsor", href: "https://elevenlabs.io/", logo: "/sponsors/eleven-labs.png", invert: true },
 ];
 
 export function Sponsors() {
@@ -69,7 +70,7 @@ export function Sponsors() {
                 height={100}
                 className={`h-auto max-h-24 w-auto object-contain opacity-80 transition-opacity hover:opacity-100 ${
                   sponsor.round ? "rounded-full" : ""
-                }`}
+                } ${sponsor.invert ? "invert" : ""}`}
               />
             </a>
           ))}
