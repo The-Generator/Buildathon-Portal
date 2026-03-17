@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useInView } from "@/hooks/useInView";
 
-const sponsors: Array<{ name: string; tier: string; href: string; logo: string; round?: boolean; invert?: boolean }> = [
-  { name: "Babson College", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/babson-college.jpg", round: true },
+const sponsors: Array<{ name: string; tier: string; href: string; logo: string; invert?: boolean }> = [
+  { name: "Babson College", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/babson-college.png" },
   { name: "The Generator", tier: "Host", href: "https://www.babson.edu/thegenerator/", logo: "/sponsors/generator-ai-lab.png" },
   { name: "Butler Institute", tier: "Host", href: "https://www.babson.edu/entrepreneurship-center/thought-leadership/butler-institute-for-free-enterprise-through-entrepreneurship/", logo: "/sponsors/butler-institute.png" },
   {
@@ -21,6 +22,11 @@ const sponsors: Array<{ name: string; tier: string; href: string; logo: string; 
   },
   { name: "Bryant University", tier: "Partner", href: "https://www.bryant.edu/", logo: "/sponsors/bryant-university.png" },
   { name: "ElevenLabs", tier: "Sponsor", href: "https://elevenlabs.io/", logo: "/sponsors/eleven-labs.png", invert: true },
+  { name: "Tripo AI", tier: "Sponsor", href: "https://www.tripo3d.ai/", logo: "/sponsors/tripo-ai.png", invert: true },
+  { name: "HubSpot", tier: "Sponsor", href: "https://www.hubspot.com/", logo: "/sponsors/hubspot.png" },
+  { name: "Lovable", tier: "Sponsor", href: "https://lovable.dev/", logo: "/sponsors/lovable.png" },
+  { name: "Cursor", tier: "Sponsor", href: "https://www.cursor.com/", logo: "/sponsors/cursor.png" },
+  { name: "OpenAI", tier: "Sponsor", href: "https://openai.com/", logo: "/sponsors/openai.png", invert: true },
 ];
 
 export function Sponsors() {
@@ -53,7 +59,7 @@ export function Sponsors() {
         </div>
 
         {/* Sponsor grid */}
-        <div className="mx-auto mt-14 grid max-w-3xl grid-cols-2 items-center justify-items-center gap-10 sm:grid-cols-3 sm:gap-12">
+        <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 items-center justify-items-center gap-10 sm:grid-cols-4 sm:gap-12">
           {sponsors.map((sponsor) => (
             <a
               key={sponsor.name}
@@ -69,22 +75,35 @@ export function Sponsors() {
                 width={200}
                 height={100}
                 className={`h-auto max-h-24 w-auto object-contain opacity-80 transition-opacity hover:opacity-100 ${
-                  sponsor.round ? "rounded-full" : ""
-                } ${sponsor.invert ? "invert" : ""}`}
+                  sponsor.invert ? "invert" : ""
+                }`}
               />
             </a>
           ))}
         </div>
 
-        <p className="font-body mt-12 text-center text-sm text-white/40">
-          Interested in sponsoring?{" "}
-          <a
-            href="mailto:alaraia1@babson.edu"
-            className="font-medium text-[#00e87b] underline underline-offset-4 transition-colors hover:text-[#00ff88]"
-          >
-            Get in touch
-          </a>
-        </p>
+        <div className="font-body mt-12 text-center text-sm text-white/40">
+          <p>
+            Interested in sponsoring?{" "}
+            <Link
+              href="/partners"
+              className="font-medium text-[#00e87b] underline underline-offset-4 transition-colors hover:text-[#00ff88]"
+            >
+              Become a Partner
+            </Link>
+          </p>
+          <p className="mt-2">
+            A program of{" "}
+            <a
+              href="https://www.babson.edu/thegenerator/"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-[#00e87b] underline underline-offset-4 transition-colors hover:text-[#00ff88]"
+            >
+              The Generator at Babson College
+            </a>
+          </p>
+        </div>
       </div>
     </section>
   );
