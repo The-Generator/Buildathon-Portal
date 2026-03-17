@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { TEAM_OPTIONS } from "@/lib/constants";
+import { scrollToFirstError } from "@/lib/utils";
 import { stepTeamSetupSchema } from "@/lib/validations";
 import { cn } from "@/lib/utils";
 import { UserPlus, User, Eye, Plus, Trash2 } from "lucide-react";
@@ -81,6 +82,7 @@ export function StepTeamSetup({
         }
       });
       setErrors(fieldErrors);
+      scrollToFirstError();
       return;
     }
 

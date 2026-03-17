@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/admin-auth";
 import { z } from "zod";
 import type { Team } from "@/types";
+import { dissolveEmptyTeam } from "../_helpers";
 
 const addMembersSchema = z.object({
   participant_ids: z
@@ -17,6 +18,7 @@ const addMembersSchema = z.object({
 
 const removeMemberSchema = z.object({
   participant_id: z.string().uuid("Invalid participant ID"),
+  dissolve_if_empty: z.boolean().optional(),
 });
 
 async function recomputeAggregates(supabase: ReturnType<typeof createAdminClient>, teamId: string) {
@@ -344,6 +346,26 @@ export async function DELETE(
           details: auditError.message,
         },
         { status: 500 }
+      );
+    }
+
+    // Check if team is now empty and should be dissolved
+    const { count: remainingCount } = await supabase
+      .from("participants")
+      .select("*", { count: "exact", head: true })
+      .eq("team_id", id);
+
+    if ((remainingCount ?? 0) === 0 && result.data.dissolve_if_empty) {
+      const dissolveResult = await dissolveEmptyTeam(supabase, id, admin.email);
+      if (!dissolveResult.success) {
+        return NextResponse.json(
+          { error: "Member removed but failed to dissolve empty team", details: dissolveResult.error },
+          { status: 500 }
+        );
+      }
+      return NextResponse.json(
+        { success: true, dissolved: true },
+        { status: 200 }
       );
     }
 

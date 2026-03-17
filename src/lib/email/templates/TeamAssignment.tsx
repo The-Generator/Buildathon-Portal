@@ -16,6 +16,7 @@ import { EVENT_CONFIG } from "@/lib/constants";
 interface TeamAssignmentProps {
   participantName: string;
   teamName: string;
+  roomNumber?: number | null;
   teammates: Array<{
     name: string;
     school: string;
@@ -29,6 +30,7 @@ interface TeamAssignmentProps {
 export default function TeamAssignment({
   participantName,
   teamName,
+  roomNumber,
   teammates,
   teamSkills,
 }: TeamAssignmentProps) {
@@ -111,6 +113,9 @@ export default function TeamAssignment({
             <Section style={teamNameCard}>
               <Text style={teamNameLabel}>YOUR TEAM</Text>
               <Heading as="h2" style={teamNameHeading}>{teamName}</Heading>
+              {roomNumber && (
+                <Text style={roomNumberText}>Room {roomNumber}</Text>
+              )}
             </Section>
 
             {/* Teammates */}
@@ -231,11 +236,51 @@ export default function TeamAssignment({
                       <span style={{ color: "#9ca3af" }}>{EVENT_CONFIG.address}</span>
                     </td>
                   </tr>
+                  {roomNumber && (
+                    <tr>
+                      <td style={iconCell}>
+                        <Img
+                          src="https://em-content.zobj.net/source/apple/391/door_1f6aa.png"
+                          alt="room"
+                          width="18"
+                          height="18"
+                        />
+                      </td>
+                      <td style={detailText}>Room {roomNumber}</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </Section>
 
             <Hr style={hr} />
+
+            {/* Check-In Callout */}
+            <Section style={checkinCallout}>
+              <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
+                <tbody>
+                  <tr>
+                    <td>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/clipboard_1f4cb.png"
+                        alt="checkin"
+                        width="32"
+                        height="32"
+                        style={{ margin: "0 auto" }}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ paddingTop: "8px" }}>
+                      <Text style={checkinCalloutTitle}>Check-In Email Coming April 10th</Text>
+                      <Text style={checkinCalloutDesc}>
+                        Check in online to get a green checkmark and skip the line at the door!
+                      </Text>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Section>
 
             {/* Get Ready */}
             <Heading as="h2" style={{ ...sectionTitle, marginBottom: "20px" }}>
@@ -411,6 +456,13 @@ const teamNameHeading: React.CSSProperties = {
   margin: "0",
 };
 
+const roomNumberText: React.CSSProperties = {
+  color: "rgba(255,255,255,0.75)",
+  fontSize: "14px",
+  fontWeight: "500",
+  margin: "6px 0 0",
+};
+
 const sectionTitle: React.CSSProperties = {
   color: "#111827",
   fontSize: "15px",
@@ -460,14 +512,6 @@ const memberName: React.CSSProperties = {
 const memberSchool: React.CSSProperties = {
   color: "#6b7280",
   fontSize: "12px",
-  margin: "0",
-  lineHeight: "1.4",
-};
-
-const memberRole: React.CSSProperties = {
-  color: "#006241",
-  fontSize: "12px",
-  fontWeight: "600",
   margin: "0",
   lineHeight: "1.4",
 };
@@ -530,6 +574,29 @@ const directoryLink: React.CSSProperties = {
   textDecoration: "none",
   display: "inline-block",
   padding: "8px 20px",
+};
+
+const checkinCallout: React.CSSProperties = {
+  backgroundColor: "#eff6ff",
+  border: "1px solid #bfdbfe",
+  borderRadius: "10px",
+  padding: "20px",
+  margin: "0 0 24px",
+  textAlign: "center" as const,
+};
+
+const checkinCalloutTitle: React.CSSProperties = {
+  color: "#1e40af",
+  fontSize: "14px",
+  fontWeight: "700",
+  margin: "0 0 4px",
+};
+
+const checkinCalloutDesc: React.CSSProperties = {
+  color: "#3b82f6",
+  fontSize: "13px",
+  lineHeight: "1.5",
+  margin: "0",
 };
 
 const card: React.CSSProperties = {

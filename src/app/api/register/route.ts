@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
           portfolio_url: data.portfolio_url || null,
           bio: data.bio || null,
           photo_url: data.photo_url || null,
-          profile_visible: true,
+          profile_visible: data.profile_visible ?? false,
         })
         .select()
         .single();
@@ -79,9 +79,8 @@ export async function POST(request: NextRequest) {
         subject: `You're registered for ${EVENT_CONFIG.shortName}!`,
         react: createElement(RegistrationConfirmation, {
           participantName: spectator.full_name,
-          teamName: "Spectator",
-          teamSize: 0,
-          isComplete: true,
+          teamOption: "spectator" as const,
+          groupSize: 0,
           isRegisteredByOther: false,
         }),
       }).catch((err) => console.error("Spectator confirmation email failed:", err));
@@ -202,77 +201,19 @@ export async function POST(request: NextRequest) {
       teammateRecords.push(teammateRecord);
     }
 
-    // 6. Determine team formation_type and is_complete
-    const formationType = "algorithm_matched";
-    const isComplete = false;
-
-    // 7. Create team
-    const { data: team, error: teamError } = await supabase
-      .from("teams")
-      .insert({
-        name: `${data.full_name}'s Team`,
-        formation_type: formationType,
-        is_complete: isComplete,
-      })
-      .select()
-      .single();
-
-    if (teamError || !team) {
-      return NextResponse.json(
-        { error: "Failed to create team", details: teamError?.message },
-        { status: 500 }
-      );
-    }
-
-    // 8. Assign team_id to all participants
-    const allParticipantIds = [
-      registrant.id,
-      ...teammateRecords.map((t) => t.id),
-    ];
-
-    const { error: assignError } = await supabase
-      .from("participants")
-      .update({ team_id: team.id })
-      .in("id", allParticipantIds);
-
-    if (assignError) {
-      console.error("Failed to assign team:", assignError.message);
-    }
-
-    // 9. Create registration_group record
+    // 6. Create registration_group record (no team yet — teams are created by matching)
     const { error: groupError } = await supabase
       .from("registration_groups")
       .insert({
         registrant_id: registrant.id,
         group_size: incomingGroupSize,
         members_requested: null,
-        team_id: team.id,
+        team_id: null,
         tagged_team_skills: data.tagged_team_skills,
       });
 
     if (groupError) {
       console.error("Failed to create registration group:", groupError.message);
-    }
-
-    // 10. Aggregate roles and skills onto the team
-    const allParticipants = [registrant, ...teammateRecords];
-    const aggregateRoles = [
-      ...new Set(allParticipants.map((p) => p.primary_role)),
-    ];
-    const aggregateSkills = [
-      ...new Set(allParticipants.flatMap((p) => p.specific_skills)),
-    ];
-
-    const { error: aggregateError } = await supabase
-      .from("teams")
-      .update({
-        aggregate_roles: aggregateRoles,
-        aggregate_skills: aggregateSkills,
-      })
-      .eq("id", team.id);
-
-    if (aggregateError) {
-      console.error("Failed to aggregate team data:", aggregateError.message);
     }
 
     // Send confirmation email to registrant
@@ -281,9 +222,8 @@ export async function POST(request: NextRequest) {
       subject: `You're registered for ${EVENT_CONFIG.shortName}!`,
       react: createElement(RegistrationConfirmation, {
         participantName: registrant.full_name,
-        teamName: team.name,
-        teamSize: incomingGroupSize,
-        isComplete: isComplete,
+        teamOption: data.team_option,
+        groupSize: incomingGroupSize,
         isRegisteredByOther: false,
       }),
     }).catch((err) => console.error("Registration confirmation email failed:", err));
@@ -295,9 +235,8 @@ export async function POST(request: NextRequest) {
         subject: `You're registered for ${EVENT_CONFIG.shortName}!`,
         react: createElement(RegistrationConfirmation, {
           participantName: teammate.full_name,
-          teamName: team.name,
-          teamSize: incomingGroupSize,
-          isComplete: isComplete,
+          teamOption: data.team_option,
+          groupSize: incomingGroupSize,
           isRegisteredByOther: true,
           registeredByName: registrant.full_name,
         }),
@@ -307,11 +246,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         message: "Registration successful!",
-        team: {
-          id: team.id,
-          name: team.name,
-          is_complete: team.is_complete,
-        },
         registrant: {
           id: registrant.id,
           full_name: registrant.full_name,

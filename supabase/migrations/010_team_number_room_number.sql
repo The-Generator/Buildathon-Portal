@@ -1,0 +1,3 @@
+ALTER TABLE teams
+  ADD COLUMN team_number INTEGER UNIQUE,
+  ADD COLUMN room_number INTEGER CHECK (room_number BETWEEN 1 AND 10);

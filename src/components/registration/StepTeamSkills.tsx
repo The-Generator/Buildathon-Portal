@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SkillChips } from "./SkillChips";
 import { SPECIFIC_SKILLS } from "@/lib/constants";
+import { scrollToFirstError } from "@/lib/utils";
 import { stepTeamSkillsSchema } from "@/lib/validations";
 import type { RegistrationFormData } from "@/types";
 
@@ -36,6 +37,7 @@ export function StepTeamSkills({
         }
       });
       setErrors(fieldErrors);
+      scrollToFirstError();
       return;
     }
 

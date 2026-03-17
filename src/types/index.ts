@@ -31,6 +31,8 @@ export interface Participant {
 export interface Team {
   id: string;
   name: string;
+  team_number?: number | null;
+  room_number?: number | null;
   formation_type: "algorithm_matched" | "admin_assigned";
   is_complete: boolean;
   is_locked: boolean;

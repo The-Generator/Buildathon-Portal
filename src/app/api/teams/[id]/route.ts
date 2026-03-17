@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/admin-auth";
+import { EVENT_CONFIG } from "@/lib/constants";
 import type { Team } from "@/types";
 
 export async function GET(
@@ -73,6 +74,8 @@ export async function PATCH(
     // Only allow updating specific fields
     const allowedFields = [
       "name",
+      "team_number",
+      "room_number",
       "is_complete",
       "is_locked",
       "project_name",
@@ -85,6 +88,31 @@ export async function PATCH(
     for (const field of allowedFields) {
       if (field in bodyRecord) {
         updateData[field] = bodyRecord[field];
+      }
+    }
+
+    // Validate room_number: must be 1-10 or null
+    if ("room_number" in updateData) {
+      const rn = updateData.room_number;
+      if (
+        rn !== null &&
+        (typeof rn !== "number" || !Number.isInteger(rn) || rn < 1 || rn > EVENT_CONFIG.roomCount)
+      ) {
+        return NextResponse.json(
+          { error: `room_number must be between 1 and ${EVENT_CONFIG.roomCount}, or null` },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate team_number: must be a positive integer or null
+    if ("team_number" in updateData) {
+      const tn = updateData.team_number;
+      if (tn !== null && (typeof tn !== "number" || !Number.isInteger(tn) || tn < 1)) {
+        return NextResponse.json(
+          { error: "team_number must be a positive integer, or null" },
+          { status: 400 }
+        );
       }
     }
 
@@ -123,6 +151,13 @@ export async function PATCH(
       .eq("id", id)
       .select()
       .single();
+
+    if (updateError?.code === "23505") {
+      return NextResponse.json(
+        { error: "team_number is already taken by another team" },
+        { status: 409 }
+      );
+    }
 
     if (updateError || !updatedTeam) {
       return NextResponse.json(

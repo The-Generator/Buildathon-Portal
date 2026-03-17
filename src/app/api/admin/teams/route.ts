@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/admin-auth";
+import { EVENT_CONFIG } from "@/lib/constants";
 import { z } from "zod";
 
 const createTeamSchema = z.object({
@@ -68,28 +69,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Determine the next team_number from the current max
+    const { data: maxRow } = await supabase
+      .from("teams")
+      .select("team_number")
+      .order("team_number", { ascending: false })
+      .limit(1)
+      .single();
+
+    const teamNumber = (maxRow?.team_number ?? 0) + 1;
+    const roomNumber = ((teamNumber - 1) % EVENT_CONFIG.roomCount) + 1;
+
     // Auto-generate team name if not provided
-    let teamName = name;
-    if (!teamName) {
-      const { count, error: countError } = await supabase
-        .from("teams")
-        .select("*", { count: "exact", head: true });
-
-      if (countError) {
-        return NextResponse.json(
-          { error: "Failed to generate team name", details: countError.message },
-          { status: 500 }
-        );
-      }
-
-      teamName = `Team ${(count ?? 0) + 1}`;
-    }
+    const teamName = name ?? `Team ${teamNumber}`;
 
     // Create the team
+    let createdTeam: Record<string, unknown> | null = null;
+
     const { data: team, error: createError } = await supabase
       .from("teams")
       .insert({
         name: teamName,
+        team_number: teamNumber,
+        room_number: roomNumber,
         formation_type: "admin_assigned",
         is_complete: participant_ids.length >= 5,
         is_locked: false,
@@ -99,22 +101,61 @@ export async function POST(request: NextRequest) {
       .select()
       .single();
 
-    if (createError || !team) {
+    // Retry once on unique constraint violation (concurrent request race)
+    if (createError?.code === "23505") {
+      const { data: retryMax } = await supabase
+        .from("teams")
+        .select("team_number")
+        .order("team_number", { ascending: false })
+        .limit(1)
+        .single();
+
+      const retryNumber = (retryMax?.team_number ?? 0) + 1;
+      const retryRoom = ((retryNumber - 1) % EVENT_CONFIG.roomCount) + 1;
+
+      const { data: retryTeam, error: retryError } = await supabase
+        .from("teams")
+        .insert({
+          name: name ?? `Team ${retryNumber}`,
+          team_number: retryNumber,
+          room_number: retryRoom,
+          formation_type: "admin_assigned",
+          is_complete: participant_ids.length >= 5,
+          is_locked: false,
+          aggregate_roles: [],
+          aggregate_skills: [],
+        })
+        .select()
+        .single();
+
+      if (retryError || !retryTeam) {
+        return NextResponse.json(
+          { error: "Failed to create team (conflict on team number)", details: retryError?.message },
+          { status: 409 }
+        );
+      }
+
+      createdTeam = retryTeam;
+    } else if (createError || !team) {
       return NextResponse.json(
         { error: "Failed to create team", details: createError?.message },
         { status: 500 }
       );
+    } else {
+      createdTeam = team;
     }
+
+    const teamId = createdTeam!.id as string;
 
     // Assign participants to the team
     const { error: assignError } = await supabase
       .from("participants")
-      .update({ team_id: team.id })
+      .update({ team_id: teamId })
       .in("id", participant_ids);
 
     if (assignError) {
       // Rollback: delete the team we just created
-      await supabase.from("teams").delete().eq("id", team.id);
+      await supabase.from("teams").delete().eq("id", teamId);
       return NextResponse.json(
         { error: "Failed to assign participants", details: assignError.message },
         { status: 500 }
@@ -125,7 +166,7 @@ export async function POST(request: NextRequest) {
     const { data: members } = await supabase
       .from("participants")
       .select("primary_role, specific_skills")
-      .eq("team_id", team.id);
+      .eq("team_id", teamId);
 
     if (members) {
       const aggregateRoles = [...new Set(members.map((m) => m.primary_role))];
@@ -136,7 +177,7 @@ export async function POST(request: NextRequest) {
       await supabase
         .from("teams")
         .update({ aggregate_roles: aggregateRoles, aggregate_skills: aggregateSkills })
-        .eq("id", team.id);
+        .eq("id", teamId);
     }
 
     // Write audit log entry
@@ -145,7 +186,7 @@ export async function POST(request: NextRequest) {
       .insert({
         admin_email: admin.email,
         action_type: "created_team",
-        team_id: team.id,
+        team_id: teamId,
         details: {
           team_name: teamName,
           participant_ids,
@@ -161,11 +202,11 @@ export async function POST(request: NextRequest) {
     const { data: fullMembers } = await supabase
       .from("participants")
       .select("*")
-      .eq("team_id", team.id);
+      .eq("team_id", teamId);
 
     return NextResponse.json(
       {
-        ...team,
+        ...createdTeam,
         name: teamName,
         aggregate_roles: members
           ? [...new Set(members.map((m) => m.primary_role))]

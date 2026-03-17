@@ -19,6 +19,7 @@ import {
   Unlock,
   Users,
 } from "lucide-react";
+import { EVENT_CONFIG } from "@/lib/constants";
 import type { Team, Participant } from "@/types";
 
 type TeamWithMembers = Team & { members: Participant[] };
@@ -51,7 +52,7 @@ export default function TeamsPage() {
     const { data: teamData, error: tError } = await supabase
       .from("teams")
       .select("*")
-      .order("created_at", { ascending: false });
+      .order("team_number", { ascending: true, nullsFirst: false });
 
     if (tError) {
       console.error("Failed to fetch teams:", tError);
@@ -481,6 +482,9 @@ export default function TeamsPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-gray-900 truncate">
+                        {team.team_number != null && (
+                          <span className="text-emerald-700 mr-1.5">#{team.team_number}</span>
+                        )}
                         {team.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
@@ -491,7 +495,10 @@ export default function TeamsPage() {
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 ml-2">
+                    <div className="flex items-center gap-2 ml-2 flex-wrap justify-end">
+                      {team.room_number != null && (
+                        <Badge color="blue">Room {team.room_number}</Badge>
+                      )}
                       <Badge color={formationColor(team.formation_type)}>
                         {formationLabel(team.formation_type)}
                       </Badge>
@@ -551,6 +558,53 @@ export default function TeamsPage() {
                             {team.project_description}
                           </p>
                         )}
+                      </div>
+                    )}
+                    {adminToken && (
+                      <div className="mt-3 pt-3 border-t border-gray-100">
+                        <label className="text-xs text-gray-400 uppercase font-medium">
+                          Room Assignment
+                        </label>
+                        <select
+                          className="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-emerald-500 focus:ring-emerald-500 disabled:opacity-50"
+                          value={team.room_number ?? ""}
+                          disabled={syncing}
+                          onChange={async (e) => {
+                            const val = e.target.value;
+                            const room_number = val === "" ? null : Number(val);
+                            const res = await fetch(`/api/teams/${team.id}`, {
+                              method: "PATCH",
+                              headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${adminToken}`,
+                              },
+                              body: JSON.stringify({ room_number }),
+                            });
+                            if (!res.ok) {
+                              const err = await res.json().catch(() => ({ error: "Request failed" }));
+                              showActionToast(`Failed: ${err.error}`);
+                              const data = await fetchData();
+                              if (data) setTeams(data);
+                              return;
+                            }
+                            const data = await fetchData();
+                            if (data) setTeams(data);
+                            showActionToast(
+                              room_number
+                                ? `${team.name} → Room ${room_number}`
+                                : `${team.name} room cleared`
+                            );
+                          }}
+                        >
+                          <option value="">No room</option>
+                          {Array.from({ length: EVENT_CONFIG.roomCount }, (_, i) => i + 1).map(
+                            (n) => (
+                              <option key={n} value={n}>
+                                Room {n}
+                              </option>
+                            )
+                          )}
+                        </select>
                       </div>
                     )}
                     {adminToken && (

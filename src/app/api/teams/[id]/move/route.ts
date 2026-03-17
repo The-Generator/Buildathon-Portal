@@ -2,10 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/admin-auth";
+import { dissolveEmptyTeam } from "../_helpers";
 
 const moveParticipantSchema = z.object({
   participant_id: z.string().uuid(),
   target_team_id: z.string().uuid(),
+  dissolve_if_empty: z.boolean().optional(),
 });
 
 export async function POST(
@@ -201,6 +203,28 @@ export async function POST(
         },
         { status: 500 }
       );
+    }
+
+    // Check if source team is now empty and should be dissolved
+    if (parsed.data.dissolve_if_empty) {
+      const { count: sourceRemainingCount } = await supabase
+        .from("participants")
+        .select("*", { count: "exact", head: true })
+        .eq("team_id", sourceTeamId);
+
+      if ((sourceRemainingCount ?? 0) === 0) {
+        const dissolveResult = await dissolveEmptyTeam(supabase, sourceTeamId, admin.email);
+        return NextResponse.json(
+          {
+            success: true,
+            participant_id,
+            source_team_id: sourceTeamId,
+            target_team_id,
+            source_dissolved: dissolveResult.success,
+          },
+          { status: 200 }
+        );
+      }
     }
 
     return NextResponse.json(

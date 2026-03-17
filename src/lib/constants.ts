@@ -11,6 +11,7 @@ export const EVENT_CONFIG = {
   address: "231 Forest St, Wellesley, MA 02457",
   capacity: 500,
   teamSize: 5,
+  roomCount: 10,
   theme: "AI x Body & Mind",
 } as const;
 
@@ -54,6 +55,8 @@ export const EXPERIENCE_LEVELS = [
 
 export const SCHOOLS = [
   "Babson",
+  "Bentley",
+  "Bryant",
   "Olin",
   "Wellesley",
   "MIT",

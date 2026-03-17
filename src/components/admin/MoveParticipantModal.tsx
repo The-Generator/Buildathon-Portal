@@ -14,6 +14,7 @@ interface MoveParticipantModalProps {
   participant: Participant;
   sourceTeamId: string;
   sourceTeamName: string;
+  sourceTeamMemberCount: number;
   adminToken: string;
   onMoved: () => void;
 }
@@ -24,6 +25,7 @@ export function MoveParticipantModal({
   participant,
   sourceTeamId,
   sourceTeamName,
+  sourceTeamMemberCount,
   adminToken,
   onMoved,
 }: MoveParticipantModalProps) {
@@ -92,6 +94,7 @@ export function MoveParticipantModal({
         body: JSON.stringify({
           participant_id: participant.id,
           target_team_id: selectedTeamId,
+          ...(sourceTeamMemberCount === 1 && { dissolve_if_empty: true }),
         }),
       });
 
@@ -194,6 +197,13 @@ export function MoveParticipantModal({
             </div>
           )}
         </div>
+
+        {/* Last member dissolution warning */}
+        {sourceTeamMemberCount === 1 && (
+          <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">
+            Moving the last member will dissolve <span className="font-medium">{sourceTeamName}</span>.
+          </div>
+        )}
 
         {/* Confirmation summary */}
         {selectedTeam && (

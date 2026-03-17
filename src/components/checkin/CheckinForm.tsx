@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 
 type CheckinState =
   | "idle"
@@ -28,6 +29,8 @@ export function CheckinForm() {
   const [participant, setParticipant] = useState<ParticipantInfo | null>(null);
   const [error, setError] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const searchParams = useSearchParams();
+  const isStationMode = searchParams.get("mode") === "station";
 
   useEffect(() => {
     inputRef.current?.focus();
@@ -101,8 +104,10 @@ export function CheckinForm() {
 
       setState("checked_in_success");
 
-      // Reset after 3 seconds
-      setTimeout(reset, 3000);
+      // Only auto-reset in station mode (organizer kiosk)
+      if (isStationMode) {
+        setTimeout(reset, 3000);
+      }
     } catch {
       setError("Network error. Please try again.");
       setState("found_not_checked_in");
@@ -118,10 +123,10 @@ export function CheckinForm() {
   // Success state
   if (state === "checked_in_success") {
     return (
-      <div className="text-center py-6 animate-in fade-in">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-100 mb-4">
+      <div className="text-center py-8 animate-in fade-in">
+        <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-emerald-100 mb-6">
           <svg
-            className="w-8 h-8 text-emerald-800"
+            className="w-12 h-12 text-emerald-800"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -134,12 +139,30 @@ export function CheckinForm() {
             />
           </svg>
         </div>
-        <h3 className="text-xl font-bold text-emerald-800 mb-1">
+        <h3 className="text-2xl font-bold text-emerald-800 mb-2">
           You&apos;re checked in!
         </h3>
-        <p className="text-gray-500 text-sm">
-          Welcome, {participant?.full_name}
+        <p className="text-lg text-gray-900 font-medium mb-1">
+          {participant?.full_name}
         </p>
+        {!isStationMode && (
+          <>
+            <p className="text-sm text-gray-500 mt-4">
+              Show this screen at the door to skip the line
+            </p>
+            <button
+              onClick={reset}
+              className="mt-6 inline-flex items-center justify-center rounded-xl font-semibold text-sm px-8 py-3 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+            >
+              Done
+            </button>
+          </>
+        )}
+        {isStationMode && (
+          <p className="text-gray-500 text-sm mt-2">
+            Welcome, {participant?.full_name}
+          </p>
+        )}
       </div>
     );
   }
@@ -147,10 +170,10 @@ export function CheckinForm() {
   // Already checked in state
   if (state === "found_checked_in" && participant) {
     return (
-      <div className="text-center py-4">
-        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-emerald-100 mb-3">
+      <div className="text-center py-6">
+        <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-emerald-100 mb-6">
           <svg
-            className="w-7 h-7 text-emerald-800"
+            className="w-12 h-12 text-emerald-800"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -163,11 +186,11 @@ export function CheckinForm() {
             />
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+        <h3 className="text-xl font-bold text-gray-900 mb-1">
           Already checked in
         </h3>
-        <p className="text-sm text-gray-600 mb-1">{participant.full_name}</p>
-        <p className="text-xs text-gray-400">
+        <p className="text-lg text-gray-900 font-medium">{participant.full_name}</p>
+        <p className="text-xs text-gray-400 mt-1">
           Checked in at{" "}
           {participant.checked_in_at
             ? new Date(participant.checked_in_at).toLocaleTimeString("en-US", {
@@ -177,11 +200,16 @@ export function CheckinForm() {
               })
             : "earlier"}
         </p>
+        {!isStationMode && (
+          <p className="text-sm text-gray-500 mt-4">
+            Show this screen at the door to skip the line
+          </p>
+        )}
         <button
           onClick={reset}
-          className="mt-4 text-sm text-emerald-800 font-medium hover:underline"
+          className="mt-6 inline-flex items-center justify-center rounded-xl font-medium text-sm px-8 py-3 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
         >
-          Check in someone else
+          {isStationMode ? "Check in someone else" : "Done"}
         </button>
       </div>
     );

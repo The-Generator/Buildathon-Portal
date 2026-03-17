@@ -15,6 +15,7 @@ import {
   SCHOOLS,
   YEARS,
 } from "@/lib/constants";
+import { scrollToFirstError } from "@/lib/utils";
 import { stepPersonalInfoSchema } from "@/lib/validations";
 import type { RegistrationFormData } from "@/types";
 
@@ -30,7 +31,6 @@ export function StepPersonalInfo({
   onNext,
 }: StepPersonalInfoProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [profileOpen, setProfileOpen] = useState(false);
 
   const handleNext = () => {
     const result = stepPersonalInfoSchema.safeParse({
@@ -49,7 +49,7 @@ export function StepPersonalInfo({
       linkedin_url: data.linkedin_url || "",
       portfolio_url: data.portfolio_url || "",
       bio: data.bio || "",
-      profile_visible: true,
+      profile_visible: data.profile_visible ?? false,
     });
 
     if (!result.success) {
@@ -61,6 +61,7 @@ export function StepPersonalInfo({
         }
       });
       setErrors(fieldErrors);
+      scrollToFirstError();
       return;
     }
 
@@ -209,14 +210,14 @@ export function StepPersonalInfo({
                 className="sr-only"
               />
               <div
-                className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${
+                className={`shrink-0 h-4 w-4 rounded-full border-2 flex items-center justify-center ${
                   data.experience_level === level
                     ? "border-[#006241]"
                     : "border-gray-300"
                 }`}
               >
                 {data.experience_level === level && (
-                  <div className="h-2 w-2 rounded-full bg-[#006241]" />
+                  <div className="shrink-0 h-2 w-2 rounded-full bg-[#006241]" />
                 )}
               </div>
               <span className="text-sm font-medium">{level}</span>
@@ -243,27 +244,30 @@ export function StepPersonalInfo({
       </div>
 
       {/* Public Profile (Optional) */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
-        <button
-          type="button"
-          onClick={() => setProfileOpen((o) => !o)}
-          className="w-full flex items-center justify-between px-4 py-3 bg-gray-50 hover:bg-gray-100 transition-colors"
-        >
-          <span className="text-sm font-medium text-gray-700">
-            Public Profile <span className="text-gray-400 font-normal">(Optional)</span>
-          </span>
-          <svg
-            className={`h-4 w-4 text-gray-500 transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`}
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
-          </svg>
-        </button>
-        {profileOpen && (
-          <div className="px-4 py-4 space-y-4">
-            <p className="text-xs text-gray-500">
-              Your name, school, role, skills, and links below will be visible on the participant directory so other builders can find you.
+      <div className="border border-gray-200 rounded-lg p-4 space-y-4">
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={data.profile_visible ?? false}
+            onChange={(e) => onChange({ profile_visible: e.target.checked })}
+            className="mt-0.5 h-4 w-4 shrink-0 rounded border-gray-300 text-[#006241] focus:ring-[#006241]"
+          />
+          <div>
+            <span className="text-sm font-medium text-gray-700">
+              Make my profile public on the participant directory
+            </span>
+            <p className="text-xs text-gray-500 mt-0.5">
+              Your name, school, role, skills, and links will be visible to other participants.
+            </p>
+          </div>
+        </label>
+        {errors.profile_visible && (
+          <p className="text-sm text-red-600">{errors.profile_visible}</p>
+        )}
+        {data.profile_visible && (
+          <div className="space-y-4 pt-2 border-t border-gray-100">
+            <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+              Add at least one: a photo, LinkedIn, or social media link.
             </p>
             <PhotoUpload
               value={data.photo_url}
@@ -272,7 +276,7 @@ export function StepPersonalInfo({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 id="linkedin_url"
-                label="LinkedIn URL"
+                label="LinkedIn"
                 type="url"
                 placeholder="https://linkedin.com/in/yourname"
                 value={data.linkedin_url || ""}
@@ -281,12 +285,13 @@ export function StepPersonalInfo({
               />
               <Input
                 id="portfolio_url"
-                label="Portfolio URL"
+                label="Social / Portfolio Link"
                 type="url"
-                placeholder="https://yourportfolio.com"
+                placeholder="https://instagram.com/yourhandle"
                 value={data.portfolio_url || ""}
                 onChange={(e) => onChange({ portfolio_url: e.target.value })}
                 error={errors.portfolio_url}
+                helperText="Instagram, X, GitHub, personal site, etc."
               />
             </div>
             <div>

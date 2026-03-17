@@ -25,3 +25,17 @@ export function formatTime(date: Date | string) {
 export function formatDateTime(date: Date | string) {
   return `${formatDate(date)} at ${formatTime(date)}`;
 }
+
+/** Scroll to the first visible validation error after React re-renders. */
+export function scrollToFirstError() {
+  requestAnimationFrame(() => {
+    // border-red-500 targets Input/Select fields in error state;
+    // text-red-600 catches standalone error messages (RoleSelector, SkillChips, etc.)
+    const el = document.querySelector<HTMLElement>(".border-red-500, .text-red-600");
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement) {
+      el.focus();
+    }
+  });
+}

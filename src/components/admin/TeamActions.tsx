@@ -35,6 +35,7 @@ export function TeamActions({
   );
   const [confirmDissolve, setConfirmDissolve] = useState(false);
   const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
+  const [confirmRemoveLastMember, setConfirmRemoveLastMember] = useState<Participant | null>(null);
   const [notifying, setNotifying] = useState(false);
   const [showPostEditNotifyPrompt, setShowPostEditNotifyPrompt] = useState(false);
   const [notifyResult, setNotifyResult] = useState<{ sent: number; failed: number } | null>(null);
@@ -89,7 +90,7 @@ export function TeamActions({
     }
   };
 
-  const removeMember = async (participantId: string) => {
+  const removeMember = async (participantId: string, dissolveIfEmpty = false) => {
     setRemovingMemberId(participantId);
     try {
       const res = await fetch(`/api/teams/${teamId}/members`, {
@@ -98,7 +99,10 @@ export function TeamActions({
           "Content-Type": "application/json",
           Authorization: `Bearer ${adminToken}`,
         },
-        body: JSON.stringify({ participant_id: participantId }),
+        body: JSON.stringify({
+          participant_id: participantId,
+          dissolve_if_empty: dissolveIfEmpty,
+        }),
       });
 
       if (!res.ok) {
@@ -107,7 +111,9 @@ export function TeamActions({
         return;
       }
 
-      onUpdated("Member removed to unassigned queue");
+      const data = await res.json();
+      setConfirmRemoveLastMember(null);
+      onUpdated(data.dissolved ? "Last member removed — team dissolved" : "Member removed to unassigned queue");
     } catch (err) {
       console.error("Remove member error:", err);
     } finally {
@@ -330,7 +336,13 @@ export function TeamActions({
                   </button>
                   <button
                     type="button"
-                    onClick={() => removeMember(m.id)}
+                    onClick={() => {
+                      if (members.length === 1) {
+                        setConfirmRemoveLastMember(m);
+                      } else {
+                        removeMember(m.id);
+                      }
+                    }}
                     disabled={loading !== null || removingMemberId !== null}
                     className="p-1 rounded hover:bg-red-100 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50"
                     title="Remove from team"
@@ -348,6 +360,33 @@ export function TeamActions({
         </div>
       )}
 
+      {/* Last member removal confirmation */}
+      {confirmRemoveLastMember && (
+        <div className="mt-2 p-3 rounded-lg border border-amber-200 bg-amber-50">
+          <p className="text-sm text-amber-800 font-medium">
+            Removing {confirmRemoveLastMember.full_name} will dissolve {teamName} since it will have 0 members.
+          </p>
+          <div className="flex gap-2 mt-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={removingMemberId !== null}
+              onClick={() => removeMember(confirmRemoveLastMember.id, true)}
+            >
+              {removingMemberId ? "Removing..." : "Remove & Dissolve"}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={removingMemberId !== null}
+              onClick={() => setConfirmRemoveLastMember(null)}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Move modal */}
       {moveParticipant && (
         <MoveParticipantModal
@@ -356,6 +395,7 @@ export function TeamActions({
           participant={moveParticipant}
           sourceTeamId={teamId}
           sourceTeamName={teamName}
+          sourceTeamMemberCount={members.length}
           adminToken={adminToken}
           onMoved={() => {
             setMoveParticipant(null);

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdmin } from "@/lib/admin-auth";
+import { EVENT_CONFIG } from "@/lib/constants";
 import { z } from "zod";
 
 const confirmMatchesSchema = z.object({
@@ -34,6 +35,16 @@ export async function POST(request: NextRequest) {
     const { matches } = result.data;
     const supabase = createAdminClient();
 
+    // Determine the next team_number from the current max
+    const { data: maxRow } = await supabase
+      .from("teams")
+      .select("team_number")
+      .order("team_number", { ascending: false })
+      .limit(1)
+      .single();
+
+    let nextTeamNumber = (maxRow?.team_number ?? 0) + 1;
+
     const results = [];
 
     for (let i = 0; i < matches.length; i++) {
@@ -44,13 +55,16 @@ export async function POST(request: NextRequest) {
 
       // If this is a draft team ID from the algorithm, create a new team
       if (isDraftId) {
-        const teamNumber = i + 1;
+        const teamNumber = nextTeamNumber++;
+        const roomNumber = ((teamNumber - 1) % EVENT_CONFIG.roomCount) + 1;
         const teamName = `Team ${teamNumber}`;
 
         const { data: newTeam, error: createError } = await supabase
           .from("teams")
           .insert({
             name: teamName,
+            team_number: teamNumber,
+            room_number: roomNumber,
             formation_type: "algorithm_matched",
             is_complete: match.participant_ids.length >= 5,
             is_locked: true,
@@ -60,16 +74,54 @@ export async function POST(request: NextRequest) {
           .select("id")
           .single();
 
-        if (createError || !newTeam) {
+        // Retry once on unique constraint violation (concurrent request race)
+        if (createError?.code === "23505") {
+          const { data: retryMax } = await supabase
+            .from("teams")
+            .select("team_number")
+            .order("team_number", { ascending: false })
+            .limit(1)
+            .single();
+
+          nextTeamNumber = (retryMax?.team_number ?? 0) + 1;
+          const retryNumber = nextTeamNumber++;
+          const retryRoom = ((retryNumber - 1) % EVENT_CONFIG.roomCount) + 1;
+
+          const { data: retryTeam, error: retryError } = await supabase
+            .from("teams")
+            .insert({
+              name: `Team ${retryNumber}`,
+              team_number: retryNumber,
+              room_number: retryRoom,
+              formation_type: "algorithm_matched",
+              is_complete: match.participant_ids.length >= 5,
+              is_locked: true,
+              aggregate_roles: [],
+              aggregate_skills: [],
+            })
+            .select("id")
+            .single();
+
+          if (retryError || !retryTeam) {
+            results.push({
+              team_id: match.team_id,
+              success: false,
+              error: retryError?.message ?? "Failed to create team after retry",
+            });
+            continue;
+          }
+
+          teamId = retryTeam.id;
+        } else if (createError || !newTeam) {
           results.push({
             team_id: match.team_id,
             success: false,
             error: createError?.message ?? "Failed to create team",
           });
           continue;
+        } else {
+          teamId = newTeam.id;
         }
-
-        teamId = newTeam.id;
       }
 
       // Update participants with team assignment

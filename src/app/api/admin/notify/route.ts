@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     // Fetch teams with members
     const { data: teams, error: teamsError } = await supabase
       .from("teams")
-      .select("id, name, aggregate_skills")
+      .select("id, name, room_number, aggregate_skills")
       .in("id", teamIds);
 
     if (teamsError) {
@@ -144,6 +144,7 @@ export async function POST(request: NextRequest) {
         const emailElement = createElement(TeamAssignment, {
           participantName: member.full_name,
           teamName: team.name,
+          roomNumber: team.room_number,
           teammates,
           teamSkills: team.aggregate_skills ?? [],
         });

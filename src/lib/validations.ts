@@ -13,21 +13,21 @@ export const stepPersonalInfoSchema = z
     full_name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
     phone: z.string().min(10, "Phone number must be at least 10 digits"),
-    school: z.enum([...SCHOOLS]),
+    school: z.enum([...SCHOOLS], { message: "Please select your school" }),
     school_other: z.string().optional(),
-    year: z.enum([...YEARS]),
+    year: z.enum([...YEARS], { message: "Please select your year" }),
     dietary_restrictions: z.string().optional(),
-    primary_role: z.enum([...PRIMARY_ROLES]),
+    primary_role: z.enum([...PRIMARY_ROLES], { message: "Please select a role" }),
     specific_skills: z
       .array(z.enum([...SPECIFIC_SKILLS]))
       .optional()
       .default([]),
-    experience_level: z.enum([...EXPERIENCE_LEVELS]),
+    experience_level: z.enum([...EXPERIENCE_LEVELS], { message: "Please select your experience level" }),
     ai_tools: z.array(z.string()).optional().default([]),
     ai_tools_used: z.array(z.string()).optional().default([]),
     // Public Profile (optional)
     linkedin_url: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")),
-    portfolio_url: z.string().url("Invalid portfolio URL").optional().or(z.literal("")),
+    portfolio_url: z.string().url("Invalid URL").optional().or(z.literal("")),
     bio: z.string().max(280, "Bio must be 280 characters or less").optional().or(z.literal("")),
     photo_url: z.string().optional(),
     profile_visible: z.boolean().optional().default(false),
@@ -42,6 +42,16 @@ export const stepPersonalInfoSchema = z
     {
       message: "Please specify your school",
       path: ["school_other"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.profile_visible) return true;
+      return !!(data.photo_url || data.linkedin_url || data.portfolio_url);
+    },
+    {
+      message: "Add at least a photo, LinkedIn, or social media link to make your profile public",
+      path: ["profile_visible"],
     }
   );
 
@@ -88,20 +98,20 @@ export const fullRegistrationSchema = z
     full_name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
     phone: z.string().min(10, "Phone number must be at least 10 digits"),
-    school: z.enum([...SCHOOLS]),
+    school: z.enum([...SCHOOLS], { message: "Please select your school" }),
     school_other: z.string().optional(),
-    year: z.enum([...YEARS]),
+    year: z.enum([...YEARS], { message: "Please select your year" }),
     dietary_restrictions: z.string().optional(),
     // Optional for spectators (Jotform condition #1 disables these)
     // Accept empty string so base parsing passes; refinements enforce for non-spectators.
-    primary_role: z.enum([...PRIMARY_ROLES]).optional().or(z.literal("")),
+    primary_role: z.enum([...PRIMARY_ROLES], { message: "Please select a role" }).optional().or(z.literal("")),
     specific_skills: z.array(z.enum([...SPECIFIC_SKILLS])).optional().default([]),
-    experience_level: z.enum([...EXPERIENCE_LEVELS]).optional().or(z.literal("")),
+    experience_level: z.enum([...EXPERIENCE_LEVELS], { message: "Please select your experience level" }).optional().or(z.literal("")),
     ai_tools: z.array(z.string()).optional().default([]),
     ai_tools_used: z.array(z.string()).optional().default([]),
     // Public Profile (optional)
     linkedin_url: z.string().url("Invalid LinkedIn URL").optional().or(z.literal("")),
-    portfolio_url: z.string().url("Invalid portfolio URL").optional().or(z.literal("")),
+    portfolio_url: z.string().url("Invalid URL").optional().or(z.literal("")),
     bio: z.string().max(280, "Bio must be 280 characters or less").optional().or(z.literal("")),
     photo_url: z.string().optional(),
     profile_visible: z.boolean().optional().default(false),
@@ -170,6 +180,16 @@ export const fullRegistrationSchema = z
       message:
         "Select at least one team skill for team registrations. Spectator registrations should not include team skills.",
       path: ["tagged_team_skills"],
+    }
+  )
+  .refine(
+    (data) => {
+      if (!data.profile_visible) return true;
+      return !!(data.photo_url || data.linkedin_url || data.portfolio_url);
+    },
+    {
+      message: "Add at least a photo, LinkedIn, or social media link to make your profile public",
+      path: ["profile_visible"],
     }
   );
 

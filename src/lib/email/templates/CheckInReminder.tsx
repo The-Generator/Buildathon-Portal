@@ -13,21 +13,15 @@ import {
 } from "@react-email/components";
 import { EVENT_CONFIG } from "@/lib/constants";
 
-interface RegistrationConfirmationProps {
+interface CheckInReminderProps {
   participantName: string;
-  teamOption: "solo" | "partial_team" | "spectator";
-  groupSize: number;
-  isRegisteredByOther: boolean;
-  registeredByName?: string;
+  checkinUrl: string;
 }
 
-export default function RegistrationConfirmation({
+export default function CheckInReminder({
   participantName,
-  teamOption,
-  groupSize,
-  isRegisteredByOther,
-  registeredByName,
-}: RegistrationConfirmationProps) {
+  checkinUrl,
+}: CheckInReminderProps) {
   const formattedDate = new Date(EVENT_CONFIG.startTime).toLocaleDateString(
     "en-US",
     { weekday: "long", year: "numeric", month: "long", day: "numeric" }
@@ -40,8 +34,7 @@ export default function RegistrationConfirmation({
         <meta name="supported-color-schemes" content="light" />
       </Head>
       <Preview>
-        You&apos;re registered for {EVENT_CONFIG.shortName}! Join us on{" "}
-        {formattedDate}.
+        Check in online for {EVENT_CONFIG.shortName} and skip the line at the door!
       </Preview>
       <Body style={main}>
         <Container style={container}>
@@ -70,15 +63,15 @@ export default function RegistrationConfirmation({
             </table>
           </Section>
 
-          {/* Success Banner */}
-          <Section style={successBanner}>
+          {/* Check-In Banner */}
+          <Section style={checkinBanner}>
             <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
               <tbody>
                 <tr>
                   <td>
                     <Img
-                      src="https://em-content.zobj.net/source/apple/391/check-mark-button_2705.png"
-                      alt="check"
+                      src="https://em-content.zobj.net/source/apple/391/clipboard_1f4cb.png"
+                      alt="checkin"
                       width="48"
                       height="48"
                       style={{ margin: "0 auto" }}
@@ -87,8 +80,8 @@ export default function RegistrationConfirmation({
                 </tr>
                 <tr>
                   <td style={{ paddingTop: "12px" }}>
-                    <Heading as="h1" style={successHeading}>
-                      Registration Confirmed
+                    <Heading as="h1" style={checkinHeading}>
+                      Time to Check In!
                     </Heading>
                   </td>
                 </tr>
@@ -99,19 +92,10 @@ export default function RegistrationConfirmation({
           {/* Main Content */}
           <Section style={content}>
             <Text style={greeting}>Hi {participantName},</Text>
-
-            {isRegisteredByOther && registeredByName ? (
-              <Text style={paragraph}>
-                {registeredByName} has registered you for{" "}
-                {EVENT_CONFIG.name}. You&apos;re all set to participate on April 11th.
-              </Text>
-            ) : (
-              <Text style={paragraph}>
-                Thank you for registering for {EVENT_CONFIG.name}! We&apos;re
-                excited to have you join us for a day of building, learning,
-                and innovation.
-              </Text>
-            )}
+            <Text style={paragraph}>
+              The Build-a-thon is tomorrow! Check in online now to skip the
+              line at the door.
+            </Text>
 
             {/* Event Details */}
             <Section style={card}>
@@ -159,69 +143,18 @@ export default function RegistrationConfirmation({
               </table>
             </Section>
 
-            {/* Registration Status */}
-            <Section style={card}>
-              <Text style={cardLabel}>REGISTRATION STATUS</Text>
-              <Text style={registrationStatus}>
-                {teamOption === "spectator"
-                  ? "Spectator — You're set! No team assignment needed."
-                  : teamOption === "solo"
-                    ? "Solo Registration — You'll be matched with a team before the event."
-                    : `Group of ${groupSize} — Your group will be matched with additional teammates before the event.`}
-              </Text>
-            </Section>
-
-            <Hr style={hr} />
-
-            {/* Check-In Callout */}
-            {teamOption !== "spectator" && (
-              <Section style={checkinCallout}>
-                <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <Img
-                          src="https://em-content.zobj.net/source/apple/391/clipboard_1f4cb.png"
-                          alt="checkin"
-                          width="32"
-                          height="32"
-                          style={{ margin: "0 auto" }}
-                        />
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ paddingTop: "8px" }}>
-                        <Text style={checkinCalloutTitle}>Check-In Email Coming April 10th</Text>
-                        <Text style={checkinCalloutDesc}>
-                          Check in online to get a green checkmark and skip the line at the door!
-                        </Text>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </Section>
-            )}
-
-            {/* What's Next */}
+            {/* How It Works */}
             <Heading as="h2" style={sectionTitle}>
-              What&apos;s Next
+              How It Works
             </Heading>
 
             <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
               <tbody>
-                {(teamOption === "spectator"
-                  ? [
-                      { num: "1", title: "Save the date", desc: "Add April 11, 2026 to your calendar." },
-                      { num: "2", title: "Explore the event", desc: "Check out demos, workshops, and presentations." },
-                      { num: "3", title: "Show up and enjoy", desc: `Arrive at ${EVENT_CONFIG.location} and enjoy the event.` },
-                    ]
-                  : [
-                      { num: "1", title: "Save the date", desc: "Add April 11, 2026 to your calendar." },
-                      { num: "2", title: "Wait for your team", desc: "Once finalized, you'll get an email with your teammates' details." },
-                      { num: "3", title: "Prepare your tools", desc: "Make sure your laptop is ready and your dev environment is set up." },
-                      { num: "4", title: "Show up ready to build", desc: `Arrive at ${EVENT_CONFIG.location} by 8:00 AM for registration & breakfast.` },
-                    ]
-                ).map((step) => (
+                {[
+                  { num: "1", title: "Click the button below", desc: "Opens the check-in page" },
+                  { num: "2", title: "Enter your email", desc: "We'll look up your registration" },
+                  { num: "3", title: "Show your green checkmark", desc: "Present it at the door to skip the line" },
+                ].map((step) => (
                   <tr key={step.num}>
                     <td style={stepNumCell}>
                       <table cellPadding="0" cellSpacing="0">
@@ -247,8 +180,8 @@ export default function RegistrationConfirmation({
                 <tbody>
                   <tr>
                     <td style={ctaButton}>
-                      <Link href="https://babsonbuildathon.com" style={ctaLink}>
-                        Visit Event Website
+                      <Link href={checkinUrl} style={ctaLink}>
+                        Check In Now
                       </Link>
                     </td>
                   </tr>
@@ -328,15 +261,15 @@ const headerTheme: React.CSSProperties = {
   letterSpacing: "0.5px",
 };
 
-const successBanner: React.CSSProperties = {
-  backgroundColor: "#ecfdf5",
-  borderBottom: "1px solid #d1fae5",
+const checkinBanner: React.CSSProperties = {
+  backgroundColor: "#eff6ff",
+  borderBottom: "1px solid #bfdbfe",
   padding: "24px 32px",
   textAlign: "center" as const,
 };
 
-const successHeading: React.CSSProperties = {
-  color: "#065f46",
+const checkinHeading: React.CSSProperties = {
+  color: "#1e40af",
   fontSize: "24px",
   fontWeight: "700",
   margin: "0",
@@ -389,43 +322,6 @@ const detailText: React.CSSProperties = {
   lineHeight: "1.5",
   verticalAlign: "top",
   paddingBottom: "10px",
-};
-
-const registrationStatus: React.CSSProperties = {
-  color: "#111827",
-  fontSize: "14px",
-  fontWeight: "500",
-  lineHeight: "1.5",
-  margin: "0",
-};
-
-const checkinCallout: React.CSSProperties = {
-  backgroundColor: "#eff6ff",
-  border: "1px solid #bfdbfe",
-  borderRadius: "10px",
-  padding: "20px",
-  margin: "0 0 24px",
-  textAlign: "center" as const,
-};
-
-const checkinCalloutTitle: React.CSSProperties = {
-  color: "#1e40af",
-  fontSize: "14px",
-  fontWeight: "700",
-  margin: "0 0 4px",
-};
-
-const checkinCalloutDesc: React.CSSProperties = {
-  color: "#3b82f6",
-  fontSize: "13px",
-  lineHeight: "1.5",
-  margin: "0",
-};
-
-const hr: React.CSSProperties = {
-  borderColor: "#e5e7eb",
-  borderWidth: "1px 0 0",
-  margin: "24px 0",
 };
 
 const sectionTitle: React.CSSProperties = {
@@ -493,6 +389,12 @@ const ctaLink: React.CSSProperties = {
   textDecoration: "none",
   display: "inline-block",
   padding: "12px 32px",
+};
+
+const hr: React.CSSProperties = {
+  borderColor: "#e5e7eb",
+  borderWidth: "1px 0 0",
+  margin: "24px 0",
 };
 
 const link: React.CSSProperties = {

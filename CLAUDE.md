@@ -27,3 +27,7 @@ Read AGENTS.md first -- it has the full project context.
 - Types in `src/types/index.ts` must match the DB schema.
 - Run lint + typecheck before every commit. Fix all errors.
 - One issue per session. Don't scope-creep into adjacent work.
+
+## Code Review
+
+When reviewing pull requests, also read and enforce all rules in `REVIEW.md` at the project root. That file contains the complete code review rubric including severity levels (MUST vs SHOULD) and explicit "do not flag" exceptions.

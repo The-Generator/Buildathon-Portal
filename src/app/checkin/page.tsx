@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { CheckinForm } from "@/components/checkin/CheckinForm";
 
 export const metadata = {
@@ -24,7 +25,9 @@ export default function CheckinPage() {
           <h2 className="text-xl font-semibold text-gray-900 text-center mb-6">
             Check In
           </h2>
-          <CheckinForm />
+          <Suspense fallback={null}>
+            <CheckinForm />
+          </Suspense>
         </div>
 
         <p className="text-xs text-gray-400 text-center mt-6">
