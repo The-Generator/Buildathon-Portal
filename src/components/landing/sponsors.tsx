@@ -22,11 +22,11 @@ const partners: SponsorEntry[] = [
 
 const sponsors: SponsorEntry[] = [
   { name: "ElevenLabs", href: "https://elevenlabs.io/", logo: "/sponsors/eleven-labs.png", invert: true },
-  { name: "Tripo AI", href: "https://www.tripo3d.ai/", logo: "/sponsors/tripo-ai.png", invert: true },
+  { name: "Tripo AI", href: "https://www.tripo3d.ai/", logo: "/sponsors/tripo-ai.png" },
   { name: "HubSpot", href: "https://www.hubspot.com/", logo: "/sponsors/hubspot.png" },
   { name: "Lovable", href: "https://lovable.dev/", logo: "/sponsors/lovable.png" },
   { name: "Cursor", href: "https://www.cursor.com/", logo: "/sponsors/cursor.png" },
-  { name: "OpenAI", href: "https://openai.com/", logo: "/sponsors/openai.png", invert: true },
+  { name: "OpenAI", href: "https://openai.com/", logo: "/sponsors/openai.png" },
   { name: "Anthropic", href: "https://www.anthropic.com/", logo: "/sponsors/anthropic.svg" },
   { name: "WHOOP", href: "https://www.whoop.com/", logo: "/sponsors/whoop.svg" },
 ];
