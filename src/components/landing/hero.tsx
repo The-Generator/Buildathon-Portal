@@ -313,8 +313,44 @@ export function Hero() {
           <span className="text-[#00e87b] font-semibold">Mind</span>
         </p>
 
+        {/* Brought to you by */}
+        <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10">
+          <p className="font-data text-[10px] font-medium uppercase tracking-[0.25em] text-white/40 sm:text-xs">
+            Brought to you by
+          </p>
+          <div className="grid grid-cols-3 items-center gap-8 sm:gap-12">
+            <div className="flex items-center justify-center drop-shadow-[0_0_12px_rgba(0,232,123,0.3)] transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_20px_rgba(0,232,123,0.5)]">
+              <Image
+                src="/sponsors/babson-college-green.png"
+                alt="Babson College"
+                width={240}
+                height={80}
+                className="h-12 w-auto object-contain sm:h-16 md:h-20"
+              />
+            </div>
+            <div className="flex items-center justify-center drop-shadow-[0_0_12px_rgba(0,232,123,0.3)] transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_20px_rgba(0,232,123,0.5)]">
+              <Image
+                src="/sponsors/bentley-university.png"
+                alt="Bentley University"
+                width={240}
+                height={80}
+                className="h-12 w-auto object-contain sm:h-16 md:h-20"
+              />
+            </div>
+            <div className="flex items-center justify-center drop-shadow-[0_0_12px_rgba(0,232,123,0.3)] transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_20px_rgba(0,232,123,0.5)]">
+              <Image
+                src="/sponsors/bryant-university.png"
+                alt="Bryant University"
+                width={240}
+                height={80}
+                className="h-12 w-auto object-contain sm:h-16 md:h-20"
+              />
+            </div>
+          </div>
+        </div>
+
         {/* Countdown */}
-        <div className="mt-10 flex justify-center gap-3 sm:mt-14 sm:gap-8">
+        <div className="mt-8 flex justify-center gap-3 sm:mt-10 sm:gap-8">
           <CountdownUnit value={countdown.days} label="Days" />
           <span className="font-data self-start pt-1 text-2xl font-light text-white/15 sm:pt-2 sm:text-4xl md:text-5xl">:</span>
           <CountdownUnit value={countdown.hours} label="Hours" />
@@ -325,12 +361,12 @@ export function Hero() {
         </div>
 
         {/* Live heartbeat monitor */}
-        <div className="mt-8 sm:mt-10">
+        <div className="mt-6 sm:mt-8">
           <HeartbeatMonitor tick={Math.floor(countdown.seconds / 3)} />
         </div>
 
         {/* CTA buttons */}
-        <div className="mt-10 flex flex-col items-center gap-3 sm:mt-14 sm:flex-row sm:justify-center sm:gap-4">
+        <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
           <Link
             href="/register"
             className="rounded-xl bg-[#006241] px-10 py-4 text-base font-bold text-white shadow-lg shadow-[#006241]/20 transition-all hover:bg-[#007a52] hover:shadow-xl hover:shadow-[#006241]/30"

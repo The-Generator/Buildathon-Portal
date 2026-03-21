@@ -6,7 +6,7 @@ import { Prizes } from "@/components/landing/prizes";
 import { Schedule } from "@/components/landing/schedule";
 import { Sponsors } from "@/components/landing/sponsors";
 import { RegistrationInfo } from "@/components/landing/RegistrationInfo";
-import { PhotoGallery } from "@/components/landing/PhotoGallery";
+import { SponsorCTA } from "@/components/landing/SponsorCTA";
 import { PastWinners } from "@/components/landing/PastWinners";
 import { FAQ } from "@/components/landing/faq";
 import { Footer } from "@/components/landing/footer";
@@ -25,7 +25,7 @@ export default function Home() {
         <Prizes />
         <Schedule />
         <Sponsors />
-        <PhotoGallery />
+        <SponsorCTA />
         <PastWinners />
         <FAQ />
       </main>

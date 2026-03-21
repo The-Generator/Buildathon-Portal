@@ -3,14 +3,13 @@
 import {
   Award,
   Coffee,
-  Mic,
   Rocket,
   UtensilsCrossed,
   Upload,
   Scale,
   MapPin,
-  DoorOpen,
-  Trophy,
+  Camera,
+  Presentation,
   Clock,
 } from "lucide-react";
 import { SCHEDULE_BLOCKS, type ScheduleBlock } from "@/data/schedule";
@@ -49,16 +48,15 @@ const TYPE_STYLES: Record<
 
 const ICON_MAP: Record<string, LucideIcon> = {
   "Registration & Breakfast": Coffee,
-  "Opening Ceremony": Mic,
+  "Opening Ceremony + All-Hands Photo": Camera,
   "Buildathon Begins": Rocket,
   "Grab-and-Go Lunch": UtensilsCrossed,
-  "Submissions Open": Upload,
-  "Submissions Close": Clock,
-  "First Round Judging": Scale,
-  "Substantial Snack / Dinner": UtensilsCrossed,
-  "Final Round Judging": Trophy,
-  "Award Ceremony": Award,
-  "Event Ends": DoorOpen,
+  "Project Submissions Open": Upload,
+  "Project Submissions Close": Clock,
+  "Project Showcases & Judging": Scale,
+  "Dinner Break": UtensilsCrossed,
+  "Final Round Presentations": Presentation,
+  "Awards Ceremony": Award,
 };
 
 function BlockRow({ block }: { block: ScheduleBlock }) {
@@ -66,7 +64,7 @@ function BlockRow({ block }: { block: ScheduleBlock }) {
   const Icon = ICON_MAP[block.title] ?? Rocket;
 
   return (
-    <div className="group relative grid grid-cols-[4.5rem_1fr] gap-4 sm:grid-cols-[5.5rem_1fr]">
+    <div className="group relative grid grid-cols-[6rem_1fr] gap-4 sm:grid-cols-[7.5rem_1fr]">
       {/* Time column */}
       <div className="pt-0.5 text-right">
         <span className="font-data text-xs font-semibold uppercase tracking-wider text-white/50 group-hover:text-white/70 sm:text-sm">
@@ -94,7 +92,7 @@ function BlockRow({ block }: { block: ScheduleBlock }) {
             <p className="font-body mt-1 text-xs leading-relaxed text-white/40 sm:text-sm">
               {block.description}
             </p>
-            <p className="font-data mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wider text-white/25 sm:text-xs">
+            <p className="font-data mt-1 flex items-center gap-1 text-[10px] uppercase tracking-wider text-[#5ba4dc] sm:text-xs">
               <MapPin className="h-3 w-3" />
               {block.location}
             </p>
@@ -142,10 +140,8 @@ export function Schedule() {
             [
               ["ceremony", "Ceremony"],
               ["hacking", "Hacking"],
-              ["workshop", "Workshop"],
               ["meal", "Meals"],
               ["judging", "Judging"],
-              ["social", "Social"],
             ] as const
           ).map(([type, label]) => (
             <span key={type} className="flex items-center gap-1.5">

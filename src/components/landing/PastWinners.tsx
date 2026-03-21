@@ -91,44 +91,59 @@ export function PastWinners() {
             </p>
           </div>
 
-          {/* Winner cards */}
-          <div className="mx-auto mt-14 max-w-3xl">
+          {/* Winner cards — side by side */}
+          <div className="mx-auto mt-14 grid max-w-6xl grid-cols-1 gap-8 md:grid-cols-2">
             {WINNERS.map((winner) => (
               <div
                 key={`${winner.team}-${winner.event}`}
-                className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
+                className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]"
               >
-                {/* 2x2 photo quadrant */}
-                <div className="grid grid-cols-2 gap-1">
-                  {winner.images.map((img, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() =>
-                        openLightbox(img, `${winner.team} — photo ${i + 1}`)
-                      }
-                      className="group relative aspect-[4/3] overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00e87b] focus-visible:ring-inset"
-                    >
-                      <Image
-                        src={img}
-                        alt={`${winner.team} — photo ${i + 1}`}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        sizes="(max-width: 768px) 50vw, 384px"
-                      />
-                      <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20" />
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        <span className="rounded-full bg-black/50 px-3 py-1.5 font-body text-xs font-medium text-white">
-                          Click to enlarge
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                {/* Feature image — tall vertical crop */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    openLightbox(winner.images[0], `${winner.team} — photo 1`)
+                  }
+                  className="group relative aspect-[3/2] overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00e87b] focus-visible:ring-inset"
+                >
+                  <Image
+                    src={winner.images[0]}
+                    alt={`${winner.team} — feature photo`}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20" />
+                </button>
+
+                {/* Thumbnail row */}
+                {winner.images.length > 1 && (
+                  <div className={`grid gap-1 ${winner.images.length >= 4 ? "grid-cols-3" : "grid-cols-2"}`}>
+                    {winner.images.slice(1, 4).map((img, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() =>
+                          openLightbox(img, `${winner.team} — photo ${i + 2}`)
+                        }
+                        className="group relative aspect-[4/3] overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-[#00e87b] focus-visible:ring-inset"
+                      >
+                        <Image
+                          src={img}
+                          alt={`${winner.team} — photo ${i + 2}`}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 33vw, 17vw"
+                        />
+                        <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20" />
+                      </button>
+                    ))}
+                  </div>
+                )}
 
                 {/* Info */}
-                <div className="px-4 py-5 sm:px-6 sm:py-6">
-                  <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-1 flex-col px-5 py-5 sm:px-6 sm:py-6">
+                  <div className="flex items-start justify-between gap-3">
                     <div>
                       <h3 className="font-display text-xl font-bold text-white sm:text-2xl">
                         {winner.team}
@@ -136,19 +151,19 @@ export function PastWinners() {
                       <p className="font-body mt-1 text-sm text-white/50">
                         {winner.event} &middot; {winner.track}
                       </p>
-                      <p className="font-body mt-3 text-sm leading-relaxed text-white/60">
-                        {winner.description}
-                      </p>
                     </div>
-                    <Trophy className="mt-1 h-6 w-6 shrink-0 text-[#00e87b]" />
+                    <Trophy className="mt-1 h-5 w-5 shrink-0 text-[#00e87b]" />
                   </div>
+                  <p className="font-body mt-3 flex-1 text-sm leading-relaxed text-white/60">
+                    {winner.description}
+                  </p>
 
                   {winner.deckUrl && (
                     <a
                       href={winner.deckUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[#00e87b]/30 bg-[#00e87b]/10 px-4 py-2 font-body text-sm font-medium text-[#00e87b] transition-colors hover:bg-[#00e87b]/20"
+                      className="mt-4 inline-flex items-center gap-2 self-start rounded-lg border border-[#00e87b]/30 bg-[#00e87b]/10 px-4 py-2 font-body text-sm font-medium text-[#00e87b] transition-colors hover:bg-[#00e87b]/20"
                     >
                       View Pitch Deck
                       <svg

@@ -1,33 +1,66 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { useInView } from "@/hooks/useInView";
 
-const sponsors: Array<{ name: string; tier: string; href: string; logo: string; invert?: boolean }> = [
-  { name: "Babson College", tier: "Host", href: "https://www.babson.edu/", logo: "/sponsors/babson-college.png" },
-  { name: "The Generator", tier: "Host", href: "https://www.babson.edu/thegenerator/", logo: "/sponsors/generator-ai-lab.png" },
-  { name: "Butler Institute", tier: "Host", href: "https://www.babson.edu/entrepreneurship-center/thought-leadership/butler-institute-for-free-enterprise-through-entrepreneurship/", logo: "/sponsors/butler-institute.png" },
-  {
-    name: "Bentley University",
-    tier: "Partner",
-    href: "https://www.bentley.edu/",
-    logo: "/sponsors/bentley-university.png",
-  },
-  {
-    name: "Bentley E-Hub",
-    tier: "Partner",
-    href: "https://www.bentley.edu/",
-    logo: "/sponsors/bentley-ehub.png",
-  },
-  { name: "Bryant University", tier: "Partner", href: "https://www.bryant.edu/", logo: "/sponsors/bryant-university.png" },
-  { name: "ElevenLabs", tier: "Sponsor", href: "https://elevenlabs.io/", logo: "/sponsors/eleven-labs.png", invert: true },
-  { name: "Tripo AI", tier: "Sponsor", href: "https://www.tripo3d.ai/", logo: "/sponsors/tripo-ai.png", invert: true },
-  { name: "HubSpot", tier: "Sponsor", href: "https://www.hubspot.com/", logo: "/sponsors/hubspot.png" },
-  { name: "Lovable", tier: "Sponsor", href: "https://lovable.dev/", logo: "/sponsors/lovable.png" },
-  { name: "Cursor", tier: "Sponsor", href: "https://www.cursor.com/", logo: "/sponsors/cursor.png" },
-  { name: "OpenAI", tier: "Sponsor", href: "https://openai.com/", logo: "/sponsors/openai.png", invert: true },
+interface SponsorEntry {
+  name: string;
+  href: string;
+  logo: string;
+  invert?: boolean;
+  whiten?: boolean;
+}
+
+const partners: SponsorEntry[] = [
+  { name: "Babson College", href: "https://www.babson.edu/", logo: "/sponsors/babson-college.png", whiten: true },
+  { name: "The Generator", href: "https://www.babson.edu/thegenerator/", logo: "/sponsors/generator-ai-lab.png" },
+  { name: "Butler Institute", href: "https://www.babson.edu/entrepreneurship-center/thought-leadership/butler-institute-for-free-enterprise-through-entrepreneurship/", logo: "/sponsors/butler-institute.png" },
+  { name: "Bentley University", href: "https://www.bentley.edu/", logo: "/sponsors/bentley-university.png" },
+  { name: "Bentley E-Hub", href: "https://www.bentley.edu/", logo: "/sponsors/bentley-ehub.png" },
+  { name: "Bryant University", href: "https://www.bryant.edu/", logo: "/sponsors/bryant-university.png" },
 ];
+
+const sponsors: SponsorEntry[] = [
+  { name: "ElevenLabs", href: "https://elevenlabs.io/", logo: "/sponsors/eleven-labs.png", invert: true },
+  { name: "Tripo AI", href: "https://www.tripo3d.ai/", logo: "/sponsors/tripo-ai.png", invert: true },
+  { name: "HubSpot", href: "https://www.hubspot.com/", logo: "/sponsors/hubspot.png" },
+  { name: "Lovable", href: "https://lovable.dev/", logo: "/sponsors/lovable.png" },
+  { name: "Cursor", href: "https://www.cursor.com/", logo: "/sponsors/cursor.png" },
+  { name: "OpenAI", href: "https://openai.com/", logo: "/sponsors/openai.png", invert: true },
+  { name: "Anthropic", href: "https://www.anthropic.com/", logo: "/sponsors/anthropic.svg" },
+  { name: "WHOOP", href: "https://www.whoop.com/", logo: "/sponsors/whoop.svg" },
+];
+
+function logoFilter(item: SponsorEntry): string {
+  if (item.whiten) return "brightness-0 invert";
+  if (item.invert) return "invert";
+  return "";
+}
+
+function LogoGrid({ items }: { items: SponsorEntry[] }) {
+  return (
+    <div className="mx-auto grid max-w-4xl grid-cols-2 items-center justify-items-center gap-10 sm:grid-cols-3 md:grid-cols-4 sm:gap-12">
+      {items.map((item) => (
+        <a
+          key={item.name}
+          href={item.href}
+          target="_blank"
+          rel="noreferrer"
+          aria-label={`Visit ${item.name}`}
+          className="flex items-center justify-center px-4"
+        >
+          <Image
+            src={item.logo}
+            alt={item.name}
+            width={200}
+            height={100}
+            className={`h-auto max-h-24 w-auto object-contain opacity-80 transition-opacity hover:opacity-100 ${logoFilter(item)}`}
+          />
+        </a>
+      ))}
+    </div>
+  );
+}
 
 export function Sponsors() {
   const { ref, hasEntered } = useInView();
@@ -58,51 +91,23 @@ export function Sponsors() {
           </p>
         </div>
 
-        {/* Sponsor grid */}
-        <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 items-center justify-items-center gap-10 sm:grid-cols-4 sm:gap-12">
-          {sponsors.map((sponsor) => (
-            <a
-              key={sponsor.name}
-              href={sponsor.href}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={`Visit ${sponsor.name}`}
-              className="flex items-center justify-center px-4"
-            >
-              <Image
-                src={sponsor.logo}
-                alt={sponsor.name}
-                width={200}
-                height={100}
-                className={`h-auto max-h-24 w-auto object-contain opacity-80 transition-opacity hover:opacity-100 ${
-                  sponsor.invert ? "invert" : ""
-                }`}
-              />
-            </a>
-          ))}
+        {/* Partners */}
+        <div className="mt-16">
+          <p className="font-data mb-8 text-center text-xs font-medium uppercase tracking-widest text-white/50">
+            Partners
+          </p>
+          <LogoGrid items={partners} />
         </div>
 
-        <div className="font-body mt-12 text-center text-sm text-white/40">
-          <p>
-            Interested in sponsoring?{" "}
-            <Link
-              href="/partners"
-              className="font-medium text-[#00e87b] underline underline-offset-4 transition-colors hover:text-[#00ff88]"
-            >
-              Become a Partner
-            </Link>
+        {/* Divider */}
+        <div className="mx-auto my-14 max-w-md border-t border-white/10" />
+
+        {/* Sponsors */}
+        <div>
+          <p className="font-data mb-8 text-center text-xs font-medium uppercase tracking-widest text-white/50">
+            Sponsors
           </p>
-          <p className="mt-2">
-            A program of{" "}
-            <a
-              href="https://www.babson.edu/thegenerator/"
-              target="_blank"
-              rel="noreferrer"
-              className="font-medium text-[#00e87b] underline underline-offset-4 transition-colors hover:text-[#00ff88]"
-            >
-              The Generator at Babson College
-            </a>
-          </p>
+          <LogoGrid items={sponsors} />
         </div>
       </div>
     </section>

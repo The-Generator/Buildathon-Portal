@@ -9,6 +9,19 @@ export interface Winner {
 
 export const WINNERS: Winner[] = [
   {
+    team: "IPE",
+    event: "Fall 2025",
+    track: "Entrepreneurial Applications for Biotech",
+    description:
+      "An AI-powered patent management platform that helps biotech startups navigate the patent process — using NLP and machine learning to predict patent success rates and provide actionable feedback on draft filings.",
+    images: [
+      "/photos/ipe-team.jpg",
+      "/photos/ipe-presenting.jpg",
+      "/photos/ipe-pitch.jpg",
+    ],
+    deckUrl: "/decks/ipe-fall-2025.pptx",
+  },
+  {
     team: "TerraFlex",
     event: "Spring 2025",
     track: "AI-Powered Bio-Medical Devices",
