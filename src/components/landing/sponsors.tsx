@@ -13,11 +13,11 @@ interface SponsorEntry {
 
 const partners: SponsorEntry[] = [
   { name: "Babson College", href: "https://www.babson.edu/", logo: "/sponsors/babson-college.png", whiten: true },
+  { name: "Bentley University", href: "https://www.bentley.edu/", logo: "/sponsors/bentley-university.png" },
+  { name: "Bryant University", href: "https://www.bryant.edu/", logo: "/sponsors/bryant-university.png" },
   { name: "The Generator", href: "https://www.babson.edu/thegenerator/", logo: "/sponsors/generator-ai-lab.png" },
   { name: "Butler Institute", href: "https://www.babson.edu/entrepreneurship-center/thought-leadership/butler-institute-for-free-enterprise-through-entrepreneurship/", logo: "/sponsors/butler-institute.png" },
-  { name: "Bentley University", href: "https://www.bentley.edu/", logo: "/sponsors/bentley-university.png" },
   { name: "Bentley E-Hub", href: "https://www.bentley.edu/", logo: "/sponsors/bentley-ehub.png" },
-  { name: "Bryant University", href: "https://www.bryant.edu/", logo: "/sponsors/bryant-university.png" },
 ];
 
 const sponsors: SponsorEntry[] = [
@@ -29,6 +29,7 @@ const sponsors: SponsorEntry[] = [
   { name: "OpenAI", href: "https://openai.com/", logo: "/sponsors/openai.png" },
   { name: "Anthropic", href: "https://www.anthropic.com/", logo: "/sponsors/anthropic.svg" },
   { name: "WHOOP", href: "https://www.whoop.com/", logo: "/sponsors/whoop.svg" },
+  { name: "Weissman Foundry", href: "https://www.foundry.babson.edu/", logo: "/sponsors/weissman-foundry.png" },
 ];
 
 function logoFilter(item: SponsorEntry): string {
