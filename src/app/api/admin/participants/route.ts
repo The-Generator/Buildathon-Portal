@@ -105,6 +105,74 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// DELETE - Remove a participant and associated records
+export async function DELETE(request: NextRequest) {
+  try {
+    const admin = await verifyAdmin();
+    if (!admin) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await request.json();
+    if (!id || typeof id !== "string") {
+      return NextResponse.json({ error: "Participant ID required" }, { status: 400 });
+    }
+
+    const supabase = createAdminClient();
+
+    // Fetch the participant to determine cleanup strategy
+    const { data: participant, error: fetchError } = await supabase
+      .from("participants")
+      .select("id, is_self_registered, registered_by")
+      .eq("id", id)
+      .single();
+
+    if (fetchError || !participant) {
+      return NextResponse.json({ error: "Participant not found" }, { status: 404 });
+    }
+
+    if (participant.is_self_registered) {
+      // Self-registered: delete their teammates first, then registration group, then self
+      const { data: teammates } = await supabase
+        .from("participants")
+        .select("id")
+        .eq("registered_by", participant.id);
+
+      for (const teammate of teammates ?? []) {
+        await supabase.from("admin_actions").update({ participant_id: null }).eq("participant_id", teammate.id);
+        await supabase.from("participants").delete().eq("id", teammate.id);
+      }
+
+      await supabase.from("registration_groups").delete().eq("registrant_id", participant.id);
+      await supabase.from("admin_actions").update({ participant_id: null }).eq("participant_id", participant.id);
+      await supabase.from("participants").delete().eq("id", participant.id);
+    } else {
+      // Non-self-registered (someone's teammate): delete and decrement parent group
+      await supabase.from("admin_actions").update({ participant_id: null }).eq("participant_id", participant.id);
+      await supabase.from("participants").delete().eq("id", participant.id);
+
+      if (participant.registered_by) {
+        const { data: group } = await supabase
+          .from("registration_groups")
+          .select("id, group_size")
+          .eq("registrant_id", participant.registered_by)
+          .single();
+
+        if (group && group.group_size > 1) {
+          await supabase
+            .from("registration_groups")
+            .update({ group_size: group.group_size - 1 })
+            .eq("id", group.id);
+        }
+      }
+    }
+
+    return NextResponse.json({ success: true }, { status: 200 });
+  } catch {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
+}
+
 // PATCH - Update existing participant
 export async function PATCH(request: NextRequest) {
   try {

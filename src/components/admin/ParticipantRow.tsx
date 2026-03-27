@@ -2,13 +2,14 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronUp, Pencil, Users } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil, Users, Trash2 } from "lucide-react";
 import type { Participant, Team } from "@/types";
 
 interface ParticipantRowProps {
   participant: Participant & { team_name?: string };
   onEdit?: (participant: Participant) => void;
   onQuickAssign?: (participant: Participant) => void;
+  onDelete?: (participant: Participant) => void;
   teams?: (Team & { member_count: number })[];
 }
 
@@ -18,7 +19,7 @@ const typeConfig: Record<string, { label: string; color: "green" | "gray" | "ora
   walk_in: { label: "Walk-in", color: "orange" },
 };
 
-export function ParticipantRow({ participant, onEdit, onQuickAssign }: ParticipantRowProps) {
+export function ParticipantRow({ participant, onEdit, onQuickAssign, onDelete }: ParticipantRowProps) {
   const [expanded, setExpanded] = useState(false);
 
   const schoolDisplay =
@@ -144,7 +145,7 @@ export function ParticipantRow({ participant, onEdit, onQuickAssign }: Participa
             </div>
 
             {/* Action buttons */}
-            {(onEdit || onQuickAssign) && (
+            {(onEdit || onQuickAssign || onDelete) && (
               <div className="ml-8 mt-4 pt-3 border-t border-gray-200 flex gap-2">
                 {onEdit && (
                   <button
@@ -170,6 +171,19 @@ export function ParticipantRow({ participant, onEdit, onQuickAssign }: Participa
                   >
                     <Users className="h-3.5 w-3.5" />
                     Assign to Team
+                  </button>
+                )}
+                {onDelete && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(participant);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 transition-colors"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Remove
                   </button>
                 )}
               </div>

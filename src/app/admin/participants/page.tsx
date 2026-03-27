@@ -7,6 +7,7 @@ import { ParticipantRow } from "@/components/admin/ParticipantRow";
 import { AddWalkinModal } from "@/components/admin/AddWalkinModal";
 import { EditParticipantModal } from "@/components/admin/EditParticipantModal";
 import { AssignTeamModal } from "@/components/admin/AssignTeamModal";
+import { Modal } from "@/components/ui/modal";
 import { Search, ChevronLeft, ChevronRight, UserPlus } from "lucide-react";
 import type { Participant } from "@/types";
 
@@ -38,6 +39,8 @@ export default function ParticipantsPage() {
   const [addWalkinOpen, setAddWalkinOpen] = useState(false);
   const [editingParticipant, setEditingParticipant] = useState<Participant | null>(null);
   const [assigningParticipant, setAssigningParticipant] = useState<Participant | null>(null);
+  const [deletingParticipant, setDeletingParticipant] = useState<Participant | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [adminToken] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
@@ -177,6 +180,32 @@ export default function ParticipantsPage() {
       setLoading(false);
     };
     void refresh();
+  };
+
+  const handleDelete = async () => {
+    if (!deletingParticipant || !adminToken) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch("/api/admin/participants", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify({ id: deletingParticipant.id }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Failed to delete participant");
+      } else {
+        setDeletingParticipant(null);
+        handleRefresh();
+      }
+    } catch {
+      alert("Network error");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   if (loading) {
@@ -336,6 +365,7 @@ export default function ParticipantsPage() {
                     participant={p}
                     onEdit={adminToken ? (participant) => setEditingParticipant(participant) : undefined}
                     onQuickAssign={adminToken ? (participant) => setAssigningParticipant(participant) : undefined}
+                    onDelete={adminToken ? (participant) => setDeletingParticipant(participant) : undefined}
                   />
                 ))
               )}
@@ -404,6 +434,48 @@ export default function ParticipantsPage() {
           participant={assigningParticipant}
           adminToken={adminToken}
         />
+      )}
+      {/* Delete Confirmation Modal */}
+      {deletingParticipant && (
+        <Modal
+          open={!!deletingParticipant}
+          onClose={() => setDeletingParticipant(null)}
+          title="Remove Participant"
+        >
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              Are you sure you want to remove{" "}
+              <span className="font-semibold text-gray-900">
+                {deletingParticipant.full_name}
+              </span>{" "}
+              ({deletingParticipant.email})?
+            </p>
+            {deletingParticipant.is_self_registered && (
+              <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
+                <p className="text-sm text-amber-800">
+                  This participant registered teammates. Removing them will also
+                  delete any teammates they registered.
+                </p>
+              </div>
+            )}
+            <div className="flex justify-end gap-3 pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setDeletingParticipant(null)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                {isDeleting ? "Removing..." : "Remove"}
+              </Button>
+            </div>
+          </div>
+        </Modal>
       )}
     </div>
   );
