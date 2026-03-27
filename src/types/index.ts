@@ -123,4 +123,7 @@ export interface RegistrationFormData {
 
   // Step 3: Team Skills
   tagged_team_skills: string[];
+
+  // Re-submission flag (set when user confirms replacing an existing registration)
+  replaceExisting?: boolean;
 }

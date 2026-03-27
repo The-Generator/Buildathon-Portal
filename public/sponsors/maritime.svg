@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 50" width="280" height="50">
+  <!-- Sailboat icon -->
+  <g transform="translate(10, 5)">
+    <!-- Mast -->
+    <line x1="18" y1="2" x2="18" y2="38" stroke="white" stroke-width="1.5"/>
+    <!-- Main sail -->
+    <polygon points="20,4 20,32 35,32" fill="white"/>
+    <!-- Jib sail -->
+    <polygon points="16,6 16,28 4,28" fill="white"/>
+    <!-- Hull -->
+    <path d="M2,38 Q18,46 34,38" stroke="white" stroke-width="2" fill="none"/>
+  </g>
+  <!-- "maritime" text -->
+  <text x="55" y="34" font-family="-apple-system, 'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="500" fill="white" letter-spacing="0.5">maritime</text>
+</svg>

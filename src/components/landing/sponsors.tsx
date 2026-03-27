@@ -30,6 +30,9 @@ const sponsors: SponsorEntry[] = [
   { name: "Anthropic", href: "https://www.anthropic.com/", logo: "/sponsors/anthropic.svg" },
   { name: "WHOOP", href: "https://www.whoop.com/", logo: "/sponsors/whoop.svg" },
   { name: "Weissman Foundry", href: "https://www.foundry.babson.edu/", logo: "/sponsors/weissman-foundry.png" },
+  { name: "Maritime", href: "https://maritime.sh/", logo: "/sponsors/maritime.svg" },
+  { name: "Offscript", href: "https://offscriptvc.com/", logo: "/sponsors/offscript-vc.svg" },
+  { name: "Mass AI Coalition", href: "https://massaicoalition.com/", logo: "/sponsors/mass-ai-coalition.png" },
 ];
 
 function logoFilter(item: SponsorEntry): string {

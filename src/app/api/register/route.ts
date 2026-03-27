@@ -6,6 +6,104 @@ import { EVENT_CONFIG } from "@/lib/constants";
 import { sendEmail } from "@/lib/email/send";
 import RegistrationConfirmation from "@/lib/email/templates/RegistrationConfirmation";
 
+type SupabaseAdmin = ReturnType<typeof createAdminClient>;
+
+interface DuplicateInfo {
+  email: string;
+  existingName: string;
+  isTeamAssigned: boolean;
+}
+
+/** Delete an existing participant and all associated records, respecting FK constraints. */
+async function deleteExistingParticipant(
+  supabase: SupabaseAdmin,
+  participant: { id: string; is_self_registered: boolean; registered_by: string | null }
+) {
+  if (participant.is_self_registered) {
+    // Self-registered: delete their teammates first, then registration group, then self
+    const { data: teammates } = await supabase
+      .from("participants")
+      .select("id")
+      .eq("registered_by", participant.id);
+
+    for (const teammate of teammates ?? []) {
+      await supabase
+        .from("admin_actions")
+        .update({ participant_id: null })
+        .eq("participant_id", teammate.id);
+      await supabase.from("participants").delete().eq("id", teammate.id);
+    }
+
+    await supabase
+      .from("registration_groups")
+      .delete()
+      .eq("registrant_id", participant.id);
+
+    await supabase
+      .from("admin_actions")
+      .update({ participant_id: null })
+      .eq("participant_id", participant.id);
+
+    await supabase.from("participants").delete().eq("id", participant.id);
+  } else {
+    // Non-self-registered (someone's teammate): delete and decrement parent group
+    await supabase
+      .from("admin_actions")
+      .update({ participant_id: null })
+      .eq("participant_id", participant.id);
+
+    await supabase.from("participants").delete().eq("id", participant.id);
+
+    if (participant.registered_by) {
+      const { data: group } = await supabase
+        .from("registration_groups")
+        .select("id, group_size")
+        .eq("registrant_id", participant.registered_by)
+        .single();
+
+      if (group && group.group_size > 1) {
+        await supabase
+          .from("registration_groups")
+          .update({ group_size: group.group_size - 1 })
+          .eq("id", group.id);
+      }
+    }
+  }
+}
+
+/** Look up a participant by email and return duplicate info if found. */
+async function findDuplicate(
+  supabase: SupabaseAdmin,
+  email: string
+): Promise<
+  | {
+      info: DuplicateInfo;
+      record: { id: string; is_self_registered: boolean; registered_by: string | null };
+    }
+  | null
+> {
+  const { data } = await supabase
+    .from("participants")
+    .select("id, full_name, team_id, is_self_registered, registered_by")
+    .eq("email", email)
+    .single();
+
+  if (!data) return null;
+
+  return {
+    info: {
+      email,
+      existingName: data.full_name,
+      isTeamAssigned: !!data.team_id,
+    },
+    record: {
+      id: data.id,
+      is_self_registered: data.is_self_registered,
+      registered_by: data.registered_by,
+    },
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -24,18 +122,44 @@ export async function POST(request: NextRequest) {
     const supabase = createAdminClient();
     const isSpectator = data.team_option === "spectator";
 
-    // 2. Check for duplicate email (registrant)
-    const { data: existingParticipant } = await supabase
-      .from("participants")
-      .select("id")
-      .eq("email", data.email)
-      .single();
+    // 2. Check for duplicate emails (registrant + teammates)
+    const allEmails = [data.email, ...data.teammates.map((t) => t.email)];
+    const duplicates: { info: DuplicateInfo; record: { id: string; is_self_registered: boolean; registered_by: string | null } }[] = [];
 
-    if (existingParticipant) {
-      return NextResponse.json(
-        { error: "A participant with this email is already registered." },
-        { status: 400 }
-      );
+    for (const email of allEmails) {
+      const dup = await findDuplicate(supabase, email);
+      if (dup) duplicates.push(dup);
+    }
+
+    if (duplicates.length > 0) {
+      // Check if any duplicate has been assigned to a team — block replacement entirely
+      const teamAssigned = duplicates.some((d) => d.info.isTeamAssigned);
+      if (teamAssigned) {
+        return NextResponse.json(
+          {
+            error:
+              "One or more existing registrations have already been assigned to a team. Please contact an organizer to update your registration.",
+            teamAssigned: true,
+          },
+          { status: 409 }
+        );
+      }
+
+      if (!data.replaceExisting) {
+        // Return 409 with duplicate info — frontend will show confirmation modal
+        return NextResponse.json(
+          {
+            duplicates: true,
+            duplicateEmails: duplicates.map((d) => d.info),
+          },
+          { status: 409 }
+        );
+      }
+
+      // replaceExisting is true — delete old records before inserting new ones
+      for (const dup of duplicates) {
+        await deleteExistingParticipant(supabase, dup.record);
+      }
     }
 
     // --- Spectator branch: no capacity check, no team, no registration_group ---
@@ -119,24 +243,6 @@ export async function POST(request: NextRequest) {
         { error: "Event is at full capacity. Registration is closed." },
         { status: 400 }
       );
-    }
-
-    // Check teammate emails for duplicates
-    for (const teammate of data.teammates) {
-      const { data: existingTeammate } = await supabase
-        .from("participants")
-        .select("id")
-        .eq("email", teammate.email)
-        .single();
-
-      if (existingTeammate) {
-        return NextResponse.json(
-          {
-            error: `A participant with email ${teammate.email} is already registered.`,
-          },
-          { status: 400 }
-        );
-      }
     }
 
     // 4. Create participant record for registrant

@@ -122,6 +122,9 @@ export const fullRegistrationSchema = z
 
     // Step 3: Team Skills
     tagged_team_skills: z.array(z.enum([...SPECIFIC_SKILLS])),
+
+    // Re-submission flag (set when user confirms replacing an existing registration)
+    replaceExisting: z.boolean().optional().default(false),
   })
   .refine(
     (data) => {

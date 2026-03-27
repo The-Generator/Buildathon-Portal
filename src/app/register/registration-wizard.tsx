@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ProgressSteps } from "@/components/ui/progress-steps";
 import { StepPersonalInfo } from "@/components/registration/StepPersonalInfo";
 import { StepTeamSetup } from "@/components/registration/StepTeamSetup";
 import { StepTeamSkills } from "@/components/registration/StepTeamSkills";
 import { StepReview } from "@/components/registration/StepReview";
+import { Modal } from "@/components/ui/modal";
+import { Button } from "@/components/ui/button";
 import type { RegistrationFormData } from "@/types";
 
 const STEPS = ["Personal Info", "Team Setup", "Team Skills", "Review"];
@@ -28,6 +31,12 @@ const INITIAL_FORM_DATA: RegistrationFormData = {
   tagged_team_skills: [],
 };
 
+interface DuplicateInfo {
+  email: string;
+  existingName: string;
+  isTeamAssigned: boolean;
+}
+
 interface RegistrationWizardProps {
   participantCapacityFull?: boolean;
 }
@@ -38,6 +47,14 @@ export function RegistrationWizard({
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] =
     useState<RegistrationFormData>(INITIAL_FORM_DATA);
+
+  // Duplicate replacement flow state
+  const [duplicateInfo, setDuplicateInfo] = useState<DuplicateInfo[] | null>(
+    null
+  );
+  const [isReplacing, setIsReplacing] = useState(false);
+  const [replaceSuccess, setReplaceSuccess] = useState(false);
+  const [replaceError, setReplaceError] = useState<string | null>(null);
 
   const updateFormData = (partial: Partial<RegistrationFormData>) => {
     setFormData((prev) => ({ ...prev, ...partial }));
@@ -76,6 +93,21 @@ export function RegistrationWizard({
       body: JSON.stringify(formData),
     });
 
+    if (res.status === 409) {
+      const body = await res.json();
+      if (body.teamAssigned) {
+        throw new Error(
+          "One or more existing registrations have already been assigned to a team. Please contact an organizer to update your registration."
+        );
+      }
+      if (body.duplicates) {
+        setDuplicateInfo(body.duplicateEmails);
+        throw new Error(
+          "An existing registration was found for one or more emails. Please confirm if you'd like to replace it."
+        );
+      }
+    }
+
     if (!res.ok) {
       const body = await res.json().catch(() => null);
       let message = body?.error || `Registration failed (${res.status})`;
@@ -88,6 +120,68 @@ export function RegistrationWizard({
       throw new Error(message);
     }
   };
+
+  const handleConfirmReplace = async () => {
+    setReplaceError(null);
+    setIsReplacing(true);
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...formData, replaceExisting: true }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(
+          body?.error || "Failed to replace registration. Please try again."
+        );
+      }
+
+      setDuplicateInfo(null);
+      setReplaceSuccess(true);
+    } catch (err) {
+      setReplaceError(
+        err instanceof Error ? err.message : "Something went wrong"
+      );
+    } finally {
+      setIsReplacing(false);
+    }
+  };
+
+  // Show success screen after a confirmed replacement
+  if (replaceSuccess) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            <div className="text-center py-16 space-y-6">
+              <div className="text-6xl">&#127881;</div>
+              <h2 className="text-3xl font-bold text-gray-900">
+                Registration Updated!
+              </h2>
+              <p className="text-lg text-gray-600 max-w-md mx-auto">
+                Your previous registration has been replaced. A new confirmation
+                email has been sent to{" "}
+                <span className="font-semibold text-[#006241]">
+                  {formData.email}
+                </span>
+                . See you at the Build-a-thon!
+              </p>
+              <div className="pt-4">
+                <Link
+                  href="/"
+                  className="inline-flex items-center justify-center rounded-lg font-medium px-6 py-3 text-base bg-[#006241] text-white hover:bg-[#004d33] transition-colors"
+                >
+                  Back to Home
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -148,6 +242,64 @@ export function RegistrationWizard({
           )}
         </div>
       </div>
+
+      {/* Duplicate registration confirmation modal */}
+      <Modal
+        open={!!duplicateInfo}
+        onClose={() => setDuplicateInfo(null)}
+        title="Existing Registration Found"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-gray-600">
+            We found existing registrations for the following email
+            {duplicateInfo && duplicateInfo.length > 1 ? "s" : ""}:
+          </p>
+          <div className="space-y-2">
+            {duplicateInfo?.map((dup) => (
+              <div
+                key={dup.email}
+                className="flex items-center gap-3 px-3 py-2 bg-gray-50 rounded-lg border border-gray-200"
+              >
+                <div>
+                  <p className="text-sm font-medium text-gray-900">
+                    {dup.existingName}
+                  </p>
+                  <p className="text-xs text-gray-500">{dup.email}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="rounded-lg bg-amber-50 border border-amber-200 p-3">
+            <p className="text-sm text-amber-800">
+              Resubmitting will replace the existing registration
+              {duplicateInfo && duplicateInfo.length > 1 ? "s" : ""} with your
+              new submission. This action cannot be undone.
+            </p>
+          </div>
+
+          {replaceError && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-700">{replaceError}</p>
+            </div>
+          )}
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDuplicateInfo(null);
+                setReplaceError(null);
+              }}
+              disabled={isReplacing}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleConfirmReplace} disabled={isReplacing}>
+              {isReplacing ? "Replacing..." : "Replace and Register"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
