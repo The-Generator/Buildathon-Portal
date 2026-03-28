@@ -70,7 +70,7 @@ export function PastWinners() {
     <>
       <section
         className="relative overflow-hidden py-24 sm:py-32"
-        style={{ background: "linear-gradient(to bottom, #0a1210, #0f1210)" }}
+        style={{ background: "linear-gradient(to bottom, #0a1210, #0a1210)" }}
       >
         <div
           ref={ref}

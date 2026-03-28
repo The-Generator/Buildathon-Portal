@@ -50,16 +50,14 @@ export function RegistrationInfo() {
   return (
     <section
       id="register-info"
-      className="relative overflow-hidden bg-neutral-950 py-24 sm:py-32"
+      className="relative overflow-hidden py-24 sm:py-32"
+      style={{ background: "linear-gradient(to bottom, #0a1a14, #0a1a14)" }}
     >
-      {/* Subtle top/bottom gradient continuity */}
-      <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-neutral-950 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-neutral-950 to-transparent" />
 
       <div className="relative mx-auto max-w-3xl px-6">
         {/* Section header */}
         <div className="text-center">
-          <p className="font-data text-sm font-medium uppercase tracking-widest text-emerald-400">
+          <p className="font-data text-sm font-medium uppercase tracking-widest text-[#00e87b]">
             Registration
           </p>
           <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
@@ -77,11 +75,11 @@ export function RegistrationInfo() {
               key={item.label}
               className="flex gap-4 sm:gap-6"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-400 sm:h-12 sm:w-12">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#00e87b]/10 text-[#00e87b] sm:h-12 sm:w-12">
                 <item.icon className="h-5 w-5 sm:h-6 sm:w-6" />
               </div>
               <div className="min-w-0">
-                <dt className="font-body text-sm font-semibold uppercase tracking-wide text-emerald-400">
+                <dt className="font-body text-sm font-semibold uppercase tracking-wide text-[#00e87b]">
                   {item.label}
                 </dt>
                 <dd className="font-body mt-1 text-base leading-relaxed text-white/70 sm:text-lg">

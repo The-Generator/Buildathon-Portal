@@ -73,7 +73,7 @@ export function Sponsors() {
     <section
       id="sponsors"
       className="relative overflow-hidden py-24 sm:py-32"
-      style={{ background: "linear-gradient(to bottom, #0f1210, #070a09)" }}
+      style={{ background: "linear-gradient(to bottom, #0a1a14, #0d1f18)" }}
     >
       <div
         ref={ref}

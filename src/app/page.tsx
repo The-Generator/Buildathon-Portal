@@ -20,12 +20,12 @@ export default function Home() {
       <main className="noise-bg">
         <Hero />
         <About />
+        <Sponsors />
+        <SponsorCTA />
         <RegistrationInfo />
         <Tracks />
         <Prizes />
         <Schedule />
-        <Sponsors />
-        <SponsorCTA />
         <PastWinners />
         <FAQ />
       </main>

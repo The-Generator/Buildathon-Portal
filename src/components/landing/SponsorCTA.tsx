@@ -9,7 +9,7 @@ export function SponsorCTA() {
   return (
     <section
       className="relative overflow-hidden py-16 sm:py-20"
-      style={{ background: "linear-gradient(to bottom, #070a09, #050807)" }}
+      style={{ background: "linear-gradient(to bottom, #0d1f18, #0a1a14)" }}
     >
       <div
         ref={ref}

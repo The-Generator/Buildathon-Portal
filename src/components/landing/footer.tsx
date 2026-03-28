@@ -3,7 +3,7 @@ import { DISCORD_URL, WHATSAPP_URL } from "@/lib/constants";
 
 export function Footer() {
   return (
-    <footer className="relative overflow-hidden border-t border-white/5 bg-[#050807]">
+    <footer className="relative overflow-hidden border-t border-white/5" style={{ background: "linear-gradient(to bottom, #070a09, #050807)" }}>
       <div className="relative mx-auto max-w-7xl px-6 py-12">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           {/* Branding */}

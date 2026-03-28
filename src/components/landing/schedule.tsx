@@ -110,7 +110,7 @@ export function Schedule() {
     <section
       id="schedule"
       className="relative overflow-hidden py-24 sm:py-32"
-      style={{ background: "linear-gradient(to bottom, #0d1f18, #0f1210)" }}
+      style={{ background: "linear-gradient(to bottom, #0d1f18, #0a1210)" }}
     >
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-emerald-400/5 via-transparent to-transparent" />
