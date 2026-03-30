@@ -37,37 +37,62 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
   );
 }
 
+/** Per-cycle randomized parameters for realistic EKG variation. */
+interface CycleParams {
+  rWaveHeight: number;   // 0.30–0.46
+  sWaveDepth: number;    // 0.10–0.20
+  pWaveHeight: number;   // 0.03–0.09
+  tWaveHeight: number;   // 0.05–0.11
+  qrsOffset: number;     // timing shift -0.02–0.02
+  baselineWander: number; // subtle drift -0.015–0.015
+}
+
+function randomCycleParams(): CycleParams {
+  const rand = (min: number, max: number) => min + Math.random() * (max - min);
+  return {
+    rWaveHeight: rand(0.30, 0.46),
+    sWaveDepth: rand(0.10, 0.20),
+    pWaveHeight: rand(0.03, 0.09),
+    tWaveHeight: rand(0.05, 0.11),
+    qrsOffset: rand(-0.02, 0.02),
+    baselineWander: rand(-0.015, 0.015),
+  };
+}
+
 /** Returns y-offset (0–1, where 0.5 is baseline) for a single EKG cycle at position t (0–1). */
-function ekgCycle(t: number): number {
-  const mid = 0.5;
+function ekgCycle(t: number, params?: CycleParams): number {
+  const p_ = params ?? { rWaveHeight: 0.38, sWaveDepth: 0.15, pWaveHeight: 0.06, tWaveHeight: 0.08, qrsOffset: 0, baselineWander: 0 };
+  const mid = 0.5 + p_.baselineWander;
+  const qrsStart = 0.40 + p_.qrsOffset;
+
   // Flatline before P-wave
   if (t < 0.30) return mid;
   // P-wave bump
   if (t < 0.35) {
     const p = (t - 0.30) / 0.05;
-    return mid - 0.06 * Math.sin(p * Math.PI);
+    return mid - p_.pWaveHeight * Math.sin(p * Math.PI);
   }
   // Return to baseline
-  if (t < 0.40) return mid;
+  if (t < qrsStart) return mid;
   // QRS complex: sharp R-wave up
-  if (t < 0.42) {
-    const p = (t - 0.40) / 0.02;
-    return mid - 0.38 * p;
+  if (t < qrsStart + 0.02) {
+    const p = (t - qrsStart) / 0.02;
+    return mid - p_.rWaveHeight * p;
   }
   // QRS: sharp S-wave down below baseline
-  if (t < 0.44) {
-    const p = (t - 0.42) / 0.02;
-    return mid - 0.38 * (1 - p) + 0.15 * p;
+  if (t < qrsStart + 0.04) {
+    const p = (t - (qrsStart + 0.02)) / 0.02;
+    return mid - p_.rWaveHeight * (1 - p) + p_.sWaveDepth * p;
   }
   // Return to baseline from S-wave
-  if (t < 0.48) {
-    const p = (t - 0.44) / 0.04;
-    return mid + 0.15 * (1 - p);
+  if (t < qrsStart + 0.08) {
+    const p = (t - (qrsStart + 0.04)) / 0.04;
+    return mid + p_.sWaveDepth * (1 - p);
   }
   // T-wave gentle bump
-  if (t < 0.58) {
-    const p = (t - 0.48) / 0.10;
-    return mid - 0.08 * Math.sin(p * Math.PI);
+  if (t < qrsStart + 0.18) {
+    const p = (t - (qrsStart + 0.08)) / 0.10;
+    return mid - p_.tWaveHeight * Math.sin(p * Math.PI);
   }
   // Flatline after T-wave
   return mid;
@@ -83,14 +108,24 @@ function HeartbeatMonitor() {
     if (!ctx) return;
 
     let frameId: number;
-    // Total time for the cursor to sweep the full canvas width
     const SWEEP_DURATION = 3000; // ms — one full left-to-right pass
     const CYCLES = 2; // number of heartbeats visible across the width
-    const GAP_WIDTH = 0.06; // blank gap ahead of cursor (fraction of width)
+    const GAP_WIDTH = 0.06; // blank gap ahead of cursor
     const FADE_WIDTH = 0.12; // fade-out zone behind the gap
     const startTime = performance.now();
 
+    // Generate random params for each cycle, re-roll when cursor wraps
+    let cycleParamsArr: CycleParams[] = Array.from({ length: CYCLES }, () => randomCycleParams());
+    let lastSweepIndex = 0; // track wrap-arounds to regenerate params
+
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    /** Get the y value at position t (0→1 across full canvas width) using per-cycle params. */
+    const getY = (t: number, h: number): number => {
+      const cycleIndex = Math.floor(t * CYCLES) % CYCLES;
+      const cycleT = (t * CYCLES) % 1;
+      return ekgCycle(cycleT, cycleParamsArr[cycleIndex]) * h;
+    };
 
     const render = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -107,8 +142,14 @@ function HeartbeatMonitor() {
       ctx.clearRect(0, 0, w, h);
 
       const elapsed = performance.now() - startTime;
-      // Cursor position 0→1, loops continuously
       const cursor = reducedMotion ? 1 : (elapsed % SWEEP_DURATION) / SWEEP_DURATION;
+
+      // Regenerate random params each time the cursor wraps around
+      const sweepIndex = Math.floor(elapsed / SWEEP_DURATION);
+      if (sweepIndex !== lastSweepIndex) {
+        lastSweepIndex = sweepIndex;
+        cycleParamsArr = Array.from({ length: CYCLES }, () => randomCycleParams());
+      }
 
       const steps = Math.max(400, Math.floor(w * 2));
 
@@ -116,12 +157,10 @@ function HeartbeatMonitor() {
       ctx.lineCap = "round";
 
       if (reducedMotion) {
-        // Static full trace
         ctx.beginPath();
         for (let i = 0; i <= steps; i++) {
           const t = i / steps;
-          const cycleT = (t * CYCLES) % 1;
-          const y = ekgCycle(cycleT) * h;
+          const y = getY(t, h);
           if (i === 0) ctx.moveTo(t * w, y); else ctx.lineTo(t * w, y);
         }
         ctx.strokeStyle = "rgba(0, 232, 123, 0.25)";
@@ -132,17 +171,13 @@ function HeartbeatMonitor() {
       }
 
       // Draw the EKG trace segment by segment with per-segment alpha.
-      // Behind the cursor = freshly drawn (bright).
-      // Ahead of the cursor = old trace that fades out near the gap.
       for (let i = 1; i <= steps; i++) {
         const t = i / steps;
         const prevT = (i - 1) / steps;
         const x = t * w;
         const prevX = prevT * w;
-        const cycleT = (t * CYCLES) % 1;
-        const prevCycleT = (prevT * CYCLES) % 1;
-        const y = ekgCycle(cycleT) * h;
-        const prevY = ekgCycle(prevCycleT) * h;
+        const y = getY(t, h);
+        const prevY = getY(prevT, h);
 
         // Calculate distance ahead of cursor (wrapping around)
         let distAhead = t - cursor;
@@ -190,8 +225,7 @@ function HeartbeatMonitor() {
 
       // Glowing cursor dot
       const cursorX = cursor * w;
-      const cursorCycleT = (cursor * CYCLES) % 1;
-      const cursorY = ekgCycle(cursorCycleT) * h;
+      const cursorY = getY(cursor, h);
       const cursorEdge = cursorX < w * 0.05 ? cursorX / (w * 0.05) : cursorX > w * 0.95 ? (w - cursorX) / (w * 0.05) : 1;
 
       ctx.globalAlpha = 0.95 * cursorEdge;
