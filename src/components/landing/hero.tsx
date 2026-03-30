@@ -73,34 +73,8 @@ function ekgCycle(t: number): number {
   return mid;
 }
 
-function HeartbeatMonitor({ tick }: { tick: number }) {
+function HeartbeatMonitor() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const stateRef = useRef({
-    lastTick: tick,
-    brightness: 0,
-    lastPulseTime: 0,
-    reducedMotion: false,
-  });
-
-  // Detect reduced motion preference
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    stateRef.current.reducedMotion = mq.matches;
-    const handler = (e: MediaQueryListEvent) => {
-      stateRef.current.reducedMotion = e.matches;
-    };
-    mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
-  }, []);
-
-  // Trigger pulse on tick change
-  useEffect(() => {
-    if (tick !== stateRef.current.lastTick) {
-      stateRef.current.lastTick = tick;
-      stateRef.current.brightness = 1.0;
-      stateRef.current.lastPulseTime = performance.now();
-    }
-  }, [tick]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -108,34 +82,15 @@ function HeartbeatMonitor({ tick }: { tick: number }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const state = stateRef.current;
     let frameId: number;
-    const CYCLES = 2; // Two heartbeat cycles across the canvas
-    const FADE_DECAY = 800; // ms for brightness to decay
+    // Total time for the cursor to sweep the full canvas width
+    const SWEEP_DURATION = 3000; // ms — one full left-to-right pass
+    const CYCLES = 2; // number of heartbeats visible across the width
+    const GAP_WIDTH = 0.06; // blank gap ahead of cursor (fraction of width)
+    const FADE_WIDTH = 0.12; // fade-out zone behind the gap
+    const startTime = performance.now();
 
-    /** Build the EKG path points for given canvas dimensions. */
-    function buildPath(w: number, h: number): { x: number; y: number }[] {
-      const points: { x: number; y: number }[] = [];
-      const steps = Math.max(200, Math.floor(w));
-      for (let i = 0; i <= steps; i++) {
-        const t = i / steps; // 0→1 across canvas
-        const cycleT = (t * CYCLES) % 1; // position within single cycle
-        const y = ekgCycle(cycleT) * h;
-        points.push({ x: t * w, y });
-      }
-      return points;
-    }
-
-    /** Find the x position of the QRS peak (R-wave top) for glow dot. */
-    function findPeakX(w: number): number[] {
-      const peaks: number[] = [];
-      for (let c = 0; c < CYCLES; c++) {
-        // R-wave peak is at t=0.42 within each cycle
-        const t = (c + 0.42) / CYCLES;
-        peaks.push(t * w);
-      }
-      return peaks;
-    }
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const render = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -151,105 +106,108 @@ function HeartbeatMonitor({ tick }: { tick: number }) {
 
       ctx.clearRect(0, 0, w, h);
 
-      const points = buildPath(w, h);
+      const elapsed = performance.now() - startTime;
+      // Cursor position 0→1, loops continuously
+      const cursor = reducedMotion ? 1 : (elapsed % SWEEP_DURATION) / SWEEP_DURATION;
 
-      if (state.reducedMotion) {
-        // Static dim EKG path
+      const steps = Math.max(400, Math.floor(w * 2));
+
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+
+      if (reducedMotion) {
+        // Static full trace
         ctx.beginPath();
-        for (let i = 0; i < points.length; i++) {
-          if (i === 0) ctx.moveTo(points[i].x, points[i].y);
-          else ctx.lineTo(points[i].x, points[i].y);
+        for (let i = 0; i <= steps; i++) {
+          const t = i / steps;
+          const cycleT = (t * CYCLES) % 1;
+          const y = ekgCycle(cycleT) * h;
+          if (i === 0) ctx.moveTo(t * w, y); else ctx.lineTo(t * w, y);
         }
-        ctx.strokeStyle = "rgba(0, 232, 123, 0.15)";
-        ctx.lineWidth = 1.5;
-        ctx.lineJoin = "round";
-        ctx.lineCap = "round";
+        ctx.strokeStyle = "rgba(0, 232, 123, 0.25)";
+        ctx.lineWidth = 2;
         ctx.stroke();
         frameId = requestAnimationFrame(render);
         return;
       }
 
-      // Calculate current brightness (exponential decay)
-      const elapsed = performance.now() - state.lastPulseTime;
-      const brightness = state.lastPulseTime > 0
-        ? Math.max(0, Math.exp(-elapsed / (FADE_DECAY / 3)))
-        : 0;
+      // Draw the EKG trace segment by segment with per-segment alpha.
+      // Behind the cursor = freshly drawn (bright).
+      // Ahead of the cursor = old trace that fades out near the gap.
+      for (let i = 1; i <= steps; i++) {
+        const t = i / steps;
+        const prevT = (i - 1) / steps;
+        const x = t * w;
+        const prevX = prevT * w;
+        const cycleT = (t * CYCLES) % 1;
+        const prevCycleT = (prevT * CYCLES) % 1;
+        const y = ekgCycle(cycleT) * h;
+        const prevY = ekgCycle(prevCycleT) * h;
 
-      // Create edge fade gradient mask
-      const edgeFade = ctx.createLinearGradient(0, 0, w, 0);
-      edgeFade.addColorStop(0, "rgba(0, 232, 123, 0)");
-      edgeFade.addColorStop(0.10, "rgba(0, 232, 123, 1)");
-      edgeFade.addColorStop(0.90, "rgba(0, 232, 123, 1)");
-      edgeFade.addColorStop(1, "rgba(0, 232, 123, 0)");
+        // Calculate distance ahead of cursor (wrapping around)
+        let distAhead = t - cursor;
+        if (distAhead < 0) distAhead += 1;
 
-      // Draw dim base path
-      ctx.beginPath();
-      for (let i = 0; i < points.length; i++) {
-        if (i === 0) ctx.moveTo(points[i].x, points[i].y);
-        else ctx.lineTo(points[i].x, points[i].y);
-      }
-      ctx.globalAlpha = 0.15;
-      ctx.strokeStyle = edgeFade;
-      ctx.lineWidth = 1.5;
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
-      ctx.stroke();
+        // Gap zone: invisible
+        if (distAhead < GAP_WIDTH) continue;
 
-      // Draw bright pulsing path on top
-      if (brightness > 0.01) {
-        ctx.beginPath();
-        for (let i = 0; i < points.length; i++) {
-          if (i === 0) ctx.moveTo(points[i].x, points[i].y);
-          else ctx.lineTo(points[i].x, points[i].y);
+        // Fade zone: fading out (old trace about to be erased)
+        let alpha: number;
+        if (distAhead < GAP_WIDTH + FADE_WIDTH) {
+          // Fades from 0 at gap edge to moderate further away
+          alpha = ((distAhead - GAP_WIDTH) / FADE_WIDTH) * 0.25;
+        } else {
+          // Everything behind cursor that isn't in gap/fade is the "drawn" portion
+          // Freshly drawn = bright, older = dimmer
+          let distBehind = cursor - t;
+          if (distBehind < 0) distBehind += 1;
+          // Bright near cursor, fading to base further back
+          alpha = Math.max(0.25, 0.9 - distBehind * 1.2);
         }
-        ctx.globalAlpha = brightness * 0.5;
-        ctx.strokeStyle = edgeFade;
+
+        // Edge fade at canvas boundaries
+        const edgeX = Math.min(x, prevX);
+        const edgeMaxX = Math.max(x, prevX);
+        if (edgeX < w * 0.05) alpha *= edgeX / (w * 0.05);
+        if (edgeMaxX > w * 0.95) alpha *= (w - edgeMaxX) / (w * 0.05);
+
+        // Main trace
+        ctx.beginPath();
+        ctx.moveTo(prevX, prevY);
+        ctx.lineTo(x, y);
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = "#00e87b";
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Glow / bloom layer
-        ctx.beginPath();
-        for (let i = 0; i < points.length; i++) {
-          if (i === 0) ctx.moveTo(points[i].x, points[i].y);
-          else ctx.lineTo(points[i].x, points[i].y);
-        }
-        ctx.globalAlpha = brightness * 0.2;
-        ctx.lineWidth = 6;
-        ctx.stroke();
-
-        // Glow dots at QRS peaks
-        const peaks = findPeakX(w);
-        for (const peakX of peaks) {
-          const peakT = peakX / w;
-          const cycleT = (peakT * CYCLES) % 1;
-          const peakY = ekgCycle(cycleT) * h;
-          // Edge fade factor for the dot
-          const edgeFactor = peakX < w * 0.1
-            ? peakX / (w * 0.1)
-            : peakX > w * 0.9
-              ? (w - peakX) / (w * 0.1)
-              : 1;
-
-          ctx.globalAlpha = brightness * 0.7 * edgeFactor;
-          ctx.beginPath();
-          ctx.arc(peakX, peakY, 3, 0, Math.PI * 2);
-          ctx.fillStyle = "#00e87b";
-          ctx.fill();
-
-          // Radial glow around peak dot
-          ctx.beginPath();
-          ctx.arc(peakX, peakY, 12, 0, Math.PI * 2);
-          const glowGrad = ctx.createRadialGradient(
-            peakX, peakY, 0,
-            peakX, peakY, 12
-          );
-          glowGrad.addColorStop(0, "rgba(0, 232, 123, 0.5)");
-          glowGrad.addColorStop(1, "rgba(0, 232, 123, 0)");
-          ctx.globalAlpha = brightness * edgeFactor;
-          ctx.fillStyle = glowGrad;
-          ctx.fill();
+        // Glow for bright segments
+        if (alpha > 0.5) {
+          ctx.globalAlpha = (alpha - 0.5) * 0.5;
+          ctx.lineWidth = 6;
+          ctx.stroke();
         }
       }
+
+      // Glowing cursor dot
+      const cursorX = cursor * w;
+      const cursorCycleT = (cursor * CYCLES) % 1;
+      const cursorY = ekgCycle(cursorCycleT) * h;
+      const cursorEdge = cursorX < w * 0.05 ? cursorX / (w * 0.05) : cursorX > w * 0.95 ? (w - cursorX) / (w * 0.05) : 1;
+
+      ctx.globalAlpha = 0.95 * cursorEdge;
+      ctx.beginPath();
+      ctx.arc(cursorX, cursorY, 3, 0, Math.PI * 2);
+      ctx.fillStyle = "#00e87b";
+      ctx.fill();
+
+      const glowGrad = ctx.createRadialGradient(cursorX, cursorY, 0, cursorX, cursorY, 14);
+      glowGrad.addColorStop(0, "rgba(0, 232, 123, 0.7)");
+      glowGrad.addColorStop(1, "rgba(0, 232, 123, 0)");
+      ctx.globalAlpha = 0.9 * cursorEdge;
+      ctx.beginPath();
+      ctx.arc(cursorX, cursorY, 14, 0, Math.PI * 2);
+      ctx.fillStyle = glowGrad;
+      ctx.fill();
 
       ctx.globalAlpha = 1;
       frameId = requestAnimationFrame(render);
@@ -314,20 +272,11 @@ export function Hero() {
         </p>
 
         {/* Brought to you by */}
-        <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10">
+        <div className="mt-8 flex flex-col items-center gap-5 sm:mt-10">
           <p className="font-data text-[10px] font-medium uppercase tracking-[0.25em] text-white/40 sm:text-xs">
             Brought to you by
           </p>
-          <div className="grid grid-cols-3 items-center gap-8 sm:gap-12">
-            <div className="flex items-center justify-center drop-shadow-[0_0_12px_rgba(0,232,123,0.3)] transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_20px_rgba(0,232,123,0.5)]">
-              <Image
-                src="/sponsors/babson-college-green.png"
-                alt="Babson College"
-                width={240}
-                height={80}
-                className="h-12 w-auto object-contain sm:h-16 md:h-20"
-              />
-            </div>
+          <div className="grid grid-cols-3 items-center gap-4 sm:gap-6">
             <div className="flex items-center justify-center drop-shadow-[0_0_12px_rgba(0,232,123,0.3)] transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_20px_rgba(0,232,123,0.5)]">
               <Image
                 src="/sponsors/bentley-university.png"
@@ -335,6 +284,15 @@ export function Hero() {
                 width={240}
                 height={80}
                 className="h-12 w-auto object-contain sm:h-16 md:h-20"
+              />
+            </div>
+            <div className="flex items-center justify-center drop-shadow-[0_0_12px_rgba(0,232,123,0.3)] transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_20px_rgba(0,232,123,0.5)]">
+              <Image
+                src="/sponsors/babson-college-green.png"
+                alt="Babson College"
+                width={360}
+                height={120}
+                className="h-[4.5rem] w-auto object-contain sm:h-24 md:h-[7.5rem]"
               />
             </div>
             <div className="flex items-center justify-center drop-shadow-[0_0_12px_rgba(0,232,123,0.3)] transition-all duration-300 hover:scale-115 hover:drop-shadow-[0_0_20px_rgba(0,232,123,0.5)]">
@@ -362,7 +320,7 @@ export function Hero() {
 
         {/* Live heartbeat monitor */}
         <div className="mt-6 sm:mt-8">
-          <HeartbeatMonitor tick={Math.floor(countdown.seconds / 3)} />
+          <HeartbeatMonitor />
         </div>
 
         {/* CTA buttons */}
