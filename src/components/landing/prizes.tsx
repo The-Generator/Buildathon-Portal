@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Crown, Trophy } from "lucide-react";
+import { Crown, Trophy, Award } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
 
 const tiers = [
@@ -12,8 +12,9 @@ const tiers = [
     tint: "text-yellow-400",
     borderTint: "border-yellow-400/20",
     prizes: [
-      { name: "PS5 Digital Edition", image: "/prizes/ps5.jpg" },
-      { name: '27" LG UltraGear Monitor', image: "/prizes/monitor.jpg" },
+      { name: "Shield 5G Hotspot", image: "/prizes/shield-hotspot.png" },
+      { name: "Meta Ray-Bans", image: "/prizes/meta-ray-bans.jpg" },
+      { name: "MacBook Neo", image: "/prizes/macbook.jpg" },
     ],
   },
   {
@@ -23,9 +24,19 @@ const tiers = [
     tint: "text-gray-300",
     borderTint: "border-gray-300/20",
     prizes: [
-      { name: "DJI Mic Minis", image: "/prizes/dji-mic.jpg" },
-      { name: "Mechanical Keyboard", image: "/prizes/keyboard.jpg" },
-      { name: "Raspberry Pi Kit", image: "/prizes/rpi.jpg" },
+      { name: "DJI Mic", image: "/prizes/dji-mic.jpg" },
+      { name: "Keychron K6", image: "/prizes/keychron.jpg" },
+      { name: "Omi Recorder", image: "/prizes/omi.jpg" },
+    ],
+  },
+  {
+    place: "Crowd Vote",
+    description: "Voted on by all attendees",
+    icon: Award,
+    tint: "text-[#00e87b]",
+    borderTint: "border-[#00e87b]/20",
+    prizes: [
+      { name: "Amazon Gift Card", image: "/prizes/gift-card.jpg" },
     ],
   },
 ];
@@ -55,7 +66,7 @@ export function Prizes() {
           </h2>
           <p className="font-body mt-6 text-lg leading-relaxed text-white/60">
             First and second place teams across all three tracks win cash and
-            physical prizes.
+            prizes. Plus a crowd vote favorite.
           </p>
         </div>
 
@@ -92,26 +103,26 @@ export function Prizes() {
               {/* Prize cards with product images */}
               <div
                 className={`grid gap-4 ${
-                  tier.prizes.length === 2
-                    ? "grid-cols-2"
+                  tier.prizes.length === 1
+                    ? "grid-cols-1 max-w-xs mx-auto"
                     : "grid-cols-2 sm:grid-cols-3"
                 }`}
               >
                 {tier.prizes.map((prize) => (
                   <div
                     key={prize.name}
-                    className={`rounded-xl border ${tier.borderTint} bg-white/[0.03] p-3 text-center`}
+                    className={`rounded-xl border ${tier.borderTint} bg-white/[0.03] overflow-hidden`}
                   >
-                    <div className="relative mx-auto aspect-square w-full max-w-[180px] overflow-hidden rounded-lg bg-white/5">
+                    <div className="relative mx-auto aspect-[4/3] w-full overflow-hidden rounded-t-xl bg-white">
                       <Image
                         src={prize.image}
                         alt={prize.name}
                         fill
-                        className="object-contain p-2"
-                        sizes="180px"
+                        className="object-contain p-3"
+                        sizes="(max-width: 640px) 50vw, 250px"
                       />
                     </div>
-                    <p className="font-body mt-3 text-sm font-medium text-white/70">
+                    <p className="font-body py-3 text-center text-sm font-medium text-white/70">
                       {prize.name}
                     </p>
                   </div>
