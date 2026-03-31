@@ -1,6 +1,8 @@
 import { Resend } from "resend";
 import { render } from "@react-email/render";
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 interface SendEmailOptions {
   to: string;
   subject: string;
@@ -8,20 +10,9 @@ interface SendEmailOptions {
 }
 
 export async function sendEmail({ to, subject, react }: SendEmailOptions) {
-  console.log(`[EMAIL] Attempting to send "${subject}" to ${to}`);
-  console.log(`[EMAIL] RESEND_API_KEY present: ${!!process.env.RESEND_API_KEY}`);
-  console.log(`[EMAIL] EMAIL_FROM: ${process.env.EMAIL_FROM}`);
-
   try {
-    const key = process.env.RESEND_API_KEY;
-    if (!key) {
-      console.error("[EMAIL] RESEND_API_KEY is not set!");
-      return { success: false, error: "RESEND_API_KEY is not set" };
-    }
-
-    const resend = new Resend(key);
     const html = await render(react);
-    console.log(`[EMAIL] HTML rendered, length: ${html.length}`);
+    const text = await render(react, { plainText: true });
 
     const { data, error } = await resend.emails.send({
       from: `Babson Generator <${process.env.EMAIL_FROM}>`,
@@ -29,6 +20,7 @@ export async function sendEmail({ to, subject, react }: SendEmailOptions) {
       to,
       subject,
       html,
+      text,
     });
 
     if (error) {
