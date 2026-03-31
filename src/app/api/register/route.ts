@@ -197,8 +197,8 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // Send confirmation email (fire-and-forget)
-      sendEmail({
+      // Send confirmation email
+      await sendEmail({
         to: spectator.email,
         subject: `You're registered for ${EVENT_CONFIG.shortName}!`,
         react: createElement(RegistrationConfirmation, {
@@ -207,7 +207,7 @@ export async function POST(request: NextRequest) {
           groupSize: 0,
           isRegisteredByOther: false,
         }),
-      }).catch((err) => console.error("Spectator confirmation email failed:", err));
+      });
 
       return NextResponse.json(
         {
@@ -322,8 +322,8 @@ export async function POST(request: NextRequest) {
       console.error("Failed to create registration group:", groupError.message);
     }
 
-    // Send confirmation email to registrant
-    sendEmail({
+    // Send confirmation emails (await so serverless doesn't terminate early)
+    await sendEmail({
       to: registrant.email,
       subject: `You're registered for ${EVENT_CONFIG.shortName}!`,
       react: createElement(RegistrationConfirmation, {
@@ -332,22 +332,24 @@ export async function POST(request: NextRequest) {
         groupSize: incomingGroupSize,
         isRegisteredByOther: false,
       }),
-    }).catch((err) => console.error("Registration confirmation email failed:", err));
+    });
 
     // Send notification emails to teammates registered by this person
-    for (const teammate of teammateRecords) {
-      sendEmail({
-        to: teammate.email,
-        subject: `You're registered for ${EVENT_CONFIG.shortName}!`,
-        react: createElement(RegistrationConfirmation, {
-          participantName: teammate.full_name,
-          teamOption: data.team_option,
-          groupSize: incomingGroupSize,
-          isRegisteredByOther: true,
-          registeredByName: registrant.full_name,
-        }),
-      }).catch((err) => console.error("Teammate confirmation email failed:", err));
-    }
+    await Promise.all(
+      teammateRecords.map((teammate) =>
+        sendEmail({
+          to: teammate.email,
+          subject: `You're registered for ${EVENT_CONFIG.shortName}!`,
+          react: createElement(RegistrationConfirmation, {
+            participantName: teammate.full_name,
+            teamOption: data.team_option,
+            groupSize: incomingGroupSize,
+            isRegisteredByOther: true,
+            registeredByName: registrant.full_name,
+          }),
+        })
+      )
+    );
 
     return NextResponse.json(
       {
