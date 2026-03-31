@@ -81,6 +81,10 @@ export function StepReview({ data, onBack, onSubmit }: StepReviewProps) {
           <span className="font-semibold text-[#006241]">{data.email}</span>.
           See you at the Build-a-thon!
         </p>
+        <p className="text-sm text-gray-400 max-w-md mx-auto">
+          The email may take up to 5 minutes to arrive. Check your spam folder
+          if you don&apos;t see it.
+        </p>
         <div className="pt-4">
           <Link
             href="/"
