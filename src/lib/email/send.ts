@@ -1,14 +1,7 @@
-import nodemailer from "nodemailer";
-import { randomUUID } from "crypto";
+import { Resend } from "resend";
 import { render } from "@react-email/render";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_FROM,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 interface SendEmailOptions {
   to: string;
@@ -20,16 +13,12 @@ export async function sendEmail({ to, subject, react }: SendEmailOptions) {
   try {
     const html = await render(react);
 
-    await transporter.sendMail({
-      from: `"Babson Generator (no-reply)" <${process.env.EMAIL_FROM}>`,
+    await resend.emails.send({
+      from: `Babson Generator <${process.env.EMAIL_FROM}>`,
       replyTo: "alaraia1@babson.edu",
       to,
       subject,
       html,
-      headers: {
-        // Unique ref prevents Gmail from threading separate notification emails
-        "X-Entity-Ref-ID": randomUUID(),
-      },
     });
 
     return { success: true };
