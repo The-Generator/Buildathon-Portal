@@ -37,67 +37,6 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
   );
 }
 
-/** Per-cycle randomized parameters for realistic EKG variation. */
-interface CycleParams {
-  rWaveHeight: number;   // 0.30–0.46
-  sWaveDepth: number;    // 0.10–0.20
-  pWaveHeight: number;   // 0.03–0.09
-  tWaveHeight: number;   // 0.05–0.11
-  qrsOffset: number;     // timing shift -0.02–0.02
-  baselineWander: number; // subtle drift -0.015–0.015
-}
-
-function randomCycleParams(): CycleParams {
-  const rand = (min: number, max: number) => min + Math.random() * (max - min);
-  return {
-    rWaveHeight: rand(0.30, 0.46),
-    sWaveDepth: rand(0.10, 0.20),
-    pWaveHeight: rand(0.03, 0.09),
-    tWaveHeight: rand(0.05, 0.11),
-    qrsOffset: rand(-0.02, 0.02),
-    baselineWander: rand(-0.015, 0.015),
-  };
-}
-
-/** Returns y-offset (0–1, where 0.5 is baseline) for a single EKG cycle at position t (0–1). */
-function ekgCycle(t: number, params?: CycleParams): number {
-  const p_ = params ?? { rWaveHeight: 0.38, sWaveDepth: 0.15, pWaveHeight: 0.06, tWaveHeight: 0.08, qrsOffset: 0, baselineWander: 0 };
-  const mid = 0.5 + p_.baselineWander;
-  const qrsStart = 0.40 + p_.qrsOffset;
-
-  // Flatline before P-wave
-  if (t < 0.30) return mid;
-  // P-wave bump
-  if (t < 0.35) {
-    const p = (t - 0.30) / 0.05;
-    return mid - p_.pWaveHeight * Math.sin(p * Math.PI);
-  }
-  // Return to baseline
-  if (t < qrsStart) return mid;
-  // QRS complex: sharp R-wave up
-  if (t < qrsStart + 0.02) {
-    const p = (t - qrsStart) / 0.02;
-    return mid - p_.rWaveHeight * p;
-  }
-  // QRS: sharp S-wave down below baseline
-  if (t < qrsStart + 0.04) {
-    const p = (t - (qrsStart + 0.02)) / 0.02;
-    return mid - p_.rWaveHeight * (1 - p) + p_.sWaveDepth * p;
-  }
-  // Return to baseline from S-wave
-  if (t < qrsStart + 0.08) {
-    const p = (t - (qrsStart + 0.04)) / 0.04;
-    return mid + p_.sWaveDepth * (1 - p);
-  }
-  // T-wave gentle bump
-  if (t < qrsStart + 0.18) {
-    const p = (t - (qrsStart + 0.08)) / 0.10;
-    return mid - p_.tWaveHeight * Math.sin(p * Math.PI);
-  }
-  // Flatline after T-wave
-  return mid;
-}
-
 function HeartbeatMonitor() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -108,24 +47,118 @@ function HeartbeatMonitor() {
     if (!ctx) return;
 
     let frameId: number;
-    const SWEEP_DURATION = 3000; // ms — one full left-to-right pass
-    const CYCLES = 2; // number of heartbeats visible across the width
-    const GAP_WIDTH = 0.06; // blank gap ahead of cursor
-    const FADE_WIDTH = 0.12; // fade-out zone behind the gap
+    const SWEEP_DURATION = 4000; // ms for one full sweep
+    const GAP_WIDTH = 0.05;
+    const FADE_WIDTH = 0.10;
+    const BUFFER_SIZE = 800; // resolution of the waveform buffer
     const startTime = performance.now();
-
-    // Generate random params for each cycle, re-roll when cursor wraps
-    let cycleParamsArr: CycleParams[] = Array.from({ length: CYCLES }, () => randomCycleParams());
-    let lastSweepIndex = 0; // track wrap-arounds to regenerate params
-
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    /** Get the y value at position t (0→1 across full canvas width) using per-cycle params. */
-    const getY = (t: number, h: number): number => {
-      const cycleIndex = Math.floor(t * CYCLES) % CYCLES;
-      const cycleT = (t * CYCLES) % 1;
-      return ekgCycle(cycleT, cycleParamsArr[cycleIndex]) * h;
-    };
+    // Circular buffer of y-values (0–1, 0.5 = baseline)
+    const buffer = new Float32Array(BUFFER_SIZE).fill(0.5);
+
+    // State machine for generating the waveform in real-time
+    const rand = (min: number, max: number) => min + Math.random() * (max - min);
+    let state: "flat" | "p-wave" | "qrs-up" | "qrs-down" | "recovery" | "t-wave" = "flat";
+    let stateCounter = 0; // samples remaining in current state
+    let flatUntilBeat = Math.floor(rand(200, 450)); // long flatline — only ~2 beats per screen
+    let baselineWander = 0;
+    let wanderTarget = 0;
+
+    // Current beat's randomized params
+    let rHeight = 0;
+    let sDepth = 0;
+    let pHeight = 0;
+    let tHeight = 0;
+    let lastWriteIndex = 0;
+
+    /** Generate the next sample value. */
+    function nextSample(): number {
+      // Slowly wander the baseline
+      baselineWander += (wanderTarget - baselineWander) * 0.02;
+      if (Math.random() < 0.005) wanderTarget = rand(-0.03, 0.03);
+      const base = 0.5 + baselineWander;
+      const noise = (Math.random() - 0.5) * 0.008; // tiny noise
+
+      switch (state) {
+        case "flat":
+          flatUntilBeat--;
+          if (flatUntilBeat <= 0) {
+            // Start a new beat — randomize everything
+            rHeight = rand(0.22, 0.45);
+            sDepth = rand(0.08, 0.18);
+            pHeight = rand(0.03, 0.09);
+            tHeight = rand(0.04, 0.12);
+            state = "p-wave";
+            stateCounter = Math.floor(rand(8, 14)); // p-wave duration
+          }
+          return base + noise;
+
+        case "p-wave": {
+          const progress = 1 - stateCounter / Math.floor(rand(8, 14) || 12);
+          stateCounter--;
+          const val = base - pHeight * Math.sin(Math.min(1, Math.max(0, progress)) * Math.PI);
+          if (stateCounter <= 0) {
+            state = "qrs-up";
+            stateCounter = Math.floor(rand(3, 6));
+          }
+          return val + noise;
+        }
+
+        case "qrs-up": {
+          const total = stateCounter + 1;
+          stateCounter--;
+          const progress = 1 - stateCounter / total;
+          const val = base - rHeight * progress;
+          if (stateCounter <= 0) {
+            state = "qrs-down";
+            stateCounter = Math.floor(rand(3, 6));
+          }
+          return val;
+        }
+
+        case "qrs-down": {
+          const total = stateCounter + 1;
+          stateCounter--;
+          const progress = 1 - stateCounter / total;
+          const val = base - rHeight * (1 - progress) + sDepth * progress;
+          if (stateCounter <= 0) {
+            state = "recovery";
+            stateCounter = Math.floor(rand(6, 12));
+          }
+          return val;
+        }
+
+        case "recovery": {
+          const total = stateCounter + 1;
+          stateCounter--;
+          const progress = 1 - stateCounter / total;
+          const val = base + sDepth * (1 - progress);
+          if (stateCounter <= 0) {
+            state = "t-wave";
+            stateCounter = Math.floor(rand(12, 22));
+          }
+          return val + noise;
+        }
+
+        case "t-wave": {
+          const total = stateCounter + 1;
+          stateCounter--;
+          const progress = 1 - stateCounter / total;
+          const val = base - tHeight * Math.sin(progress * Math.PI);
+          if (stateCounter <= 0) {
+            state = "flat";
+            flatUntilBeat = Math.floor(rand(200, 450)); // long random gap until next beat
+          }
+          return val + noise;
+        }
+      }
+    }
+
+    // Pre-fill the buffer so the initial screen has a waveform
+    for (let i = 0; i < BUFFER_SIZE; i++) {
+      buffer[i] = nextSample();
+    }
 
     const render = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -144,24 +177,30 @@ function HeartbeatMonitor() {
       const elapsed = performance.now() - startTime;
       const cursor = reducedMotion ? 1 : (elapsed % SWEEP_DURATION) / SWEEP_DURATION;
 
-      // Regenerate random params each time the cursor wraps around
-      const sweepIndex = Math.floor(elapsed / SWEEP_DURATION);
-      if (sweepIndex !== lastSweepIndex) {
-        lastSweepIndex = sweepIndex;
-        cycleParamsArr = Array.from({ length: CYCLES }, () => randomCycleParams());
+      // Advance the buffer — write new samples up to cursor position
+      const writeIndex = Math.floor(cursor * BUFFER_SIZE);
+      if (writeIndex !== lastWriteIndex) {
+        // Write new samples from lastWriteIndex to writeIndex (handles wrap)
+        let i = (lastWriteIndex + 1) % BUFFER_SIZE;
+        const end = (writeIndex + 1) % BUFFER_SIZE;
+        let safety = 0;
+        while (i !== end && safety < BUFFER_SIZE) {
+          buffer[i] = nextSample();
+          i = (i + 1) % BUFFER_SIZE;
+          safety++;
+        }
+        lastWriteIndex = writeIndex;
       }
-
-      const steps = Math.max(400, Math.floor(w * 2));
 
       ctx.lineJoin = "round";
       ctx.lineCap = "round";
 
       if (reducedMotion) {
         ctx.beginPath();
-        for (let i = 0; i <= steps; i++) {
-          const t = i / steps;
-          const y = getY(t, h);
-          if (i === 0) ctx.moveTo(t * w, y); else ctx.lineTo(t * w, y);
+        for (let i = 0; i < BUFFER_SIZE; i++) {
+          const x = (i / BUFFER_SIZE) * w;
+          const y = buffer[i] * h;
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         }
         ctx.strokeStyle = "rgba(0, 232, 123, 0.25)";
         ctx.lineWidth = 2;
@@ -170,43 +209,35 @@ function HeartbeatMonitor() {
         return;
       }
 
-      // Draw the EKG trace segment by segment with per-segment alpha.
-      for (let i = 1; i <= steps; i++) {
-        const t = i / steps;
-        const prevT = (i - 1) / steps;
+      // Draw buffer segment by segment with alpha based on distance from cursor
+      for (let i = 1; i < BUFFER_SIZE; i++) {
+        const t = i / BUFFER_SIZE;
+        const prevT = (i - 1) / BUFFER_SIZE;
         const x = t * w;
         const prevX = prevT * w;
-        const y = getY(t, h);
-        const prevY = getY(prevT, h);
+        const y = buffer[i] * h;
+        const prevY = buffer[i - 1] * h;
 
-        // Calculate distance ahead of cursor (wrapping around)
         let distAhead = t - cursor;
         if (distAhead < 0) distAhead += 1;
 
-        // Gap zone: invisible
+        // Gap zone
         if (distAhead < GAP_WIDTH) continue;
 
-        // Fade zone: fading out (old trace about to be erased)
+        // Alpha
         let alpha: number;
         if (distAhead < GAP_WIDTH + FADE_WIDTH) {
-          // Fades from 0 at gap edge to moderate further away
           alpha = ((distAhead - GAP_WIDTH) / FADE_WIDTH) * 0.25;
         } else {
-          // Everything behind cursor that isn't in gap/fade is the "drawn" portion
-          // Freshly drawn = bright, older = dimmer
           let distBehind = cursor - t;
           if (distBehind < 0) distBehind += 1;
-          // Bright near cursor, fading to base further back
-          alpha = Math.max(0.25, 0.9 - distBehind * 1.2);
+          alpha = Math.max(0.2, 0.9 - distBehind * 1.5);
         }
 
-        // Edge fade at canvas boundaries
-        const edgeX = Math.min(x, prevX);
-        const edgeMaxX = Math.max(x, prevX);
-        if (edgeX < w * 0.05) alpha *= edgeX / (w * 0.05);
-        if (edgeMaxX > w * 0.95) alpha *= (w - edgeMaxX) / (w * 0.05);
+        // Edge fade
+        if (x < w * 0.05) alpha *= x / (w * 0.05);
+        if (x > w * 0.95) alpha *= (w - x) / (w * 0.05);
 
-        // Main trace
         ctx.beginPath();
         ctx.moveTo(prevX, prevY);
         ctx.lineTo(x, y);
@@ -215,17 +246,16 @@ function HeartbeatMonitor() {
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Glow for bright segments
         if (alpha > 0.5) {
-          ctx.globalAlpha = (alpha - 0.5) * 0.5;
+          ctx.globalAlpha = (alpha - 0.5) * 0.4;
           ctx.lineWidth = 6;
           ctx.stroke();
         }
       }
 
-      // Glowing cursor dot
+      // Cursor dot
       const cursorX = cursor * w;
-      const cursorY = getY(cursor, h);
+      const cursorY = buffer[Math.floor(cursor * BUFFER_SIZE)] * h;
       const cursorEdge = cursorX < w * 0.05 ? cursorX / (w * 0.05) : cursorX > w * 0.95 ? (w - cursorX) / (w * 0.05) : 1;
 
       ctx.globalAlpha = 0.95 * cursorEdge;
