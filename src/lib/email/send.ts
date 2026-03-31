@@ -1,14 +1,6 @@
 import { Resend } from "resend";
 import { render } from "@react-email/render";
 
-function getResendClient() {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) {
-    throw new Error("RESEND_API_KEY environment variable is not set");
-  }
-  return new Resend(key);
-}
-
 interface SendEmailOptions {
   to: string;
   subject: string;
@@ -16,11 +8,22 @@ interface SendEmailOptions {
 }
 
 export async function sendEmail({ to, subject, react }: SendEmailOptions) {
-  try {
-    const resend = getResendClient();
-    const html = await render(react);
+  console.log(`[EMAIL] Attempting to send "${subject}" to ${to}`);
+  console.log(`[EMAIL] RESEND_API_KEY present: ${!!process.env.RESEND_API_KEY}`);
+  console.log(`[EMAIL] EMAIL_FROM: ${process.env.EMAIL_FROM}`);
 
-    const { error } = await resend.emails.send({
+  try {
+    const key = process.env.RESEND_API_KEY;
+    if (!key) {
+      console.error("[EMAIL] RESEND_API_KEY is not set!");
+      return { success: false, error: "RESEND_API_KEY is not set" };
+    }
+
+    const resend = new Resend(key);
+    const html = await render(react);
+    console.log(`[EMAIL] HTML rendered, length: ${html.length}`);
+
+    const { data, error } = await resend.emails.send({
       from: `Babson Generator <${process.env.EMAIL_FROM}>`,
       replyTo: "alaraia1@babson.edu",
       to,
@@ -29,13 +32,14 @@ export async function sendEmail({ to, subject, react }: SendEmailOptions) {
     });
 
     if (error) {
-      console.error("Resend API error:", JSON.stringify(error));
+      console.error("[EMAIL] Resend API error:", JSON.stringify(error));
       return { success: false, error };
     }
 
+    console.log("[EMAIL] Sent successfully, id:", data?.id);
     return { success: true };
   } catch (error) {
-    console.error("Email send error:", error);
+    console.error("[EMAIL] Exception:", error);
     return { success: false, error };
   }
 }
