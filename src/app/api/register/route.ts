@@ -71,37 +71,55 @@ async function deleteExistingParticipant(
   }
 }
 
-/** Look up a participant by email and return duplicate info if found. */
-async function findDuplicate(
+type DuplicateResult = {
+  info: DuplicateInfo;
+  record: { id: string; is_self_registered: boolean; registered_by: string | null };
+};
+
+/** Look up participants by email OR by name+school and return all matches. */
+async function findDuplicates(
   supabase: SupabaseAdmin,
-  email: string
-): Promise<
-  | {
-      info: DuplicateInfo;
-      record: { id: string; is_self_registered: boolean; registered_by: string | null };
-    }
-  | null
-> {
-  const { data } = await supabase
+  email: string,
+  fullName: string,
+  school: string
+): Promise<DuplicateResult[]> {
+  const results: DuplicateResult[] = [];
+  const seenIds = new Set<string>();
+
+  // Check by email
+  const { data: emailMatches } = await supabase
     .from("participants")
-    .select("id, full_name, team_id, is_self_registered, registered_by")
-    .eq("email", email)
-    .single();
+    .select("id, full_name, email, team_id, is_self_registered, registered_by")
+    .eq("email", email);
 
-  if (!data) return null;
+  for (const match of emailMatches ?? []) {
+    if (!seenIds.has(match.id)) {
+      seenIds.add(match.id);
+      results.push({
+        info: { email: match.email, existingName: match.full_name, isTeamAssigned: !!match.team_id },
+        record: { id: match.id, is_self_registered: match.is_self_registered, registered_by: match.registered_by },
+      });
+    }
+  }
 
-  return {
-    info: {
-      email,
-      existingName: data.full_name,
-      isTeamAssigned: !!data.team_id,
-    },
-    record: {
-      id: data.id,
-      is_self_registered: data.is_self_registered,
-      registered_by: data.registered_by,
-    },
-  };
+  // Check by name + school (case-insensitive)
+  const { data: nameMatches } = await supabase
+    .from("participants")
+    .select("id, full_name, email, team_id, is_self_registered, registered_by")
+    .ilike("full_name", fullName)
+    .eq("school", school);
+
+  for (const match of nameMatches ?? []) {
+    if (!seenIds.has(match.id)) {
+      seenIds.add(match.id);
+      results.push({
+        info: { email: match.email, existingName: match.full_name, isTeamAssigned: !!match.team_id },
+        record: { id: match.id, is_self_registered: match.is_self_registered, registered_by: match.registered_by },
+      });
+    }
+  }
+
+  return results;
 }
 
 export async function POST(request: NextRequest) {
@@ -122,13 +140,22 @@ export async function POST(request: NextRequest) {
     const supabase = createAdminClient();
     const isSpectator = data.team_option === "spectator";
 
-    // 2. Check for duplicate emails (registrant + teammates)
-    const allEmails = [data.email, ...data.teammates.map((t) => t.email)];
-    const duplicates: { info: DuplicateInfo; record: { id: string; is_self_registered: boolean; registered_by: string | null } }[] = [];
+    // 2. Check for duplicates by email OR name+school (registrant + teammates)
+    const allPeople = [
+      { email: data.email, fullName: data.full_name, school: data.school },
+      ...data.teammates.map((t) => ({ email: t.email, fullName: t.full_name, school: data.school })),
+    ];
+    const duplicates: DuplicateResult[] = [];
+    const seenIds = new Set<string>();
 
-    for (const email of allEmails) {
-      const dup = await findDuplicate(supabase, email);
-      if (dup) duplicates.push(dup);
+    for (const person of allPeople) {
+      const dups = await findDuplicates(supabase, person.email, person.fullName, person.school);
+      for (const dup of dups) {
+        if (!seenIds.has(dup.record.id)) {
+          seenIds.add(dup.record.id);
+          duplicates.push(dup);
+        }
+      }
     }
 
     if (duplicates.length > 0) {
