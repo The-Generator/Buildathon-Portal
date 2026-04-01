@@ -87,7 +87,8 @@ export function CreateTeamModal({
 
       if (!res.ok) {
         const err = await res.json();
-        setError(err.error || "Failed to create team");
+        const msg = err.error || "Failed to create team";
+        setError(err.details ? `${msg}: ${err.details}` : msg);
         return;
       }
 

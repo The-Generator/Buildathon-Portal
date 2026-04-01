@@ -35,10 +35,11 @@ export async function POST(request: NextRequest) {
     const { matches } = result.data;
     const supabase = createAdminClient();
 
-    // Determine the next team_number from the current max
+    // Determine the next team_number from the current max (filter nulls so they don't shadow real values)
     const { data: maxRow } = await supabase
       .from("teams")
       .select("team_number")
+      .not("team_number", "is", null)
       .order("team_number", { ascending: false })
       .limit(1)
       .single();
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
           const { data: retryMax } = await supabase
             .from("teams")
             .select("team_number")
+            .not("team_number", "is", null)
             .order("team_number", { ascending: false })
             .limit(1)
             .single();
