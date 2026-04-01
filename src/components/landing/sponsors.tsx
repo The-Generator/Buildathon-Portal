@@ -26,7 +26,7 @@ const sponsors: SponsorEntry[] = [
   { name: "HubSpot", href: "https://www.hubspot.com/", logo: "/sponsors/hubspot.png" },
   { name: "Lovable", href: "https://lovable.dev/", logo: "/sponsors/lovable.png" },
   { name: "Cursor", href: "https://www.cursor.com/", logo: "/sponsors/cursor.png" },
-  { name: "OpenAI", href: "https://openai.com/", logo: "/sponsors/openai.png" },
+  { name: "OpenAI | ChatGPT Lab", href: "https://openai.com/", logo: "/sponsors/chatgpt-lab.png", invert: true },
   { name: "Anthropic", href: "https://www.anthropic.com/", logo: "/sponsors/anthropic.svg" },
   { name: "WHOOP", href: "https://www.whoop.com/", logo: "/sponsors/whoop.svg" },
   { name: "Weissman Foundry", href: "https://www.foundry.babson.edu/", logo: "/sponsors/weissman-foundry.png" },
