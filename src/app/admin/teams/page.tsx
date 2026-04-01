@@ -19,7 +19,7 @@ import {
   Unlock,
   Users,
 } from "lucide-react";
-import { EVENT_CONFIG } from "@/lib/constants";
+import { EVENT_CONFIG, WORKROOMS } from "@/lib/constants";
 import type { Team, Participant } from "@/types";
 
 type TeamWithMembers = Team & { members: Participant[] };
@@ -497,7 +497,7 @@ export default function TeamsPage() {
                     </div>
                     <div className="flex items-center gap-2 ml-2 flex-wrap justify-end">
                       {team.room_number != null && (
-                        <Badge color="blue">Room {team.room_number}</Badge>
+                        <Badge color="blue">{WORKROOMS[team.room_number - 1] ?? `Room ${team.room_number}`}</Badge>
                       )}
                       <Badge color={formationColor(team.formation_type)}>
                         {formationLabel(team.formation_type)}
@@ -591,19 +591,17 @@ export default function TeamsPage() {
                             if (data) setTeams(data);
                             showActionToast(
                               room_number
-                                ? `${team.name} → Room ${room_number}`
+                                ? `${team.name} → ${WORKROOMS[room_number - 1] ?? `Room ${room_number}`}`
                                 : `${team.name} room cleared`
                             );
                           }}
                         >
                           <option value="">No room</option>
-                          {Array.from({ length: EVENT_CONFIG.roomCount }, (_, i) => i + 1).map(
-                            (n) => (
-                              <option key={n} value={n}>
-                                Room {n}
-                              </option>
-                            )
-                          )}
+                          {WORKROOMS.map((name, i) => (
+                            <option key={i + 1} value={i + 1}>
+                              {name}
+                            </option>
+                          ))}
                         </select>
                       </div>
                     )}

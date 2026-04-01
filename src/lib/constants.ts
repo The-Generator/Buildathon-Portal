@@ -15,6 +15,20 @@ export const EVENT_CONFIG = {
   theme: "AI x Body & Mind",
 } as const;
 
+/** Workrooms available for team assignments (index + 1 = room_number in DB) */
+export const WORKROOMS = [
+  "Malloy 102",
+  "Malloy 201",
+  "Malloy 202",
+  "Olin 101",
+  "Olin 102",
+  "Olin 120",
+  "Olin 202",
+  "Olin 225",
+  "Olin Winn Auditorium",
+  "FME Workshop (Schlesinger Innovation Center)",
+] as const;
+
 export const PRIMARY_ROLES = [
   "Frontend Developer",
   "Backend Developer",

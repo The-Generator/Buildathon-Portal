@@ -11,7 +11,7 @@ import {
   Link,
   Img,
 } from "@react-email/components";
-import { EVENT_CONFIG } from "@/lib/constants";
+import { EVENT_CONFIG, WORKROOMS } from "@/lib/constants";
 
 interface TeamAssignmentProps {
   participantName: string;
@@ -114,7 +114,7 @@ export default function TeamAssignment({
               <Text style={teamNameLabel}>YOUR TEAM</Text>
               <Heading as="h2" style={teamNameHeading}>{teamName}</Heading>
               {roomNumber && (
-                <Text style={roomNumberText}>Room {roomNumber}</Text>
+                <Text style={roomNumberText}>{WORKROOMS[roomNumber - 1] ?? `Room ${roomNumber}`}</Text>
               )}
             </Section>
 
@@ -246,7 +246,7 @@ export default function TeamAssignment({
                           height="18"
                         />
                       </td>
-                      <td style={detailText}>Room {roomNumber}</td>
+                      <td style={detailText}>{WORKROOMS[roomNumber - 1] ?? `Room ${roomNumber}`}</td>
                     </tr>
                   )}
                 </tbody>
