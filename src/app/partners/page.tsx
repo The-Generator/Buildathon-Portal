@@ -30,10 +30,11 @@ export default function PartnersPage() {
             Partner With Us
           </h1>
           <p className="font-body mt-4 text-lg leading-relaxed text-white/50">
-            The Generator Build-a-thon brings together 200+ students from
-            across New England to build AI-powered projects in 12 hours.
-            Partner with us to connect with the next generation of builders
-            and innovators.
+            Over the past two years, the Generator Build-a-thon has brought
+            together 200+ participants from across New England to build
+            AI-powered projects in 12 hours. This year, we&apos;re going bigger
+            than ever — shooting for 500 builders. Partner with us to connect
+            with the next generation of innovators.
           </p>
         </div>
 
