@@ -18,8 +18,8 @@ const partners: SponsorEntry[] = [
   { name: "The Generator", href: "https://www.babson.edu/thegenerator/", logo: "/sponsors/generator-ai-lab.png" },
   { name: "Butler Institute", href: "https://www.babson.edu/entrepreneurship-center/thought-leadership/butler-institute-for-free-enterprise-through-entrepreneurship/", logo: "/sponsors/butler-institute.png" },
   { name: "Bentley E-Hub", href: "https://www.bentley.edu/", logo: "/sponsors/bentley-ehub.png" },
-  { name: "Olin College", href: "https://www.olin.edu/", logo: "/sponsors/olin-college.svg", invert: true },
-  { name: "Wellesley College", href: "https://www.wellesley.edu/", logo: "/sponsors/wellesley-college.svg", invert: true },
+  { name: "Olin College", href: "https://www.olin.edu/", logo: "/sponsors/olin-college.png" },
+  { name: "Wellesley College", href: "https://www.wellesley.edu/", logo: "/sponsors/wellesley-college.png" },
 ];
 
 const sponsors: SponsorEntry[] = [
