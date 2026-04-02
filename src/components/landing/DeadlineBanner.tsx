@@ -33,15 +33,17 @@ export function DeadlineBanner() {
     localStorage.setItem(STORAGE_KEY, "true");
   };
 
-  // Color shift based on urgency
+  // Color shift based on urgency — always contrast against the dark site
   let bg: string;
   let textColor = "text-white";
   if (daysLeft <= 1) {
     bg = "bg-red-600";
   } else if (daysLeft <= 2) {
-    bg = "bg-amber-600";
+    bg = "bg-amber-500";
+    textColor = "text-black";
   } else {
-    bg = "bg-[#006241]";
+    bg = "bg-amber-400";
+    textColor = "text-black";
   }
 
   const daysText =
