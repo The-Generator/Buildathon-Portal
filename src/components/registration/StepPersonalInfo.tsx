@@ -318,6 +318,14 @@ export function StepPersonalInfo({
         )}
       </div>
 
+      {/* Contact */}
+      <p className="text-sm text-gray-500">
+        Questions? Reach out to{" "}
+        <a href="mailto:alaraia1@babson.edu" className="font-medium text-[#006241] underline">
+          alaraia1@babson.edu
+        </a>
+      </p>
+
       {/* Navigation */}
       <div className="flex justify-end pt-4">
         <Button onClick={handleNext} size="lg">

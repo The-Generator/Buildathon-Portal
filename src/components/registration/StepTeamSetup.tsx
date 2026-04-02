@@ -145,6 +145,12 @@ export function StepTeamSetup({
         })}
       </div>
 
+      <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+        You can register with a max of 3 people (including yourself). If you
+        have a group of 4 or 5, split into smaller groups — you&apos;ll still
+        be matched together on the same team!
+      </div>
+
       {errors.team_option && (
         <p className="text-sm text-red-600">{errors.team_option}</p>
       )}
@@ -236,6 +242,14 @@ export function StepTeamSetup({
       {errors.teammates && (
         <p className="text-sm text-red-600">{errors.teammates}</p>
       )}
+
+      {/* Contact */}
+      <p className="text-sm text-gray-500">
+        Questions? Reach out to{" "}
+        <a href="mailto:alaraia1@babson.edu" className="font-medium text-[#006241] underline">
+          alaraia1@babson.edu
+        </a>
+      </p>
 
       {/* Navigation */}
       <div className="flex justify-between pt-4">
