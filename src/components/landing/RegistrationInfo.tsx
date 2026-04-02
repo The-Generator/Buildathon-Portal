@@ -101,6 +101,9 @@ export function RegistrationInfo() {
           <p className="font-body mt-4 text-sm text-white/40">
             Registration is free and takes about 3 minutes.
           </p>
+          <p className="font-body mt-2 text-sm font-semibold text-amber-400">
+            Registration closes April 7th
+          </p>
         </div>
       </div>
     </section>

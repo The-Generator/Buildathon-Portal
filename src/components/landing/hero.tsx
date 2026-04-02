@@ -389,12 +389,15 @@ export function Hero() {
 
         {/* CTA buttons */}
         <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
-          <Link
-            href="/register"
-            className="rounded-xl bg-[#006241] px-10 py-4 text-base font-bold text-white shadow-lg shadow-[#006241]/20 transition-all hover:bg-[#007a52] hover:shadow-xl hover:shadow-[#006241]/30"
-          >
-            Register Now
-          </Link>
+          <div className="flex flex-col items-center gap-1.5">
+            <Link
+              href="/register"
+              className="relative overflow-hidden rounded-xl bg-[#006241] px-10 py-4 text-base font-bold text-white shadow-lg shadow-[#006241]/20 transition-all hover:bg-[#007a52] hover:shadow-xl hover:shadow-[#006241]/30"
+            >
+              Register Now
+            </Link>
+            <span className="text-xs font-medium text-white/50">Registration closes April 7th</span>
+          </div>
           <a
             href="#about"
             className="rounded-xl border border-white/15 px-10 py-4 text-base font-semibold text-white transition-all hover:border-white/30 hover:bg-white/5"

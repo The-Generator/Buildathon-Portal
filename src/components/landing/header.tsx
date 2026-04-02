@@ -67,9 +67,13 @@ export function Header() {
             </button>
             <Link
               href="/register"
-              className="rounded-xl bg-[#006241] px-6 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#007a52] hover:shadow-lg hover:shadow-[#006241]/25"
+              className="relative rounded-xl bg-[#006241] px-6 py-2.5 text-sm font-bold text-white transition-all hover:bg-[#007a52] hover:shadow-lg hover:shadow-[#006241]/25"
             >
               Register Now
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-amber-400" />
+              </span>
             </Link>
           </nav>
 
