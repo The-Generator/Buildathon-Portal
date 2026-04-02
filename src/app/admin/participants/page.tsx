@@ -41,6 +41,7 @@ export default function ParticipantsPage() {
   const [assigningParticipant, setAssigningParticipant] = useState<Participant | null>(null);
   const [deletingParticipant, setDeletingParticipant] = useState<Participant | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [resendingId, setResendingId] = useState<string | null>(null);
 
   const [adminToken] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
@@ -180,6 +181,31 @@ export default function ParticipantsPage() {
       setLoading(false);
     };
     void refresh();
+  };
+
+  const handleResendConfirmation = async (participant: Participant) => {
+    if (!adminToken || resendingId) return;
+    setResendingId(participant.id);
+    try {
+      const res = await fetch("/api/admin/participants/resend-confirmation", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify({ participant_id: participant.id }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Failed to send confirmation");
+      } else {
+        alert(`Confirmation email sent to ${data.email}`);
+      }
+    } catch {
+      alert("Network error");
+    } finally {
+      setResendingId(null);
+    }
   };
 
   const handleDelete = async () => {
@@ -366,6 +392,7 @@ export default function ParticipantsPage() {
                     onEdit={adminToken ? (participant) => setEditingParticipant(participant) : undefined}
                     onQuickAssign={adminToken ? (participant) => setAssigningParticipant(participant) : undefined}
                     onDelete={adminToken ? (participant) => setDeletingParticipant(participant) : undefined}
+                    onResendConfirmation={adminToken ? handleResendConfirmation : undefined}
                   />
                 ))
               )}

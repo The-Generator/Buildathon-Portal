@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronUp, Pencil, Users, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil, Users, Trash2, Mail } from "lucide-react";
 import type { Participant, Team } from "@/types";
 
 interface ParticipantRowProps {
@@ -10,6 +10,7 @@ interface ParticipantRowProps {
   onEdit?: (participant: Participant) => void;
   onQuickAssign?: (participant: Participant) => void;
   onDelete?: (participant: Participant) => void;
+  onResendConfirmation?: (participant: Participant) => void;
   teams?: (Team & { member_count: number })[];
 }
 
@@ -19,7 +20,7 @@ const typeConfig: Record<string, { label: string; color: "green" | "gray" | "ora
   walk_in: { label: "Walk-in", color: "orange" },
 };
 
-export function ParticipantRow({ participant, onEdit, onQuickAssign, onDelete }: ParticipantRowProps) {
+export function ParticipantRow({ participant, onEdit, onQuickAssign, onDelete, onResendConfirmation }: ParticipantRowProps) {
   const [expanded, setExpanded] = useState(false);
 
   const schoolDisplay =
@@ -145,7 +146,7 @@ export function ParticipantRow({ participant, onEdit, onQuickAssign, onDelete }:
             </div>
 
             {/* Action buttons */}
-            {(onEdit || onQuickAssign || onDelete) && (
+            {(onEdit || onQuickAssign || onDelete || onResendConfirmation) && (
               <div className="ml-8 mt-4 pt-3 border-t border-gray-200 flex gap-2">
                 {onEdit && (
                   <button
@@ -158,6 +159,19 @@ export function ParticipantRow({ participant, onEdit, onQuickAssign, onDelete }:
                   >
                     <Pencil className="h-3.5 w-3.5" />
                     Edit
+                  </button>
+                )}
+                {onResendConfirmation && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onResendConfirmation(participant);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors"
+                  >
+                    <Mail className="h-3.5 w-3.5" />
+                    Resend Confirmation
                   </button>
                 )}
                 {onQuickAssign && !participant.team_id && participant.participant_type !== "spectator" && (
