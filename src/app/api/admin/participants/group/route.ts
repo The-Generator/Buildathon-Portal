@@ -30,17 +30,43 @@ export async function POST(request: NextRequest) {
     }
 
     const { participant_id, registrant_id } = parsed.data;
+
+    if (participant_id === registrant_id) {
+      return NextResponse.json(
+        { error: "Cannot add a participant to their own group" },
+        { status: 400 }
+      );
+    }
+
     const supabase = createAdminClient();
 
-    // Verify the registrant has a group
-    const { data: group, error: groupError } = await supabase
+    // Verify the participant exists and isn't already in someone else's group
+    const { data: participant, error: pError } = await supabase
+      .from("participants")
+      .select("id, registered_by, is_self_registered")
+      .eq("id", participant_id)
+      .single();
+
+    if (pError || !participant) {
+      return NextResponse.json({ error: "Participant not found" }, { status: 404 });
+    }
+
+    if (participant.registered_by && participant.registered_by !== registrant_id) {
+      return NextResponse.json(
+        { error: "Participant is already in another registration group" },
+        { status: 409 }
+      );
+    }
+
+    // Get or create the registrant's group
+    let group = await supabase
       .from("registration_groups")
       .select("id, group_size")
       .eq("registrant_id", registrant_id)
-      .single();
+      .single()
+      .then((r) => r.data);
 
-    if (groupError || !group) {
-      // Create a group for this registrant if none exists
+    if (!group) {
       const { data: newGroup, error: createError } = await supabase
         .from("registration_groups")
         .insert({
@@ -57,19 +83,7 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
-
-      // Now add the participant
-      await supabase
-        .from("participants")
-        .update({ registered_by: registrant_id })
-        .eq("id", participant_id);
-
-      await supabase
-        .from("registration_groups")
-        .update({ group_size: 2 })
-        .eq("id", newGroup.id);
-
-      return NextResponse.json({ success: true });
+      group = newGroup;
     }
 
     if (group.group_size >= 3) {
@@ -79,30 +93,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify the participant exists and isn't already in a group
-    const { data: participant, error: pError } = await supabase
-      .from("participants")
-      .select("id, registered_by, is_self_registered")
-      .eq("id", participant_id)
-      .single();
+    // If the participant being added has their own registration group (solo),
+    // delete it since they're joining someone else's group
+    await supabase
+      .from("registration_groups")
+      .delete()
+      .eq("registrant_id", participant_id);
 
-    if (pError || !participant) {
-      return NextResponse.json({ error: "Participant not found" }, { status: 404 });
-    }
-
-    if (participant.registered_by) {
-      return NextResponse.json(
-        { error: "Participant is already in a registration group" },
-        { status: 409 }
-      );
-    }
-
-    // Add to group
+    // Update participant: set registered_by and mark as not self-registered
     await supabase
       .from("participants")
-      .update({ registered_by: registrant_id })
+      .update({
+        registered_by: registrant_id,
+        is_self_registered: false,
+      })
       .eq("id", participant_id);
 
+    // Increment group size
     await supabase
       .from("registration_groups")
       .update({ group_size: group.group_size + 1 })
@@ -153,10 +160,13 @@ export async function DELETE(request: NextRequest) {
 
     const registrantId = participant.registered_by;
 
-    // Remove from group
+    // Remove from group: clear registered_by, restore self-registered status
     await supabase
       .from("participants")
-      .update({ registered_by: null })
+      .update({
+        registered_by: null,
+        is_self_registered: true,
+      })
       .eq("id", participant_id);
 
     // Decrement group size
@@ -172,6 +182,13 @@ export async function DELETE(request: NextRequest) {
         .update({ group_size: group.group_size - 1 })
         .eq("id", group.id);
     }
+
+    // Create a new solo registration group for the removed participant
+    await supabase.from("registration_groups").insert({
+      registrant_id: participant_id,
+      group_size: 1,
+      tagged_team_skills: [],
+    });
 
     return NextResponse.json({ success: true });
   } catch {
