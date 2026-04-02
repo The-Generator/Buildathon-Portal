@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ParticipantRow } from "@/components/admin/ParticipantRow";
+import { ParticipantRow, type GroupMember } from "@/components/admin/ParticipantRow";
 import { AddWalkinModal } from "@/components/admin/AddWalkinModal";
 import { EditParticipantModal } from "@/components/admin/EditParticipantModal";
 import { AssignTeamModal } from "@/components/admin/AssignTeamModal";
@@ -153,6 +153,41 @@ export default function ParticipantsPage() {
 
     return result;
   }, [participants, search, schoolFilter, roleFilter, teamStatusFilter, typeFilter, sortField, sortDir]);
+
+  // Build group membership map: participant id → list of group members
+  const groupMembersMap = useMemo(() => {
+    const map = new Map<string, GroupMember[]>();
+
+    // Build registrant → members lookup
+    const membersByRegistrant = new Map<string, GroupMember[]>();
+
+    for (const p of participants) {
+      const registrantId = p.is_self_registered ? p.id : p.registered_by;
+      if (!registrantId) continue;
+
+      const existing = membersByRegistrant.get(registrantId) ?? [];
+      existing.push({
+        id: p.id,
+        full_name: p.full_name,
+        email: p.email,
+        isRegistrant: p.is_self_registered,
+      });
+      membersByRegistrant.set(registrantId, existing);
+    }
+
+    // Map each participant to their full group
+    for (const p of participants) {
+      const registrantId = p.is_self_registered ? p.id : p.registered_by;
+      if (!registrantId) {
+        map.set(p.id, [{ id: p.id, full_name: p.full_name, email: p.email, isRegistrant: false }]);
+        continue;
+      }
+      const members = membersByRegistrant.get(registrantId) ?? [];
+      map.set(p.id, members);
+    }
+
+    return map;
+  }, [participants]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
@@ -389,10 +424,14 @@ export default function ParticipantsPage() {
                   <ParticipantRow
                     key={p.id}
                     participant={p}
+                    groupMembers={groupMembersMap.get(p.id)}
+                    allParticipants={participants}
+                    adminToken={adminToken}
                     onEdit={adminToken ? (participant) => setEditingParticipant(participant) : undefined}
                     onQuickAssign={adminToken ? (participant) => setAssigningParticipant(participant) : undefined}
                     onDelete={adminToken ? (participant) => setDeletingParticipant(participant) : undefined}
                     onResendConfirmation={adminToken ? handleResendConfirmation : undefined}
+                    onGroupChange={handleRefresh}
                   />
                 ))
               )}

@@ -2,15 +2,26 @@
 
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronUp, Pencil, Users, Trash2, Mail } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil, Users, Trash2, Mail, Link2, X, Plus, Search } from "lucide-react";
 import type { Participant, Team } from "@/types";
+
+export interface GroupMember {
+  id: string;
+  full_name: string;
+  email: string;
+  isRegistrant: boolean;
+}
 
 interface ParticipantRowProps {
   participant: Participant & { team_name?: string };
+  groupMembers?: GroupMember[];
+  allParticipants?: Participant[];
   onEdit?: (participant: Participant) => void;
   onQuickAssign?: (participant: Participant) => void;
   onDelete?: (participant: Participant) => void;
   onResendConfirmation?: (participant: Participant) => void;
+  onGroupChange?: () => void;
+  adminToken?: string | null;
   teams?: (Team & { member_count: number })[];
 }
 
@@ -20,8 +31,21 @@ const typeConfig: Record<string, { label: string; color: "green" | "gray" | "ora
   walk_in: { label: "Walk-in", color: "orange" },
 };
 
-export function ParticipantRow({ participant, onEdit, onQuickAssign, onDelete, onResendConfirmation }: ParticipantRowProps) {
+export function ParticipantRow({
+  participant,
+  groupMembers,
+  allParticipants,
+  onEdit,
+  onQuickAssign,
+  onDelete,
+  onResendConfirmation,
+  onGroupChange,
+  adminToken,
+}: ParticipantRowProps) {
   const [expanded, setExpanded] = useState(false);
+  const [addingToGroup, setAddingToGroup] = useState(false);
+  const [groupSearch, setGroupSearch] = useState("");
+  const [groupLoading, setGroupLoading] = useState(false);
 
   const schoolDisplay =
     participant.school === "Other"
@@ -32,6 +56,86 @@ export function ParticipantRow({ participant, onEdit, onQuickAssign, onDelete, o
     label: participant.participant_type,
     color: "gray" as const,
   };
+
+  // Determine the registrant ID for this participant's group
+  const registrantId = participant.is_self_registered
+    ? participant.id
+    : participant.registered_by ?? null;
+
+  const hasGroup = groupMembers && groupMembers.length > 1;
+
+  const handleRemoveFromGroup = async (memberId: string) => {
+    if (!adminToken || groupLoading) return;
+    setGroupLoading(true);
+    try {
+      const res = await fetch("/api/admin/participants/group", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify({ participant_id: memberId }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Failed to remove from group");
+      } else {
+        onGroupChange?.();
+      }
+    } catch {
+      alert("Network error");
+    } finally {
+      setGroupLoading(false);
+    }
+  };
+
+  const handleAddToGroup = async (memberId: string) => {
+    if (!adminToken || !registrantId || groupLoading) return;
+    setGroupLoading(true);
+    try {
+      const res = await fetch("/api/admin/participants/group", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${adminToken}`,
+        },
+        body: JSON.stringify({
+          participant_id: memberId,
+          registrant_id: registrantId,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Failed to add to group");
+      } else {
+        setAddingToGroup(false);
+        setGroupSearch("");
+        onGroupChange?.();
+      }
+    } catch {
+      alert("Network error");
+    } finally {
+      setGroupLoading(false);
+    }
+  };
+
+  // Build list of eligible participants to add (not already in any group, not spectator)
+  const groupMemberIds = new Set(groupMembers?.map((m) => m.id) ?? []);
+  const addCandidates = addingToGroup && allParticipants
+    ? allParticipants.filter((p) => {
+        if (groupMemberIds.has(p.id)) return false;
+        if (p.registered_by) return false; // already in a group
+        if (p.participant_type === "spectator") return false;
+        if (!groupSearch.trim()) return false;
+        const q = groupSearch.toLowerCase();
+        return (
+          p.full_name.toLowerCase().includes(q) ||
+          p.email.toLowerCase().includes(q)
+        );
+      })
+    : [];
+
+  const canAddMore = (groupMembers?.length ?? 1) < 3;
 
   return (
     <>
@@ -52,6 +156,12 @@ export function ParticipantRow({ participant, onEdit, onQuickAssign, onDelete, o
               {participant.full_name}
             </span>
             <Badge color={pType.color}>{pType.label}</Badge>
+            {hasGroup && (
+              <span className="inline-flex items-center gap-0.5 text-xs text-blue-600">
+                <Link2 className="h-3 w-3" />
+                Group of {groupMembers.length}
+              </span>
+            )}
           </div>
         </td>
         <td className="px-4 py-3 text-sm text-gray-600">
@@ -144,6 +254,123 @@ export function ParticipantRow({ participant, onEdit, onQuickAssign, onDelete, o
                 </p>
               </div>
             </div>
+
+            {/* Registration Group */}
+            {groupMembers && participant.participant_type !== "spectator" && (
+              <div className="ml-8 mt-4 pt-3 border-t border-gray-200">
+                <p className="text-gray-400 text-xs uppercase font-medium mb-2 flex items-center gap-1">
+                  <Link2 className="h-3 w-3" />
+                  Registration Group
+                </p>
+                {groupMembers.length <= 1 && !addingToGroup ? (
+                  <p className="text-sm text-gray-400">Solo registration — not paired with anyone.</p>
+                ) : (
+                  <div className="space-y-1.5">
+                    {groupMembers.map((m) => (
+                      <div
+                        key={m.id}
+                        className="flex items-center justify-between bg-white rounded-lg border border-gray-200 px-3 py-2"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className="text-sm font-medium text-gray-900 truncate">
+                            {m.full_name}
+                          </span>
+                          <span className="text-xs text-gray-400 truncate">
+                            {m.email}
+                          </span>
+                          {m.isRegistrant && (
+                            <Badge color="blue">Lead</Badge>
+                          )}
+                        </div>
+                        {adminToken && !m.isRegistrant && (
+                          <button
+                            type="button"
+                            disabled={groupLoading}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleRemoveFromGroup(m.id);
+                            }}
+                            className="ml-2 text-gray-400 hover:text-red-600 transition-colors disabled:opacity-50"
+                            title="Remove from group"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add to group */}
+                {adminToken && canAddMore && participant.is_self_registered && (
+                  <div className="mt-2">
+                    {addingToGroup ? (
+                      <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <input
+                            type="text"
+                            value={groupSearch}
+                            onChange={(e) => setGroupSearch(e.target.value)}
+                            placeholder="Search by name or email..."
+                            autoFocus
+                            className="w-full rounded-lg border border-gray-300 pl-9 pr-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                          />
+                        </div>
+                        {addCandidates.length > 0 && (
+                          <div className="max-h-40 overflow-y-auto rounded-lg border border-gray-200 bg-white">
+                            {addCandidates.slice(0, 10).map((c) => (
+                              <button
+                                key={c.id}
+                                type="button"
+                                disabled={groupLoading}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleAddToGroup(c.id);
+                                }}
+                                className="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 transition-colors flex justify-between items-center disabled:opacity-50"
+                              >
+                                <div>
+                                  <span className="font-medium text-gray-900">{c.full_name}</span>
+                                  <span className="text-gray-400 ml-2 text-xs">{c.email}</span>
+                                </div>
+                                <Plus className="h-4 w-4 text-blue-600" />
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        {groupSearch.trim() && addCandidates.length === 0 && (
+                          <p className="text-xs text-gray-400 px-1">No eligible participants found.</p>
+                        )}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setAddingToGroup(false);
+                            setGroupSearch("");
+                          }}
+                          className="text-xs text-gray-500 hover:text-gray-700"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setAddingToGroup(true);
+                        }}
+                        className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+                      >
+                        <Plus className="h-3 w-3" />
+                        Add to group
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Action buttons */}
             {(onEdit || onQuickAssign || onDelete || onResendConfirmation) && (
