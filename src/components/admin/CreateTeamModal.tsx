@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search } from "lucide-react";
+import { Search, Link2 } from "lucide-react";
 import type { Participant } from "@/types";
 import { createClient } from "@/lib/supabase/client";
 
@@ -54,13 +54,44 @@ export function CreateTeamModal({
     }
   }, [isOpen, fetchUnassigned]);
 
+  // Build group membership: participant id → all group member ids (including self)
+  const groupMap = useMemo(() => {
+    const map = new Map<string, string[]>();
+    const byRegistrant = new Map<string, string[]>();
+
+    // Group members by their registrant
+    for (const p of participants) {
+      const registrantId = p.is_self_registered ? p.id : p.registered_by;
+      if (!registrantId) continue;
+      const existing = byRegistrant.get(registrantId) ?? [];
+      existing.push(p.id);
+      byRegistrant.set(registrantId, existing);
+    }
+
+    // Map each participant to their full group
+    for (const p of participants) {
+      const registrantId = p.is_self_registered ? p.id : p.registered_by;
+      if (!registrantId) {
+        map.set(p.id, [p.id]);
+        continue;
+      }
+      map.set(p.id, byRegistrant.get(registrantId) ?? [p.id]);
+    }
+
+    return map;
+  }, [participants]);
+
   const toggleParticipant = (id: string) => {
+    const groupIds = groupMap.get(id) ?? [id];
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
-      } else {
-        next.add(id);
+      const isSelected = next.has(id);
+      for (const gid of groupIds) {
+        if (isSelected) {
+          next.delete(gid);
+        } else {
+          next.add(gid);
+        }
       }
       return next;
     });
@@ -167,6 +198,8 @@ export function CreateTeamModal({
           <div className="max-h-64 overflow-y-auto space-y-1 rounded-lg border border-gray-200 p-1">
             {filtered.map((p) => {
               const isSelected = selectedIds.has(p.id);
+              const group = groupMap.get(p.id) ?? [p.id];
+              const hasGroup = group.length > 1;
 
               return (
                 <label
@@ -191,6 +224,12 @@ export function CreateTeamModal({
                       {p.email}
                     </span>
                   </div>
+                  {hasGroup && (
+                    <span className="inline-flex items-center gap-0.5 text-xs text-blue-600">
+                      <Link2 className="h-3 w-3" />
+                      {group.length}
+                    </span>
+                  )}
                   <Badge color="gray">{p.primary_role}</Badge>
                 </label>
               );
