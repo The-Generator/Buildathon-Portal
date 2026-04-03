@@ -13,7 +13,7 @@ const details = [
   {
     icon: CalendarDays,
     label: "When",
-    value: "April 11, 2026 — 9 AM to 9 PM",
+    value: "Saturday, April 11, 2026 — 8 AM to 8:30 PM",
   },
   {
     icon: MapPin,

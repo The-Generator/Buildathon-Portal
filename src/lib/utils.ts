@@ -11,6 +11,7 @@ export function formatDate(date: Date | string) {
     year: "numeric",
     month: "long",
     day: "numeric",
+    timeZone: "America/New_York",
   });
 }
 

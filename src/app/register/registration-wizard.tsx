@@ -183,7 +183,7 @@ export function RegistrationWizard({
   <p>Thank you for registering for Babson Generator Build-a-thon 2026!</p>
   <div class="card">
     <p class="card-label">EVENT DETAILS</p>
-    <div class="detail-row">📅 Friday, April 11, 2026</div>
+    <div class="detail-row">📅 Saturday, April 11, 2026</div>
     <div class="detail-row">🕗 8:00 AM – 8:30 PM ET</div>
     <div class="detail-row">📍 Knight Auditorium, Babson College<br><span class="detail-label">231 Forest St, Wellesley, MA 02457</span></div>
   </div>

@@ -24,7 +24,7 @@ export default function CheckInReminder({
 }: CheckInReminderProps) {
   const formattedDate = new Date(EVENT_CONFIG.startTime).toLocaleDateString(
     "en-US",
-    { weekday: "long", year: "numeric", month: "long", day: "numeric" }
+    { weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: "America/New_York" }
   );
 
   return (
