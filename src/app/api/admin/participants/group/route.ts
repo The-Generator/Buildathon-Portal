@@ -12,7 +12,43 @@ const removeFromGroupSchema = z.object({
   participant_id: z.string().uuid(),
 });
 
-/** POST - Add a participant to a registration group */
+/**
+ * Resolve the full group for a participant:
+ * - If they're a lead (is_self_registered && has members), return lead + members
+ * - If they're a member (registered_by set), return their lead + all members
+ * - If solo, return just them
+ */
+async function resolveGroup(
+  supabase: ReturnType<typeof createAdminClient>,
+  participantId: string
+): Promise<string[]> {
+  const { data: p } = await supabase
+    .from("participants")
+    .select("id, is_self_registered, registered_by")
+    .eq("id", participantId)
+    .single();
+
+  if (!p) return [participantId];
+
+  // Determine the lead of this participant's group
+  const leadId = p.is_self_registered ? p.id : p.registered_by ?? p.id;
+
+  // Get all members registered under this lead
+  const { data: members } = await supabase
+    .from("participants")
+    .select("id")
+    .eq("registered_by", leadId);
+
+  const ids = new Set<string>();
+  ids.add(leadId);
+  for (const m of members ?? []) {
+    ids.add(m.id);
+  }
+
+  return [...ids];
+}
+
+/** POST - Add a participant (and their group) to a registration group */
 export async function POST(request: NextRequest) {
   try {
     const admin = await verifyAdmin();
@@ -40,38 +76,45 @@ export async function POST(request: NextRequest) {
 
     const supabase = createAdminClient();
 
-    // Verify the participant exists and isn't already in someone else's group
-    const { data: participant, error: pError } = await supabase
-      .from("participants")
-      .select("id, registered_by, is_self_registered")
-      .eq("id", participant_id)
-      .single();
+    // Resolve the full source group (the participant being added + their existing group members)
+    const sourceGroupIds = await resolveGroup(supabase, participant_id);
 
-    if (pError || !participant) {
-      return NextResponse.json({ error: "Participant not found" }, { status: 404 });
-    }
+    // Resolve the target group
+    const targetGroupIds = await resolveGroup(supabase, registrant_id);
 
-    if (participant.registered_by && participant.registered_by !== registrant_id) {
+    // Check for overlap
+    const targetSet = new Set(targetGroupIds);
+    if (sourceGroupIds.some((id) => targetSet.has(id))) {
       return NextResponse.json(
-        { error: "Participant is already in another registration group" },
-        { status: 409 }
+        { error: "These participants are already in the same group" },
+        { status: 400 }
       );
     }
 
-    // Get or create the registrant's group
-    let group = await supabase
+    const mergedSize = sourceGroupIds.length + targetGroupIds.length;
+    if (mergedSize > 3) {
+      return NextResponse.json(
+        {
+          error: `Merging would create a group of ${mergedSize}. Max is 3.`,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Get or create the target registrant's group record
+    let targetGroup = await supabase
       .from("registration_groups")
       .select("id, group_size")
       .eq("registrant_id", registrant_id)
       .single()
       .then((r) => r.data);
 
-    if (!group) {
+    if (!targetGroup) {
       const { data: newGroup, error: createError } = await supabase
         .from("registration_groups")
         .insert({
           registrant_id,
-          group_size: 1,
+          group_size: targetGroupIds.length,
           tagged_team_skills: [],
         })
         .select("id, group_size")
@@ -83,39 +126,39 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
-      group = newGroup;
+      targetGroup = newGroup;
     }
 
-    if (group.group_size >= 3) {
-      return NextResponse.json(
-        { error: "Registration groups cannot exceed 3 members" },
-        { status: 400 }
-      );
+    // Delete any registration_group records owned by source members
+    for (const id of sourceGroupIds) {
+      await supabase
+        .from("registration_groups")
+        .delete()
+        .eq("registrant_id", id);
     }
 
-    // If the participant being added has their own registration group (solo),
-    // delete it since they're joining someone else's group
+    // Move all source members to point to the target registrant
+    for (const id of sourceGroupIds) {
+      await supabase
+        .from("participants")
+        .update({
+          registered_by: registrant_id,
+          is_self_registered: false,
+        })
+        .eq("id", id);
+    }
+
+    // Update target group size
     await supabase
       .from("registration_groups")
-      .delete()
-      .eq("registrant_id", participant_id);
+      .update({ group_size: mergedSize })
+      .eq("id", targetGroup.id);
 
-    // Update participant: set registered_by and mark as not self-registered
-    await supabase
-      .from("participants")
-      .update({
-        registered_by: registrant_id,
-        is_self_registered: false,
-      })
-      .eq("id", participant_id);
-
-    // Increment group size
-    await supabase
-      .from("registration_groups")
-      .update({ group_size: group.group_size + 1 })
-      .eq("id", group.id);
-
-    return NextResponse.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      merged: sourceGroupIds.length,
+      total: mergedSize,
+    });
   } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
