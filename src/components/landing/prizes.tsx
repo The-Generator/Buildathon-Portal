@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Crown, Trophy, Award } from "lucide-react";
+import { Crown, Trophy } from "lucide-react";
 import { useInView } from "@/hooks/useInView";
 
 const tiers = [
@@ -27,16 +27,6 @@ const tiers = [
       { name: "DJI Mic", image: "/prizes/dji-mic.jpg" },
       { name: "Keychron K6", image: "/prizes/keychron.jpg" },
       { name: "Omi Recorder", image: "/prizes/omi.jpg" },
-    ],
-  },
-  {
-    place: "Crowd Vote",
-    description: "Voted on by all attendees",
-    icon: Award,
-    tint: "text-[#00e87b]",
-    borderTint: "border-[#00e87b]/20",
-    prizes: [
-      { name: "Amazon Gift Card", image: "/prizes/gift-card.jpg" },
     ],
   },
 ];
