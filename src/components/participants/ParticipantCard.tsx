@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Linkedin, Globe } from "lucide-react";
+import { Linkedin, Globe, Instagram, Twitter } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
@@ -31,6 +31,15 @@ function getSafeExternalUrl(url?: string | null): string | null {
     return null;
   }
   return null;
+}
+
+function getPortfolioMeta(url: string): { icon: typeof Globe; label: string } {
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    if (host.includes("instagram.com")) return { icon: Instagram, label: "Instagram" };
+    if (host.includes("twitter.com") || host.includes("x.com")) return { icon: Twitter, label: "X" };
+  } catch { /* ignore */ }
+  return { icon: Globe, label: "Portfolio" };
 }
 
 const MAX_VISIBLE_SKILLS = 4;
@@ -138,30 +147,39 @@ export function ParticipantCard({
         {/* Social links */}
         {(linkedInUrl || portfolioUrl) && (
           <div className="mt-3 flex items-center gap-3 border-t border-white/5 pt-3">
-            {linkedInUrl && (
-              <a
-                href={linkedInUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-white/30 text-xs font-body"
-                aria-label={`${p.full_name} LinkedIn`}
-              >
-                <Linkedin className="h-3.5 w-3.5" />
-                <span>LinkedIn</span>
-              </a>
-            )}
-            {portfolioUrl && (
-              <a
-                href={portfolioUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-white/30 text-xs font-body"
-                aria-label={`${p.full_name} portfolio`}
-              >
-                <Globe className="h-3.5 w-3.5" />
-                <span>Portfolio</span>
-              </a>
-            )}
+            {linkedInUrl && (() => {
+              const host = (() => { try { return new URL(linkedInUrl).hostname.toLowerCase(); } catch { return ""; } })();
+              const isLinkedIn = host.includes("linkedin.com");
+              const meta = isLinkedIn ? { icon: Linkedin, label: "LinkedIn" } : getPortfolioMeta(linkedInUrl);
+              const LinkIcon = meta.icon;
+              return (
+                <a
+                  href={linkedInUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-white/30 text-xs font-body"
+                  aria-label={`${p.full_name} ${meta.label}`}
+                >
+                  <LinkIcon className="h-3.5 w-3.5" />
+                  <span>{meta.label}</span>
+                </a>
+              );
+            })()}
+            {portfolioUrl && (() => {
+              const { icon: PortfolioIcon, label } = getPortfolioMeta(portfolioUrl);
+              return (
+                <a
+                  href={portfolioUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 text-white/30 text-xs font-body"
+                  aria-label={`${p.full_name} ${label}`}
+                >
+                  <PortfolioIcon className="h-3.5 w-3.5" />
+                  <span>{label}</span>
+                </a>
+              );
+            })()}
           </div>
         )}
       </CardContent>
