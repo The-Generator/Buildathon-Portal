@@ -29,6 +29,13 @@ export const SCHEDULE_BLOCKS: ScheduleBlock[] = [
     type: "hacking",
   },
   {
+    time: "10:30 AM",
+    title: "Live Demo: GitHub — From 0 → Launch",
+    description: "GitHub Education leads a live walkthrough of GitHub CLI and how to go from zero to a shipped project.",
+    location: "Winn Auditorium",
+    type: "workshop",
+  },
+  {
     time: "12:30 PM",
     title: "Grab-and-Go Lunch",
     description: "Refuel without losing momentum.",

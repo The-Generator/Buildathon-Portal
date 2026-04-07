@@ -73,7 +73,7 @@ export function Prizes() {
         {/* Cash prize banner */}
         <div className="mx-auto mt-14 max-w-2xl rounded-2xl border border-white/10 bg-white/[0.03] px-8 py-10 text-center">
           <p className="font-display text-5xl font-bold text-[#00e87b] sm:text-6xl">
-            $3,000
+            $8,000
           </p>
           <p className="font-body mt-2 text-lg text-white/60">in cash prizes</p>
           <p className="font-body mt-1 text-sm text-white/40">

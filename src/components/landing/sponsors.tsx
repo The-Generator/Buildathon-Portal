@@ -108,6 +108,33 @@ export function Sponsors() {
         {/* Divider */}
         <div className="mx-auto my-14 max-w-md border-t border-white/10" />
 
+        {/* Gold Sponsor */}
+        <div>
+          <p className="font-data mb-8 text-center text-xs font-medium uppercase tracking-widest text-yellow-400">
+            Gold Sponsor
+          </p>
+          <div className="mx-auto flex max-w-md justify-center">
+            <a
+              href="https://education.github.com"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Visit GitHub Education"
+              className="flex items-center justify-center rounded-2xl border border-yellow-400/20 bg-yellow-400/5 px-12 py-8 shadow-[0_0_40px_-8px_rgba(250,204,21,0.25)] transition-all hover:shadow-[0_0_60px_-4px_rgba(250,204,21,0.35)]"
+            >
+              <Image
+                src="/sponsors/github-education.png"
+                alt="GitHub Education"
+                width={300}
+                height={56}
+                className="h-auto max-h-14 w-auto object-contain invert"
+              />
+            </a>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="mx-auto my-14 max-w-md border-t border-white/10" />
+
         {/* Sponsors */}
         <div>
           <p className="font-data mb-8 text-center text-xs font-medium uppercase tracking-widest text-white/50">
