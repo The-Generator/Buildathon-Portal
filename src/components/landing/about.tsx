@@ -106,11 +106,9 @@ export function About() {
           <div className="overflow-hidden rounded-xl border border-white/8">
             <video
               className="aspect-video w-full bg-black"
-              autoPlay
-              loop
-              muted
+              controls
               playsInline
-              preload="auto"
+              preload="metadata"
             >
               <source src="/buildathon-promo.mp4" type="video/mp4" />
               Your browser does not support the video tag.
