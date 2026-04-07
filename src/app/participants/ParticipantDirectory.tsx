@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { SCHOOLS, PRIMARY_ROLES } from "@/lib/constants";
-import { Search, ArrowLeft } from "lucide-react";
+import { Search, ArrowLeft, ArrowUpDown } from "lucide-react";
 import { ParticipantCard } from "@/components/participants/ParticipantCard";
 import type { Participant } from "@/types";
 
@@ -23,6 +23,19 @@ type DirectoryParticipant = Pick<
   | "photo_url"
 >;
 
+type SortOption = "featured" | "az" | "za" | "shuffle";
+
+/** Score how "filled out" a profile is — more complete profiles rank higher */
+function profileScore(p: DirectoryParticipant): number {
+  let score = 0;
+  score += (p.specific_skills?.length ?? 0) * 2; // skills are worth the most
+  if (p.bio && p.bio.length > 20) score += 5;
+  if (p.photo_url) score += 4;
+  if (p.linkedin_url) score += 3;
+  if (p.portfolio_url) score += 3;
+  return score;
+}
+
 interface Props {
   participants: DirectoryParticipant[];
 }
@@ -34,6 +47,10 @@ export function ParticipantDirectory({ participants }: Props) {
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const [school, setSchool] = useState(searchParams.get("school") ?? "all");
   const [role, setRole] = useState(searchParams.get("role") ?? "all");
+  const [sort, setSort] = useState<SortOption>(
+    (searchParams.get("sort") as SortOption) || "featured"
+  );
+  const [shuffleSeed, setShuffleSeed] = useState(() => Math.random());
 
   // Sync filters to URL search params for shareable state
   const updateParams = (key: string, value: string) => {
@@ -47,7 +64,7 @@ export function ParticipantDirectory({ participants }: Props) {
   };
 
   const filtered = useMemo(() => {
-    return participants.filter((p) => {
+    const result = participants.filter((p) => {
       if (school !== "all") {
         const displaySchool = p.school === "Other" && p.school_other ? p.school_other : p.school;
         if (p.school !== school && displaySchool !== school) return false;
@@ -64,7 +81,24 @@ export function ParticipantDirectory({ participants }: Props) {
       }
       return true;
     });
-  }, [participants, school, role, search]);
+
+    if (sort === "featured") {
+      result.sort((a, b) => profileScore(b) - profileScore(a));
+    } else if (sort === "az") {
+      result.sort((a, b) => a.full_name.localeCompare(b.full_name));
+    } else if (sort === "za") {
+      result.sort((a, b) => b.full_name.localeCompare(a.full_name));
+    } else if (sort === "shuffle") {
+      // Seeded shuffle so it's stable until user clicks shuffle again
+      result.sort((a, b) => {
+        const ha = Math.sin(shuffleSeed * 10000 + a.id.charCodeAt(0) * 9301 + 49297) % 1;
+        const hb = Math.sin(shuffleSeed * 10000 + b.id.charCodeAt(0) * 9301 + 49297) % 1;
+        return ha - hb;
+      });
+    }
+
+    return result;
+  }, [participants, school, role, search, sort, shuffleSeed]);
 
   return (
     <div className="min-h-screen bg-[#0a0f0d]">
@@ -114,6 +148,23 @@ export function ParticipantDirectory({ participants }: Props) {
                 className="w-full rounded-lg border border-white/10 bg-white/5 py-2.5 pl-10 pr-4 font-body text-sm text-white placeholder-white/30 outline-none transition-colors focus:border-[#00e87b]/40 focus:ring-1 focus:ring-[#00e87b]/20"
               />
             </div>
+
+            {/* Sort dropdown */}
+            <select
+              value={sort}
+              onChange={(e) => {
+                const val = e.target.value as SortOption;
+                setSort(val);
+                updateParams("sort", val === "featured" ? "" : val);
+                if (val === "shuffle") setShuffleSeed(Math.random());
+              }}
+              className="rounded-lg border border-white/10 bg-white/5 px-3 py-2.5 font-body text-sm text-white outline-none transition-colors focus:border-[#00e87b]/40 [&>option]:bg-[#0a0f0d] [&>option]:text-white"
+            >
+              <option value="featured">Featured</option>
+              <option value="az">A → Z</option>
+              <option value="za">Z → A</option>
+              <option value="shuffle">Shuffle</option>
+            </select>
 
             {/* School dropdown */}
             <select
