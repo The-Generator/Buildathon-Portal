@@ -388,7 +388,7 @@ export function Hero() {
         </div>
 
         {/* CTA buttons */}
-        <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:justify-center sm:gap-4">
+        <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:items-start sm:justify-center sm:gap-4">
           <div className="flex flex-col items-center gap-1.5">
             <Link
               href="/register"
