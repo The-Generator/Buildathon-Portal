@@ -5,7 +5,7 @@ import Link from "next/link";
 import { X } from "lucide-react";
 
 const DEADLINE = new Date("2026-04-08T23:59:59-04:00");
-const STORAGE_KEY = "deadline-banner-dismissed";
+const STORAGE_KEY = "deadline-banner-dismissed-apr8";
 
 function getDaysLeft() {
   const now = new Date();
