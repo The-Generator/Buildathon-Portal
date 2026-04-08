@@ -146,9 +146,8 @@ export function StepTeamSetup({
       </div>
 
       <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-        You can register with a max of 3 people (including yourself). If you
-        have a group of 4 or 5, split into smaller groups — you&apos;ll still
-        be matched together on the same team!
+        You can register with up to 2 teammates (3 total). Larger friend
+        groups should split up and register in smaller groups.
       </div>
 
       {errors.team_option && (
