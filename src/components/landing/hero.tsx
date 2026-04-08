@@ -396,7 +396,7 @@ export function Hero() {
             >
               Register Now
             </Link>
-            <span className="text-xs font-medium text-white/50">Registration closes April 7th</span>
+            <span className="text-xs font-medium text-white/50">Registration closes April 8th</span>
           </div>
           <a
             href="#about"

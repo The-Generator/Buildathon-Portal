@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { X } from "lucide-react";
 
-const DEADLINE = new Date("2026-04-07T23:59:59-04:00");
+const DEADLINE = new Date("2026-04-08T23:59:59-04:00");
 const STORAGE_KEY = "deadline-banner-dismissed";
 
 function getDaysLeft() {
@@ -55,7 +55,7 @@ export function DeadlineBanner() {
     <div className={`${bg} ${textColor} relative z-[60]`}>
       <div className="mx-auto flex max-w-7xl items-center justify-center gap-x-4 px-6 py-2.5 text-sm font-medium">
         <p className="flex items-center gap-2">
-          <span className="hidden sm:inline">Registration closes April 7th —</span>
+          <span className="hidden sm:inline">Registration extended to April 8th —</span>
           <span className="font-bold">{daysText}</span>
         </p>
         <Link
