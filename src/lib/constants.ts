@@ -25,7 +25,7 @@ export const WORKROOMS = [
   "Olin 120",
   "Olin 202",
   "Olin 225",
-  "Olin Winn Auditorium",
+  "Knight Auditorium",
   "FME Workshop (Schlesinger Innovation Center)",
 ] as const;
 
