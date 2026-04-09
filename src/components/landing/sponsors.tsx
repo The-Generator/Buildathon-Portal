@@ -35,6 +35,7 @@ const sponsors: SponsorEntry[] = [
   { name: "Maritime", href: "https://maritime.sh/", logo: "/sponsors/maritime.svg" },
   { name: "Offscript", href: "https://offscriptvc.com/", logo: "/sponsors/offscript-vc.svg" },
   { name: "Mass AI Coalition", href: "https://massaicoalition.com/", logo: "/sponsors/mass-ai-coalition.png" },
+  { name: "WeTour Robotics", href: "https://www.wetourrobotics.com/", logo: "/sponsors/wetour-robotics.png" },
 ];
 
 function logoFilter(item: SponsorEntry): string {
