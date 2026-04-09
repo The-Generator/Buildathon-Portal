@@ -282,6 +282,80 @@ export default function TeamAssignment({
               </table>
             </Section>
 
+            {/* GitHub Student Developer Pack */}
+            <Section style={githubCard}>
+              <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
+                <tbody>
+                  <tr>
+                    <td>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/laptop_1f4bb.png"
+                        alt="laptop"
+                        width="32"
+                        height="32"
+                        style={{ margin: "0 auto" }}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ paddingTop: "8px" }}>
+                      <Text style={githubCardTitle}>GitHub Student Developer Pack</Text>
+                      <Text style={githubCardDesc}>
+                        Gain fast-tracked access to the GitHub Student Developer Pack, a
+                        benefits resource worth over $100k that includes free product use
+                        from MongoDB, Name.com, 1Password and DigitalOcean, plus free use
+                        of Copilot Student. Fill out this form to opt in and get access
+                        before the weekend.
+                      </Text>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ paddingTop: "12px" }}>
+                      <table cellPadding="0" cellSpacing="0" style={{ margin: "0 auto" }}>
+                        <tbody>
+                          <tr>
+                            <td style={githubButton}>
+                              <Link href="https://gh.io/babson-builds" style={githubButtonLink}>
+                                Get the Student Developer Pack
+                              </Link>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Section>
+
+            {/* W9/W8BEN Prize Notice */}
+            <Section style={prizeNotice}>
+              <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
+                <tbody>
+                  <tr>
+                    <td style={{ width: "32px", verticalAlign: "top", paddingRight: "12px" }}>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/trophy_1f3c6.png"
+                        alt="trophy"
+                        width="28"
+                        height="28"
+                      />
+                    </td>
+                    <td>
+                      <Text style={prizeNoticeTitle}>Important for Competitors</Text>
+                      <Text style={prizeNoticeDesc}>
+                        For all serious competitors: please have a digital copy of your{" "}
+                        <strong>W-9</strong> (or <strong>W-8BEN</strong> for international
+                        students) ready in order to redeem prizes.
+                      </Text>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Section>
+
+            <Hr style={hr} />
+
             {/* Get Ready */}
             <Heading as="h2" style={{ ...sectionTitle, marginBottom: "20px" }}>
               Get Ready
@@ -725,4 +799,64 @@ const footerDetail: React.CSSProperties = {
   color: "#9ca3af",
   fontSize: "12px",
   margin: "0 0 2px",
+};
+
+const githubCard: React.CSSProperties = {
+  backgroundColor: "#f0fdf4",
+  border: "1px solid #bbf7d0",
+  borderRadius: "10px",
+  padding: "20px",
+  margin: "24px 0",
+  textAlign: "center" as const,
+};
+
+const githubCardTitle: React.CSSProperties = {
+  color: "#166534",
+  fontSize: "15px",
+  fontWeight: "700",
+  margin: "0 0 8px",
+};
+
+const githubCardDesc: React.CSSProperties = {
+  color: "#166534",
+  fontSize: "13px",
+  lineHeight: "1.6",
+  margin: "0",
+};
+
+const githubButton: React.CSSProperties = {
+  backgroundColor: "#24292f",
+  borderRadius: "6px",
+  textAlign: "center" as const,
+};
+
+const githubButtonLink: React.CSSProperties = {
+  color: "#ffffff",
+  fontSize: "13px",
+  fontWeight: "600",
+  textDecoration: "none",
+  display: "inline-block",
+  padding: "8px 20px",
+};
+
+const prizeNotice: React.CSSProperties = {
+  backgroundColor: "#fffbeb",
+  border: "1px solid #fde68a",
+  borderRadius: "10px",
+  padding: "16px 20px",
+  margin: "0 0 0",
+};
+
+const prizeNoticeTitle: React.CSSProperties = {
+  color: "#92400e",
+  fontSize: "14px",
+  fontWeight: "700",
+  margin: "0 0 4px",
+};
+
+const prizeNoticeDesc: React.CSSProperties = {
+  color: "#92400e",
+  fontSize: "13px",
+  lineHeight: "1.5",
+  margin: "0",
 };

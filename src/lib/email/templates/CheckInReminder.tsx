@@ -34,7 +34,7 @@ export default function CheckInReminder({
         <meta name="supported-color-schemes" content="light" />
       </Head>
       <Preview>
-        Check in online for {EVENT_CONFIG.shortName} and skip the line at the door!
+        Check in online, view the campus map, and get ready for {EVENT_CONFIG.shortName}!
       </Preview>
       <Body style={main}>
         <Container style={container}>
@@ -63,15 +63,15 @@ export default function CheckInReminder({
             </table>
           </Section>
 
-          {/* Check-In Banner */}
+          {/* Banner */}
           <Section style={checkinBanner}>
             <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
               <tbody>
                 <tr>
                   <td>
                     <Img
-                      src="https://em-content.zobj.net/source/apple/391/clipboard_1f4cb.png"
-                      alt="checkin"
+                      src="https://em-content.zobj.net/source/apple/391/rocket_1f680.png"
+                      alt="rocket"
                       width="48"
                       height="48"
                       style={{ margin: "0 auto" }}
@@ -81,7 +81,7 @@ export default function CheckInReminder({
                 <tr>
                   <td style={{ paddingTop: "12px" }}>
                     <Heading as="h1" style={checkinHeading}>
-                      Time to Check In!
+                      Everything You Need for the Build-a-thon
                     </Heading>
                   </td>
                 </tr>
@@ -93,13 +93,67 @@ export default function CheckInReminder({
           <Section style={content}>
             <Text style={greeting}>Hi {participantName},</Text>
             <Text style={paragraph}>
-              The Build-a-thon is tomorrow! Check in online now to skip the
-              line at the door.
+              The Build-a-thon is almost here! Here&apos;s everything you need —
+              check in early, review the map, and grab your resources.
             </Text>
 
-            {/* Event Details */}
+            {/* ─── EARLY CHECK-IN ─── */}
+            <Heading as="h2" style={sectionTitle}>
+              Early Check-In
+            </Heading>
+            <Text style={paragraph}>
+              Check in online now to get a green checkmark. Screenshot it and
+              show it at the door to skip the registration line!
+            </Text>
+
+            <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
+              <tbody>
+                {[
+                  { num: "1", title: "Click the button below", desc: "Opens the check-in page" },
+                  { num: "2", title: "Enter your email or phone", desc: "We'll look up your registration" },
+                  { num: "3", title: "Save your green checkmark", desc: "Screenshot it or save the PDF — show it at the door to skip the line" },
+                ].map((step) => (
+                  <tr key={step.num}>
+                    <td style={stepNumCell}>
+                      <table cellPadding="0" cellSpacing="0">
+                        <tbody>
+                          <tr>
+                            <td style={stepNumBadge}>{step.num}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                    <td style={stepContent}>
+                      <Text style={stepTitle}>{step.title}</Text>
+                      <Text style={stepDesc}>{step.desc}</Text>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <Section style={ctaSection}>
+              <table cellPadding="0" cellSpacing="0" style={{ margin: "0 auto" }}>
+                <tbody>
+                  <tr>
+                    <td style={ctaButton}>
+                      <Link href={checkinUrl} style={ctaLink}>
+                        Check In Now
+                      </Link>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Section>
+
+            <Hr style={hr} />
+
+            {/* ─── EVENT DETAILS + LOGISTICS ─── */}
+            <Heading as="h2" style={sectionTitle}>
+              Event Details &amp; Logistics
+            </Heading>
+
             <Section style={card}>
-              <Text style={cardLabel}>EVENT DETAILS</Text>
               <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
                 <tbody>
                   <tr>
@@ -134,55 +188,191 @@ export default function CheckInReminder({
                       />
                     </td>
                     <td style={detailText}>
-                      {EVENT_CONFIG.location}
-                      <br />
-                      <span style={{ color: "#9ca3af" }}>{EVENT_CONFIG.address}</span>
+                      Babson College, 231 Forest Street, Babson Park, MA 02457
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={iconCell}>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/classical-building_1f3db-fe0f.png"
+                        alt="venue"
+                        width="18"
+                        height="18"
+                      />
+                    </td>
+                    <td style={detailText}>
+                      Knight Auditorium &amp; surrounding classrooms (Malloy and Olin Hall)
                     </td>
                   </tr>
                 </tbody>
               </table>
             </Section>
 
-            {/* How It Works */}
-            <Heading as="h2" style={sectionTitle}>
-              How It Works
-            </Heading>
+            {/* Parking */}
+            <Section style={card}>
+              <Text style={cardLabel}>PARKING &amp; ARRIVAL</Text>
+              <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
+                <tbody>
+                  <tr>
+                    <td style={iconCell}>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/automobile_1f697.png"
+                        alt="car"
+                        width="18"
+                        height="18"
+                      />
+                    </td>
+                    <td style={detailText}>
+                      Enter campus via the <strong>Westgate Entrance</strong> (open 6:30 AM &ndash; 8 PM)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={iconCell}>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/parking_1f17f-fe0f.png"
+                        alt="parking"
+                        width="18"
+                        height="18"
+                      />
+                    </td>
+                    <td style={detailText}>
+                      Guests may park in <strong>Trim Lot</strong> (a parking pass will be
+                      provided after check-in, about a 5-minute walk across campus)
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={iconCell}>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/door_1f6aa.png"
+                        alt="drop-off"
+                        width="18"
+                        height="18"
+                      />
+                    </td>
+                    <td style={detailText}>
+                      Drop-off is available at <strong>Knight Lot (#43)</strong> near the
+                      auditorium entrance. Limited parking may also be available in Knight Lot.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Section>
 
-            <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
-              <tbody>
-                {[
-                  { num: "1", title: "Click the button below", desc: "Opens the check-in page" },
-                  { num: "2", title: "Enter your email", desc: "We'll look up your registration" },
-                  { num: "3", title: "Show your green checkmark", desc: "Present it at the door to skip the line" },
-                ].map((step) => (
-                  <tr key={step.num}>
-                    <td style={stepNumCell}>
-                      <table cellPadding="0" cellSpacing="0">
+            {/* Campus Map */}
+            <Section style={mapCard}>
+              <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
+                <tbody>
+                  <tr>
+                    <td>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/world-map_1f5fa-fe0f.png"
+                        alt="map"
+                        width="32"
+                        height="32"
+                        style={{ margin: "0 auto" }}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ paddingTop: "8px" }}>
+                      <Text style={mapCardTitle}>Campus Map</Text>
+                      <Text style={mapCardDesc}>
+                        Find parking, event spaces, and key buildings on the Babson campus.
+                      </Text>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ paddingTop: "12px" }}>
+                      <table cellPadding="0" cellSpacing="0" style={{ margin: "0 auto" }}>
                         <tbody>
                           <tr>
-                            <td style={stepNumBadge}>{step.num}</td>
+                            <td style={mapButton}>
+                              <Link href="https://babsonbuildathon.com/buildathon-map.pdf" style={mapButtonLink}>
+                                View Campus Map
+                              </Link>
+                            </td>
                           </tr>
                         </tbody>
                       </table>
                     </td>
-                    <td style={stepContent}>
-                      <Text style={stepTitle}>{step.title}</Text>
-                      <Text style={stepDesc}>{step.desc}</Text>
-                    </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </Section>
 
-            {/* CTA */}
-            <Section style={ctaSection}>
-              <table cellPadding="0" cellSpacing="0" style={{ margin: "0 auto" }}>
+            <Hr style={hr} />
+
+            {/* ─── RESOURCES ─── */}
+            <Heading as="h2" style={sectionTitle}>
+              Resources
+            </Heading>
+
+            {/* GitHub Student Developer Pack */}
+            <Section style={githubCard}>
+              <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
                 <tbody>
                   <tr>
-                    <td style={ctaButton}>
-                      <Link href={checkinUrl} style={ctaLink}>
-                        Check In Now
-                      </Link>
+                    <td>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/laptop_1f4bb.png"
+                        alt="laptop"
+                        width="32"
+                        height="32"
+                        style={{ margin: "0 auto" }}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ paddingTop: "8px" }}>
+                      <Text style={githubCardTitle}>GitHub Student Developer Pack</Text>
+                      <Text style={githubCardDesc}>
+                        Gain fast-tracked access to the GitHub Student Developer Pack, a
+                        benefits resource worth over $100k that includes free product use
+                        from MongoDB, Name.com, 1Password and DigitalOcean, plus free use
+                        of Copilot Student. Fill out this form to opt in and get access
+                        before the weekend.
+                      </Text>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ paddingTop: "12px" }}>
+                      <table cellPadding="0" cellSpacing="0" style={{ margin: "0 auto" }}>
+                        <tbody>
+                          <tr>
+                            <td style={githubButton}>
+                              <Link href="https://gh.io/babson-builds" style={githubButtonLink}>
+                                Get the Student Developer Pack
+                              </Link>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Section>
+
+            {/* W9/W8BEN Prize Notice */}
+            <Section style={prizeNotice}>
+              <table cellPadding="0" cellSpacing="0" style={{ width: "100%" }}>
+                <tbody>
+                  <tr>
+                    <td style={{ width: "32px", verticalAlign: "top", paddingRight: "12px" }}>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/trophy_1f3c6.png"
+                        alt="trophy"
+                        width="28"
+                        height="28"
+                      />
+                    </td>
+                    <td>
+                      <Text style={prizeNoticeTitle}>Important for Competitors</Text>
+                      <Text style={prizeNoticeDesc}>
+                        For all serious competitors: please have a digital copy of your{" "}
+                        <strong>W-9</strong> (or <strong>W-8BEN</strong> for international
+                        students) ready in order to redeem prizes.
+                      </Text>
                     </td>
                   </tr>
                 </tbody>
@@ -426,4 +616,102 @@ const footerDetail: React.CSSProperties = {
   color: "#9ca3af",
   fontSize: "12px",
   margin: "0 0 2px",
+};
+
+const mapCard: React.CSSProperties = {
+  backgroundColor: "#eff6ff",
+  border: "1px solid #bfdbfe",
+  borderRadius: "10px",
+  padding: "20px",
+  margin: "16px 0 0",
+  textAlign: "center" as const,
+};
+
+const mapCardTitle: React.CSSProperties = {
+  color: "#1e40af",
+  fontSize: "14px",
+  fontWeight: "700",
+  margin: "0 0 4px",
+};
+
+const mapCardDesc: React.CSSProperties = {
+  color: "#3b82f6",
+  fontSize: "13px",
+  lineHeight: "1.5",
+  margin: "0",
+};
+
+const mapButton: React.CSSProperties = {
+  backgroundColor: "#1e40af",
+  borderRadius: "6px",
+  textAlign: "center" as const,
+};
+
+const mapButtonLink: React.CSSProperties = {
+  color: "#ffffff",
+  fontSize: "13px",
+  fontWeight: "600",
+  textDecoration: "none",
+  display: "inline-block",
+  padding: "8px 20px",
+};
+
+const githubCard: React.CSSProperties = {
+  backgroundColor: "#f0fdf4",
+  border: "1px solid #bbf7d0",
+  borderRadius: "10px",
+  padding: "20px",
+  margin: "0 0 16px",
+  textAlign: "center" as const,
+};
+
+const githubCardTitle: React.CSSProperties = {
+  color: "#166534",
+  fontSize: "15px",
+  fontWeight: "700",
+  margin: "0 0 8px",
+};
+
+const githubCardDesc: React.CSSProperties = {
+  color: "#166534",
+  fontSize: "13px",
+  lineHeight: "1.6",
+  margin: "0",
+};
+
+const githubButton: React.CSSProperties = {
+  backgroundColor: "#24292f",
+  borderRadius: "6px",
+  textAlign: "center" as const,
+};
+
+const githubButtonLink: React.CSSProperties = {
+  color: "#ffffff",
+  fontSize: "13px",
+  fontWeight: "600",
+  textDecoration: "none",
+  display: "inline-block",
+  padding: "8px 20px",
+};
+
+const prizeNotice: React.CSSProperties = {
+  backgroundColor: "#fffbeb",
+  border: "1px solid #fde68a",
+  borderRadius: "10px",
+  padding: "16px 20px",
+  margin: "0 0 0",
+};
+
+const prizeNoticeTitle: React.CSSProperties = {
+  color: "#92400e",
+  fontSize: "14px",
+  fontWeight: "700",
+  margin: "0 0 4px",
+};
+
+const prizeNoticeDesc: React.CSSProperties = {
+  color: "#92400e",
+  fontSize: "13px",
+  lineHeight: "1.5",
+  margin: "0",
 };

@@ -107,8 +107,7 @@ export function MatchingPreview({ adminToken, hasLockedTeams, onConfirmed }: Mat
           {!matchResult && (
             <Button
               onClick={runMatching}
-              disabled={loading || hasLockedTeams}
-              title={hasLockedTeams ? "Unlock all teams before re-running the algorithm" : undefined}
+              disabled={loading}
             >
               {loading ? (
                 <>
@@ -128,9 +127,9 @@ export function MatchingPreview({ adminToken, hasLockedTeams, onConfirmed }: Mat
 
       <CardContent>
         {hasLockedTeams && !matchResult && (
-          <div className="mb-4 rounded-lg bg-yellow-50 border border-yellow-200 p-3 text-sm text-yellow-800 flex items-start gap-2">
+          <div className="mb-4 rounded-lg bg-blue-50 border border-blue-200 p-3 text-sm text-blue-800 flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-            <span>Unlock all teams before re-running the matching algorithm.</span>
+            <span>Locked teams will be skipped — only unassigned and unlocked participants will be matched.</span>
           </div>
         )}
 

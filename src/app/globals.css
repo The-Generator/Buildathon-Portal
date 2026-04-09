@@ -96,3 +96,27 @@ body {
     text-wrap: balance;
   }
 }
+
+/* ============================================
+   Print styles for check-in confirmation
+   ============================================ */
+@media print {
+  body {
+    background: white !important;
+  }
+  /* Hide everything except the confirmation card */
+  body > * {
+    visibility: hidden;
+  }
+  #checkin-confirmation,
+  #checkin-confirmation * {
+    visibility: visible !important;
+  }
+  #checkin-confirmation {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+}

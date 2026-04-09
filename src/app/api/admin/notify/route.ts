@@ -161,6 +161,9 @@ export async function POST(request: NextRequest) {
           failed++;
           errors.push(`${member.email}: ${String(result.error)}`);
         }
+
+        // Rate-limit: 200ms between sends to avoid hitting Resend limits
+        await new Promise((r) => setTimeout(r, 200));
       }
     }
 

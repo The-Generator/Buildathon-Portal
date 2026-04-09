@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (parsed.data.test_email) {
       const result = await sendEmail({
         to: parsed.data.test_email,
-        subject: `Check in for ${EVENT_CONFIG.shortName} tomorrow!`,
+        subject: `Check in early for ${EVENT_CONFIG.shortName}!`,
         react: createElement(CheckInReminder, {
           participantName: "Test Participant",
           checkinUrl,
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
     for (const p of participants) {
       const result = await sendEmail({
         to: p.email,
-        subject: `Check in for ${EVENT_CONFIG.shortName} tomorrow!`,
+        subject: `Check in early for ${EVENT_CONFIG.shortName}!`,
         react: createElement(CheckInReminder, {
           participantName: p.full_name,
           checkinUrl,
@@ -85,6 +85,9 @@ export async function POST(request: NextRequest) {
       } else {
         failed++;
       }
+
+      // Rate-limit: 200ms between sends to avoid hitting Resend limits
+      await new Promise((r) => setTimeout(r, 200));
     }
 
     // Log the action
