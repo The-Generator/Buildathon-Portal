@@ -11,12 +11,10 @@ import { PastWinners } from "@/components/landing/PastWinners";
 import { FAQ } from "@/components/landing/faq";
 import { Footer } from "@/components/landing/footer";
 import { CommunityButton } from "@/components/landing/CommunityButton";
-import { DeadlineBanner } from "@/components/landing/DeadlineBanner";
 
 export default function Home() {
   return (
     <>
-      <DeadlineBanner />
       <Header />
       <CommunityButton />
       <main className="noise-bg">
