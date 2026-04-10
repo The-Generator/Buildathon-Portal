@@ -148,6 +148,55 @@ export default function CheckInReminder({
 
             <Hr style={hr} />
 
+            {/* ─── THE THREE TRACKS ─── */}
+            <Heading as="h2" style={sectionTitle}>
+              The Three Tracks
+            </Heading>
+            <Text style={paragraph}>
+              The Buildathon is <strong>TOMORROW</strong> and we want to make
+              sure you&apos;re locked in. There are three tracks — read up so
+              you know where your project fits:
+            </Text>
+
+            <Section style={trackCard}>
+              <Text style={trackTitle}>🏋️ AI-Enhanced Athletic Performance</Text>
+              <Text style={trackSubtitle}>Optimizing Human Performance</Text>
+              <Text style={trackDesc}>
+                Design AI-powered tools that help athletes train smarter,
+                prevent injury, and perform at their best. Whether it&apos;s for
+                pros, everyday fitness enthusiasts, or people just starting
+                their wellness journey.
+              </Text>
+            </Section>
+
+            <Section style={trackCard}>
+              <Text style={trackTitle}>♿ AI-Powered Accessibility Solutions</Text>
+              <Text style={trackSubtitle}>Technology for Every Body</Text>
+              <Text style={trackDesc}>
+                Build AI-driven tools that meaningfully improve daily life for
+                people with disabilities. Think solutions that prioritize
+                dignity, independence, and real-world impact.
+              </Text>
+            </Section>
+
+            <Section style={trackCard}>
+              <Text style={trackTitle}>🚀 Entrepreneurial AI for Unseen Markets</Text>
+              <Text style={trackSubtitle}>Innovating in Untapped Spaces</Text>
+              <Text style={trackDesc}>
+                Use AI to identify and build solutions for overlooked or
+                underserved opportunities in the wellness economy. Find the
+                markets, communities, and problems that traditional products
+                ignore.
+              </Text>
+            </Section>
+
+            <Text style={paragraph}>
+              <strong>Pick the track that best fits what you&apos;re building
+              and go all in on it.</strong>
+            </Text>
+
+            <Hr style={hr} />
+
             {/* ─── EVENT DETAILS + LOGISTICS ─── */}
             <Heading as="h2" style={sectionTitle}>
               Event Details &amp; Logistics
@@ -668,6 +717,37 @@ const mapCard: React.CSSProperties = {
   padding: "20px",
   margin: "16px 0 0",
   textAlign: "center" as const,
+};
+
+const trackCard: React.CSSProperties = {
+  backgroundColor: "#f9fafb",
+  border: "1px solid #e5e7eb",
+  borderLeft: "4px solid #006241",
+  borderRadius: "8px",
+  padding: "16px 18px",
+  margin: "12px 0",
+};
+
+const trackTitle: React.CSSProperties = {
+  color: "#111827",
+  fontSize: "15px",
+  fontWeight: "700",
+  margin: "0 0 4px",
+};
+
+const trackSubtitle: React.CSSProperties = {
+  color: "#006241",
+  fontSize: "13px",
+  fontWeight: "600",
+  fontStyle: "italic",
+  margin: "0 0 8px",
+};
+
+const trackDesc: React.CSSProperties = {
+  color: "#4b5563",
+  fontSize: "13px",
+  lineHeight: "1.6",
+  margin: "0",
 };
 
 const mapCardTitle: React.CSSProperties = {
