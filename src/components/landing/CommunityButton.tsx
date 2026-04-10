@@ -1,12 +1,11 @@
 "use client";
 
-const WHATSAPP_ANNOUNCEMENTS_URL =
-  "https://chat.whatsapp.com/GdnB3cExacMA5XfqsXh4pO";
+import { WHATSAPP_URL } from "@/lib/constants";
 
 export function CommunityButton() {
   return (
     <a
-      href={WHATSAPP_ANNOUNCEMENTS_URL}
+      href={WHATSAPP_URL}
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Join our WhatsApp community"

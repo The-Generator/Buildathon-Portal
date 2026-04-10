@@ -11,7 +11,7 @@ import {
   Link,
   Img,
 } from "@react-email/components";
-import { EVENT_CONFIG } from "@/lib/constants";
+import { EVENT_CONFIG, WHATSAPP_URL } from "@/lib/constants";
 
 interface CheckInReminderProps {
   participantName: string;
@@ -306,6 +306,49 @@ export default function CheckInReminder({
             <Heading as="h2" style={sectionTitle}>
               Resources
             </Heading>
+
+            {/* WhatsApp Day-of Announcements */}
+            <Section style={whatsappCard}>
+              <table cellPadding="0" cellSpacing="0" style={{ width: "100%", textAlign: "center" as const }}>
+                <tbody>
+                  <tr>
+                    <td>
+                      <Img
+                        src="https://em-content.zobj.net/source/apple/391/speech-balloon_1f4ac.png"
+                        alt="chat"
+                        width="32"
+                        height="32"
+                        style={{ margin: "0 auto" }}
+                      />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ paddingTop: "8px" }}>
+                      <Text style={whatsappCardTitle}>Join the WhatsApp Announcements</Text>
+                      <Text style={whatsappCardDesc}>
+                        All day-of communications and announcements will be posted in
+                        our WhatsApp group. Join now so you don&apos;t miss anything.
+                      </Text>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ paddingTop: "12px" }}>
+                      <table cellPadding="0" cellSpacing="0" style={{ margin: "0 auto" }}>
+                        <tbody>
+                          <tr>
+                            <td style={whatsappButton}>
+                              <Link href={WHATSAPP_URL} style={whatsappButtonLink}>
+                                Join the WhatsApp Group
+                              </Link>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </Section>
 
             {/* GitHub Student Developer Pack */}
             <Section style={githubCard}>
@@ -686,6 +729,44 @@ const githubButton: React.CSSProperties = {
 };
 
 const githubButtonLink: React.CSSProperties = {
+  color: "#ffffff",
+  fontSize: "13px",
+  fontWeight: "600",
+  textDecoration: "none",
+  display: "inline-block",
+  padding: "8px 20px",
+};
+
+const whatsappCard: React.CSSProperties = {
+  backgroundColor: "#ecfdf5",
+  border: "1px solid #a7f3d0",
+  borderRadius: "10px",
+  padding: "20px",
+  margin: "24px 0",
+  textAlign: "center" as const,
+};
+
+const whatsappCardTitle: React.CSSProperties = {
+  color: "#065f46",
+  fontSize: "15px",
+  fontWeight: "700",
+  margin: "0 0 8px",
+};
+
+const whatsappCardDesc: React.CSSProperties = {
+  color: "#065f46",
+  fontSize: "13px",
+  lineHeight: "1.6",
+  margin: "0",
+};
+
+const whatsappButton: React.CSSProperties = {
+  backgroundColor: "#25D366",
+  borderRadius: "6px",
+  textAlign: "center" as const,
+};
+
+const whatsappButtonLink: React.CSSProperties = {
   color: "#ffffff",
   fontSize: "13px",
   fontWeight: "600",

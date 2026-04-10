@@ -1,5 +1,5 @@
 export const DISCORD_URL = "https://discord.gg/6RNCt46u9q";
-export const WHATSAPP_URL = "https://chat.whatsapp.com/F4VWZc09KuABjhbGC8ldpQ";
+export const WHATSAPP_URL = "https://chat.whatsapp.com/BDmBe9kZVjz2X9EAZFtvW2";
 
 /** When true, the public registration page and API are closed to new signups. */
 export const REGISTRATION_CLOSED = true;
