@@ -32,13 +32,14 @@ export async function POST() {
 
     const incompleteTeamIds = (incompleteTeams ?? []).map((t) => t.id);
 
-    // Fetch participants on incomplete/unlocked teams
+    // Fetch participants on incomplete/unlocked teams (excluding spectators)
     let unmatchedParticipants: Participant[] = [];
     if (incompleteTeamIds.length > 0) {
       const { data: participants, error: participantsError } = await supabase
         .from("participants")
         .select("*")
-        .in("team_id", incompleteTeamIds);
+        .in("team_id", incompleteTeamIds)
+        .neq("participant_type", "spectator");
 
       if (participantsError) {
         return NextResponse.json(
@@ -50,11 +51,12 @@ export async function POST() {
       unmatchedParticipants = (participants ?? []) as Participant[];
     }
 
-    // Also fetch participants with no team assignment
+    // Also fetch participants with no team assignment (excluding spectators)
     const { data: noTeamParticipants, error: noTeamError } = await supabase
       .from("participants")
       .select("*")
-      .is("team_id", null);
+      .is("team_id", null)
+      .neq("participant_type", "spectator");
 
     if (noTeamError) {
       return NextResponse.json(

@@ -35,6 +35,26 @@ export async function POST(request: NextRequest) {
     const { matches } = result.data;
     const supabase = createAdminClient();
 
+    // Defensive guard: spectators must never be assigned to teams.
+    const allParticipantIds = matches.flatMap((m) => m.participant_ids);
+    if (allParticipantIds.length > 0) {
+      const { data: spectators } = await supabase
+        .from("participants")
+        .select("id")
+        .in("id", allParticipantIds)
+        .eq("participant_type", "spectator");
+
+      if (spectators && spectators.length > 0) {
+        return NextResponse.json(
+          {
+            error: "Cannot assign spectators to teams",
+            spectator_ids: spectators.map((s) => s.id),
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Determine the next team_number from the current max (filter nulls so they don't shadow real values)
     const { data: maxRow } = await supabase
       .from("teams")
