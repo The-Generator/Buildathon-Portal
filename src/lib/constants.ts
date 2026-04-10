@@ -1,6 +1,9 @@
 export const DISCORD_URL = "https://discord.gg/6RNCt46u9q";
 export const WHATSAPP_URL = "https://chat.whatsapp.com/F4VWZc09KuABjhbGC8ldpQ";
 
+/** When true, the public registration page and API are closed to new signups. */
+export const REGISTRATION_CLOSED = true;
+
 export const EVENT_CONFIG = {
   name: "Babson Generator Build-a-thon 2026",
   shortName: "Build-a-thon 2026",

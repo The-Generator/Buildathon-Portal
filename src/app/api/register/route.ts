@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createElement } from "react";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { fullRegistrationSchema } from "@/lib/validations";
-import { EVENT_CONFIG } from "@/lib/constants";
+import { EVENT_CONFIG, REGISTRATION_CLOSED } from "@/lib/constants";
 import { sendEmail } from "@/lib/email/send";
 import RegistrationConfirmation from "@/lib/email/templates/RegistrationConfirmation";
 
@@ -124,6 +124,13 @@ async function findDuplicates(
 
 export async function POST(request: NextRequest) {
   try {
+    if (REGISTRATION_CLOSED) {
+      return NextResponse.json(
+        { error: "Registration is closed." },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
 
     // 1. Validate request body
