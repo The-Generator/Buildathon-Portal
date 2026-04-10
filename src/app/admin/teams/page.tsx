@@ -15,9 +15,11 @@ import {
   Mail,
   Plus,
   RefreshCw,
+  Search,
   Trash2,
   Unlock,
   Users,
+  X,
 } from "lucide-react";
 import { EVENT_CONFIG, WORKROOMS } from "@/lib/constants";
 import type { Team, Participant } from "@/types";
@@ -31,6 +33,7 @@ export default function TeamsPage() {
   const [unassignedCount, setUnassignedCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterOption>("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [adminToken] = useState<string | null>(() => {
     if (typeof window === "undefined") return null;
@@ -280,10 +283,23 @@ export default function TeamsPage() {
     };
   }, []);
 
+  const trimmedQuery = searchQuery.trim().toLowerCase();
   const filtered = teams.filter((t) => {
-    if (filter === "complete") return t.is_complete;
-    if (filter === "incomplete") return !t.is_complete;
-    if (filter === "locked") return t.is_locked;
+    if (filter === "complete" && !t.is_complete) return false;
+    if (filter === "incomplete" && t.is_complete) return false;
+    if (filter === "locked" && !t.is_locked) return false;
+
+    if (trimmedQuery) {
+      const inTeamName = t.name?.toLowerCase().includes(trimmedQuery);
+      const inTeamNumber = t.team_number != null && String(t.team_number).includes(trimmedQuery);
+      const inMember = t.members.some(
+        (m) =>
+          m.full_name.toLowerCase().includes(trimmedQuery) ||
+          m.email.toLowerCase().includes(trimmedQuery)
+      );
+      if (!inTeamName && !inTeamNumber && !inMember) return false;
+    }
+
     return true;
   });
 
@@ -449,6 +465,28 @@ export default function TeamsPage() {
         />
       )}
 
+      {/* Search */}
+      <div className="relative mb-3">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by name, email, team name, or team number…"
+          className="w-full rounded-lg border border-gray-300 bg-white pl-9 pr-9 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#006241] focus:border-[#006241]"
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => setSearchQuery("")}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600"
+            aria-label="Clear search"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
       {/* Filters */}
       <div className="flex gap-2 mb-4">
         {(
@@ -481,7 +519,7 @@ export default function TeamsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((team) => {
-            const isExpanded = expandedId === team.id;
+            const isExpanded = trimmedQuery !== "" || expandedId === team.id;
 
             return (
               <Card key={team.id} className="overflow-hidden">
