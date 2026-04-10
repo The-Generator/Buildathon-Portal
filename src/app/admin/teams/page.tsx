@@ -28,6 +28,7 @@ type FilterOption = "all" | "complete" | "incomplete" | "locked";
 
 export default function TeamsPage() {
   const [teams, setTeams] = useState<TeamWithMembers[]>([]);
+  const [unassignedCount, setUnassignedCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterOption>("all");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -46,7 +47,7 @@ export default function TeamsPage() {
   const actionToastTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const fetchData = useCallback(async (): Promise<TeamWithMembers[] | null> => {
+  const fetchData = useCallback(async (): Promise<{ teams: TeamWithMembers[]; unassignedCount: number } | null> => {
     const supabase = createClient();
 
     const { data: teamData, error: tError } = await supabase
@@ -64,28 +65,35 @@ export default function TeamsPage() {
       .select("*");
 
     const participantsByTeam = new Map<string, Participant[]>();
+    let unassigned = 0;
     for (const p of pData ?? []) {
       if (p.team_id) {
         const existing = participantsByTeam.get(p.team_id) ?? [];
         existing.push(p);
         participantsByTeam.set(p.team_id, existing);
+      } else {
+        unassigned++;
       }
     }
 
-    return (teamData ?? []).map((t) => ({
-      ...t,
-      members: participantsByTeam.get(t.id) ?? [],
-    }));
+    return {
+      teams: (teamData ?? []).map((t) => ({
+        ...t,
+        members: participantsByTeam.get(t.id) ?? [],
+      })),
+      unassignedCount: unassigned,
+    };
   }, []);
 
   useEffect(() => {
     let cancelled = false;
 
     const load = async () => {
-      const data = await fetchData();
+      const result = await fetchData();
       if (cancelled) return;
-      if (data) {
-        setTeams(data);
+      if (result) {
+        setTeams(result.teams);
+        setUnassignedCount(result.unassignedCount);
       }
       setLoading(false);
     };
@@ -105,8 +113,11 @@ export default function TeamsPage() {
       if (debounceRef.current) clearTimeout(debounceRef.current);
       debounceRef.current = setTimeout(async () => {
         setSyncing(true);
-        const data = await fetchData();
-        if (data) setTeams(data);
+        const result = await fetchData();
+        if (result) {
+          setTeams(result.teams);
+          setUnassignedCount(result.unassignedCount);
+        }
         setSyncing(false);
       }, 500);
     };
@@ -146,7 +157,7 @@ export default function TeamsPage() {
 
   const hasIncompleteTeams = teams.some((t) => !t.is_complete);
   const hasLockedTeams = teams.some((t) => t.is_locked);
-  const hasUnmatchedPotential = hasIncompleteTeams || teams.length === 0;
+  const hasUnmatchedPotential = hasIncompleteTeams || teams.length === 0 || unassignedCount > 0;
 
   const showActionToast = useCallback((message: string) => {
     setActionToast(message);
@@ -171,7 +182,7 @@ export default function TeamsPage() {
       )
     );
     const data = await fetchData();
-    if (data) setTeams(data);
+    if (data) { setTeams(data.teams); setUnassignedCount(data.unassignedCount); }
     setUnlockingAll(false);
     showActionToast(`Unlocked ${lockedTeams.length} teams`);
   }, [adminToken, teams, fetchData, showActionToast]);
@@ -204,7 +215,7 @@ export default function TeamsPage() {
       });
     }
     const data = await fetchData();
-    if (data) setTeams(data);
+    if (data) { setTeams(data.teams); setUnassignedCount(data.unassignedCount); }
     setDissolvingAll(false);
     setConfirmDissolveAll(false);
     showActionToast(`Dissolved ${count} teams`);
@@ -247,7 +258,8 @@ export default function TeamsPage() {
       setLoading(true);
       const data = await fetchData();
       if (data) {
-        setTeams(data);
+        setTeams(data.teams);
+        setUnassignedCount(data.unassignedCount);
       }
       setLoading(false);
       if (toastMessage) {
@@ -584,11 +596,11 @@ export default function TeamsPage() {
                               const err = await res.json().catch(() => ({ error: "Request failed" }));
                               showActionToast(`Failed: ${err.error}`);
                               const data = await fetchData();
-                              if (data) setTeams(data);
+                              if (data) { setTeams(data.teams); setUnassignedCount(data.unassignedCount); }
                               return;
                             }
                             const data = await fetchData();
-                            if (data) setTeams(data);
+                            if (data) { setTeams(data.teams); setUnassignedCount(data.unassignedCount); }
                             showActionToast(
                               room_number
                                 ? `${team.name} → ${WORKROOMS[room_number - 1] ?? `Room ${room_number}`}`
