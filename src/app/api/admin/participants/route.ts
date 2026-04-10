@@ -188,7 +188,15 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Participant ID required" }, { status: 400 });
     }
 
-    const result = updateParticipantSchema.safeParse(fields);
+    // Strip empty strings and nulls so partial updates don't fail validation on
+    // unrelated fields the admin didn't touch (e.g. an empty phone input).
+    const cleanedFields = Object.fromEntries(
+      Object.entries(fields).filter(
+        ([, v]) => v !== "" && v !== null && v !== undefined
+      )
+    );
+
+    const result = updateParticipantSchema.safeParse(cleanedFields);
     if (!result.success) {
       return NextResponse.json(
         { error: "Validation failed", details: result.error.flatten() },
