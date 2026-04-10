@@ -206,16 +206,44 @@ function greedyConstruction(inputs: MatchInput[]): {
     }
   }
 
-  // Groups of 2: pair with 3 solos
-  for (const group of groupsOf2) {
+  // Groups of 2: prefer pairing with 3 solos. If solos are insufficient, pair
+  // with another duo (+ 1 solo if any) to form a team of 4-5 instead of leaving
+  // standalone teams of 2 behind.
+  while (groupsOf2.length > 0) {
+    const group = groupsOf2.shift()!;
     const needed = TEAM_SIZE - group.length; // 3
 
     if (solos.length >= needed) {
+      // Standard path: 3 solos
       const bestIndices = findBestCandidates(group, solos, needed);
       const chosen = bestIndices.map((i) => solos[i]);
       solos = removeAtIndices(solos, bestIndices);
       teams.push(buildDraftTeam(makeTeamId(teamIndex++), [...group, ...chosen]));
+    } else if (groupsOf2.length > 0) {
+      // Solos are short. Pair with the best-matching remaining duo.
+      let bestDuoIdx = 0;
+      let bestScore = -Infinity;
+      for (let i = 0; i < groupsOf2.length; i++) {
+        const score = calculateTeamScore([...group, ...groupsOf2[i]]);
+        if (score > bestScore) {
+          bestScore = score;
+          bestDuoIdx = i;
+        }
+      }
+      const otherDuo = groupsOf2.splice(bestDuoIdx, 1)[0];
+      let team = [...group, ...otherDuo];
+
+      // Add 1 solo if available to complete the team of 5
+      if (solos.length > 0) {
+        const soloIndices = findBestCandidates(team, solos, 1);
+        const chosenSolo = soloIndices.map((i) => solos[i]);
+        solos = removeAtIndices(solos, soloIndices);
+        team = [...team, ...chosenSolo];
+      }
+
+      teams.push(buildDraftTeam(makeTeamId(teamIndex++), team));
     } else {
+      // Last duo and not enough solos: take what's left (rare edge case)
       const available = Math.min(solos.length, needed);
       const bestIndices = findBestCandidates(group, solos, available);
       const chosen = bestIndices.map((i) => solos[i]);
