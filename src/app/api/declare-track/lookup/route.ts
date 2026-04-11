@@ -37,14 +37,36 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data: team, error: teamError } = await supabase
+    // Try the full select (with deck columns); if the migration adding deck
+    // columns hasn't been applied yet, fall back to a select without them so
+    // the track declaration still works.
+    let team: {
+      id: string;
+      name: string;
+      team_number: number | null;
+      track: string | null;
+      deck_filename?: string | null;
+      deck_uploaded_at?: string | null;
+    } | null = null;
+
+    const withDeck = await supabase
       .from("teams")
       .select("id, name, team_number, track, deck_filename, deck_uploaded_at")
       .eq("id", participant.team_id)
       .single();
 
-    if (teamError || !team) {
-      return NextResponse.json({ error: "Team not found" }, { status: 404 });
+    if (!withDeck.error && withDeck.data) {
+      team = withDeck.data;
+    } else {
+      const basic = await supabase
+        .from("teams")
+        .select("id, name, team_number, track")
+        .eq("id", participant.team_id)
+        .single();
+      if (basic.error || !basic.data) {
+        return NextResponse.json({ error: "Team not found" }, { status: 404 });
+      }
+      team = basic.data;
     }
 
     return NextResponse.json({
