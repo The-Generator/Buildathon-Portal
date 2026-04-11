@@ -641,6 +641,11 @@ export default function TeamsPage() {
                             className="flex items-center justify-between text-sm"
                           >
                             <div>
+                              {team.team_number != null && (
+                                <span className="inline-flex items-center rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 mr-2">
+                                  #{team.team_number}
+                                </span>
+                              )}
                               <span className="font-medium text-gray-900">
                                 {m.full_name}
                               </span>
