@@ -161,6 +161,16 @@ export default function TeamsPage() {
   const hasIncompleteTeams = teams.some((t) => !t.is_complete);
   const declaredCount = teams.filter((t) => t.track).length;
   const undeclaredTeams = teams.filter((t) => !t.track);
+  const teamsByTrack: Record<string, TeamWithMembers[]> = {
+    athletic_performance: teams.filter((t) => t.track === "athletic_performance"),
+    accessibility_solutions: teams.filter((t) => t.track === "accessibility_solutions"),
+    entrepreneurial_ai: teams.filter((t) => t.track === "entrepreneurial_ai"),
+  };
+  const trackMeta: Array<{ id: keyof typeof teamsByTrack; label: string; accent: string }> = [
+    { id: "athletic_performance", label: "Athletic Performance", accent: "bg-rose-50 text-rose-800" },
+    { id: "accessibility_solutions", label: "Accessibility Solutions", accent: "bg-sky-50 text-sky-800" },
+    { id: "entrepreneurial_ai", label: "Entrepreneurial AI", accent: "bg-violet-50 text-violet-800" },
+  ];
   const hasLockedTeams = teams.some((t) => t.is_locked);
   const hasUnmatchedPotential = hasIncompleteTeams || teams.length === 0 || unassignedCount > 0;
 
@@ -484,20 +494,54 @@ export default function TeamsPage() {
             </span>
           </div>
         </div>
+        {/* Per-track breakdown */}
+        <div className="mt-4 grid grid-cols-1 gap-3 border-t border-gray-100 pt-3 sm:grid-cols-3">
+          {trackMeta.map((meta) => {
+            const list = teamsByTrack[meta.id];
+            return (
+              <details key={meta.id} className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+                <summary className="cursor-pointer text-sm font-semibold text-gray-900">
+                  {meta.label} <span className="ml-1 text-gray-500">({list.length})</span>
+                </summary>
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {list.length === 0 ? (
+                    <span className="text-xs text-gray-400">None yet</span>
+                  ) : (
+                    list
+                      .slice()
+                      .sort((a, b) => (a.team_number ?? 0) - (b.team_number ?? 0))
+                      .map((t) => (
+                        <span
+                          key={t.id}
+                          className={`inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-medium ${meta.accent}`}
+                        >
+                          #{t.team_number ?? "?"}
+                        </span>
+                      ))
+                  )}
+                </div>
+              </details>
+            );
+          })}
+        </div>
+
         {undeclaredTeams.length > 0 && (
           <details className="mt-3 border-t border-gray-100 pt-3">
             <summary className="cursor-pointer text-xs font-medium text-gray-600 hover:text-gray-900">
               {undeclaredTeams.length} team{undeclaredTeams.length === 1 ? "" : "s"} haven&apos;t declared yet
             </summary>
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {undeclaredTeams.map((t) => (
-                <span
-                  key={t.id}
-                  className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800"
-                >
-                  #{t.team_number ?? "?"} {t.name}
-                </span>
-              ))}
+              {undeclaredTeams
+                .slice()
+                .sort((a, b) => (a.team_number ?? 0) - (b.team_number ?? 0))
+                .map((t) => (
+                  <span
+                    key={t.id}
+                    className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800"
+                  >
+                    #{t.team_number ?? "?"} {t.name}
+                  </span>
+                ))}
             </div>
           </details>
         )}
