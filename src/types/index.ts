@@ -42,9 +42,32 @@ export interface Team {
   aggregate_skills: string[];
   project_name?: string | null;
   project_description?: string | null;
+  track?: TrackId | null;
   created_at: string;
   updated_at: string;
   members?: Participant[];
+}
+
+export type TrackId =
+  | "athletic_performance"
+  | "accessibility_solutions"
+  | "entrepreneurial_ai";
+
+export interface JudgeScore {
+  id: string;
+  judge_name: string;
+  track: TrackId;
+  team_id: string;
+  team_number: number;
+  business_strength: number;
+  track_focus: number;
+  innovation: number;
+  execution: number;
+  presentation: number;
+  notes?: string | null;
+  total_score: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface RegistrationGroup {
