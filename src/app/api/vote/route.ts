@@ -9,15 +9,11 @@ const TRACK_VALUES = [
   "entrepreneurial_ai",
 ] as const;
 
-// A single ballot: email + 0-3 picks (one per track). Optional per-track so
-// voters don't have to pick every track if they missed a category.
+// Single ballot: email + exactly one team (identified by track + team_number).
 const schema = z.object({
   email: z.string().email(),
-  picks: z.object({
-    athletic_performance: z.number().int().optional(),
-    accessibility_solutions: z.number().int().optional(),
-    entrepreneurial_ai: z.number().int().optional(),
-  }),
+  track: z.enum(TRACK_VALUES),
+  team_number: z.number().int(),
 });
 
 export async function POST(request: NextRequest) {
@@ -36,81 +32,49 @@ export async function POST(request: NextRequest) {
     }
 
     const email = parsed.data.email.trim().toLowerCase();
-    const picks = parsed.data.picks;
+    const { track, team_number } = parsed.data;
 
-    // Validate each pick is actually a finalist for its track
-    for (const track of TRACK_VALUES) {
-      const picked = picks[track];
-      if (picked == null) continue;
-      const allowed = FINALISTS[track].teams.map((t) => t.team_number);
-      if (!allowed.includes(picked)) {
-        return NextResponse.json(
-          { error: `Team #${picked} isn't a finalist in ${FINALISTS[track].label}.` },
-          { status: 400 }
-        );
-      }
-    }
-
-    const supabase = createAdminClient();
-
-    // Resolve each picked team_number to a team_id
-    const pickedNumbers = TRACK_VALUES.map((t) => picks[t]).filter(
-      (n): n is number => typeof n === "number"
-    );
-    if (pickedNumbers.length === 0) {
+    // Validate pick is an actual finalist for that track
+    const allowed = FINALISTS[track].teams.map((t) => t.team_number);
+    if (!allowed.includes(team_number)) {
       return NextResponse.json(
-        { error: "Pick at least one team to vote." },
+        { error: `Team #${team_number} isn't a finalist in ${FINALISTS[track].label}.` },
         { status: 400 }
       );
     }
 
-    const { data: teamRows } = await supabase
+    const supabase = createAdminClient();
+
+    // Resolve team_number to team_id
+    const { data: team } = await supabase
       .from("teams")
-      .select("id, team_number")
-      .in("team_number", pickedNumbers);
-    const teamIdByNumber = new Map<number, string>();
-    for (const t of teamRows ?? []) {
-      if (t.team_number != null) teamIdByNumber.set(t.team_number, t.id);
+      .select("id")
+      .eq("team_number", team_number)
+      .single();
+    if (!team) {
+      return NextResponse.json({ error: "Team not found" }, { status: 404 });
     }
 
-    // Build the rows to upsert (one per track the voter picked)
-    const rows: Array<{
-      voter_email: string;
-      track: (typeof TRACK_VALUES)[number];
-      team_id: string;
-      team_number: number;
-      updated_at: string;
-    }> = [];
+    // One vote per email total — clear any previous vote this email cast.
+    await supabase.from("crowd_votes").delete().eq("voter_email", email);
+
+    // Insert the new vote
     const now = new Date().toISOString();
-    for (const track of TRACK_VALUES) {
-      const num = picks[track];
-      if (num == null) continue;
-      const teamId = teamIdByNumber.get(num);
-      if (!teamId) continue;
-      rows.push({
-        voter_email: email,
-        track,
-        team_id: teamId,
-        team_number: num,
-        updated_at: now,
-      });
+    const { error: insertError } = await supabase.from("crowd_votes").insert({
+      voter_email: email,
+      track,
+      team_id: team.id,
+      team_number,
+      updated_at: now,
+    });
+    if (insertError) {
+      return NextResponse.json(
+        { error: "Could not record vote", details: insertError.message },
+        { status: 500 }
+      );
     }
 
-    // Upsert each row individually so we don't clobber other tracks the voter
-    // already voted on.
-    for (const row of rows) {
-      const { error } = await supabase
-        .from("crowd_votes")
-        .upsert(row, { onConflict: "voter_email,track" });
-      if (error) {
-        return NextResponse.json(
-          { error: "Could not record vote", details: error.message },
-          { status: 500 }
-        );
-      }
-    }
-
-    return NextResponse.json({ success: true, recorded: rows.length });
+    return NextResponse.json({ success: true });
   } catch {
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
