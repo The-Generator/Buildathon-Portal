@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { CheckinMetrics, type CheckinMetricsData } from "./CheckinMetrics";
 import { CheckinLiveFeed } from "./CheckinLiveFeed";
+import { CheckinSearch } from "./CheckinSearch";
 
 export function CheckinDashboard() {
   const [metrics, setMetrics] = useState<CheckinMetricsData>({
@@ -172,6 +173,9 @@ export function CheckinDashboard() {
     <div className="space-y-6">
       {/* Metrics section */}
       <CheckinMetrics data={metrics} />
+
+      {/* Search participants by name/email */}
+      <CheckinSearch />
 
       {/* Live feed (self-contained realtime) */}
       <CheckinLiveFeed />
