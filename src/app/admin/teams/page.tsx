@@ -673,6 +673,44 @@ export default function TeamsPage() {
                         )}
                       </div>
                     )}
+                    {adminToken && team.deck_filename && (
+                      <div className="mt-3 pt-3 border-t border-gray-100">
+                        <label className="text-xs text-gray-400 uppercase font-medium">
+                          Deck
+                        </label>
+                        <div className="mt-1 flex items-center justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-sm text-gray-900">
+                              {team.deck_filename}
+                            </p>
+                            {team.deck_uploaded_at && (
+                              <p className="text-xs text-gray-400">
+                                {new Date(team.deck_uploaded_at).toLocaleString()}
+                              </p>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              const res = await fetch(`/api/admin/teams/${team.id}/deck`, {
+                                headers: { Authorization: `Bearer ${adminToken}` },
+                              });
+                              if (!res.ok) {
+                                const err = await res.json().catch(() => ({ error: "Failed" }));
+                                showActionToast(`Failed: ${err.error}`);
+                                return;
+                              }
+                              const data = await res.json();
+                              window.open(data.url, "_blank");
+                            }}
+                            className="shrink-0 rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-800"
+                          >
+                            Download
+                          </button>
+                        </div>
+                      </div>
+                    )}
                     {adminToken && (
                       <div className="mt-3 pt-3 border-t border-gray-100">
                         <label className="text-xs text-gray-400 uppercase font-medium">
