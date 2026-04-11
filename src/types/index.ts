@@ -43,6 +43,9 @@ export interface Team {
   project_name?: string | null;
   project_description?: string | null;
   track?: TrackId | null;
+  deck_storage_path?: string | null;
+  deck_filename?: string | null;
+  deck_uploaded_at?: string | null;
   created_at: string;
   updated_at: string;
   members?: Participant[];

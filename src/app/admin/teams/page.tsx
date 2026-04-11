@@ -159,6 +159,8 @@ export default function TeamsPage() {
   const [confirmNotifyAll, setConfirmNotifyAll] = useState(false);
 
   const hasIncompleteTeams = teams.some((t) => !t.is_complete);
+  const declaredCount = teams.filter((t) => t.track).length;
+  const undeclaredTeams = teams.filter((t) => !t.track);
   const hasLockedTeams = teams.some((t) => t.is_locked);
   const hasUnmatchedPotential = hasIncompleteTeams || teams.length === 0 || unassignedCount > 0;
 
@@ -456,6 +458,51 @@ export default function TeamsPage() {
         </div>
       )}
 
+      {/* Track declaration progress */}
+      <div className="mb-6 rounded-2xl border border-gray-200 bg-white p-4 sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-emerald-700">
+              Track declaration
+            </p>
+            <p className="mt-1 text-sm text-gray-700">
+              <span className="font-bold text-gray-900">{declaredCount}</span>
+              <span className="text-gray-500"> of </span>
+              <span className="font-bold text-gray-900">{teams.length}</span>
+              <span className="text-gray-500"> teams have declared a track</span>
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="h-2 w-32 overflow-hidden rounded-full bg-gray-200">
+              <div
+                className="h-full bg-emerald-600 transition-all"
+                style={{ width: teams.length > 0 ? `${(declaredCount / teams.length) * 100}%` : "0%" }}
+              />
+            </div>
+            <span className="text-xs font-medium text-gray-500">
+              {teams.length > 0 ? Math.round((declaredCount / teams.length) * 100) : 0}%
+            </span>
+          </div>
+        </div>
+        {undeclaredTeams.length > 0 && (
+          <details className="mt-3 border-t border-gray-100 pt-3">
+            <summary className="cursor-pointer text-xs font-medium text-gray-600 hover:text-gray-900">
+              {undeclaredTeams.length} team{undeclaredTeams.length === 1 ? "" : "s"} haven&apos;t declared yet
+            </summary>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {undeclaredTeams.map((t) => (
+                <span
+                  key={t.id}
+                  className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800"
+                >
+                  #{t.team_number ?? "?"} {t.name}
+                </span>
+              ))}
+            </div>
+          </details>
+        )}
+      </div>
+
       {/* Matching section - shown when there are incomplete teams or potential unmatched participants */}
       {adminToken && hasUnmatchedPotential && (
         <MatchingPreview
@@ -548,6 +595,17 @@ export default function TeamsPage() {
                     <div className="flex items-center gap-2 ml-2 flex-wrap justify-end">
                       {team.room_number != null && (
                         <Badge color="blue">{WORKROOMS[team.room_number - 1] ?? `Room ${team.room_number}`}</Badge>
+                      )}
+                      {team.track ? (
+                        <Badge color="purple">
+                          {team.track === "athletic_performance"
+                            ? "Athletic"
+                            : team.track === "accessibility_solutions"
+                            ? "Accessibility"
+                            : "Entrepreneurial"}
+                        </Badge>
+                      ) : (
+                        <Badge color="yellow">No track</Badge>
                       )}
                       <Badge color={formationColor(team.formation_type)}>
                         {formationLabel(team.formation_type)}

@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     const { data: team, error: teamError } = await supabase
       .from("teams")
-      .select("id, name, team_number, track")
+      .select("id, name, team_number, track, deck_filename, deck_uploaded_at")
       .eq("id", participant.team_id)
       .single();
 
@@ -52,6 +52,8 @@ export async function POST(request: NextRequest) {
       team_number: team.team_number,
       team_name: team.name,
       current_track: team.track ?? null,
+      current_deck_filename: team.deck_filename ?? null,
+      current_deck_uploaded_at: team.deck_uploaded_at ?? null,
       member_full_name: participant.full_name,
     });
   } catch {
