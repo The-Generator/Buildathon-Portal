@@ -13,6 +13,7 @@ import {
   Gavel,
   LogOut,
   Menu,
+  Vote,
   X,
 } from "lucide-react";
 
@@ -23,6 +24,7 @@ const navItems = [
   { label: "Check-In", href: "/admin/checkin", icon: ClipboardCheck },
   { label: "Decks", href: "/admin/decks", icon: FileText },
   { label: "Judging", href: "/admin/judging", icon: Gavel },
+  { label: "Crowd Vote", href: "/admin/vote", icon: Vote },
   { label: "Export", href: "/admin/export", icon: Download },
 ];
 

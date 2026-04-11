@@ -4,6 +4,40 @@ export const WHATSAPP_URL = "https://chat.whatsapp.com/BDmBe9kZVjz2X9EAZFtvW2";
 /** When true, the public registration page and API are closed to new signups. */
 export const REGISTRATION_CLOSED = true;
 
+/** When true, the /vote page is live and crowd votes are accepted. */
+export const CROWD_VOTING_OPEN = true;
+
+/** Finalist teams for the crowd vote, grouped by track. team_number keys. */
+export const FINALISTS: Record<
+  "athletic_performance" | "accessibility_solutions" | "entrepreneurial_ai",
+  { label: string; teams: Array<{ team_number: number; display_name?: string }> }
+> = {
+  athletic_performance: {
+    label: "AI-Enhanced Athletic Performance",
+    teams: [
+      { team_number: 44 },
+      { team_number: 7 },
+      { team_number: 4, display_name: "Asians Unite" },
+    ],
+  },
+  entrepreneurial_ai: {
+    label: "Entrepreneurial AI for Unseen Markets",
+    teams: [
+      { team_number: 2 },
+      { team_number: 48 },
+      { team_number: 51 },
+    ],
+  },
+  accessibility_solutions: {
+    label: "AI-Powered Accessibility Solutions",
+    teams: [
+      { team_number: 41 },
+      { team_number: 67 },
+      { team_number: 69 },
+    ],
+  },
+};
+
 /** Competition tracks. Stored on teams.track and on judge_scores.track. */
 export const TRACKS = [
   {
