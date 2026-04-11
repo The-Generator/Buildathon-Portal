@@ -9,6 +9,7 @@ import {
   UsersRound,
   ClipboardCheck,
   Download,
+  FileText,
   Gavel,
   LogOut,
   Menu,
@@ -20,6 +21,7 @@ const navItems = [
   { label: "Participants", href: "/admin/participants", icon: Users },
   { label: "Teams", href: "/admin/teams", icon: UsersRound },
   { label: "Check-In", href: "/admin/checkin", icon: ClipboardCheck },
+  { label: "Decks", href: "/admin/decks", icon: FileText },
   { label: "Judging", href: "/admin/judging", icon: Gavel },
   { label: "Export", href: "/admin/export", icon: Download },
 ];
