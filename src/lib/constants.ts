@@ -5,7 +5,7 @@ export const WHATSAPP_URL = "https://chat.whatsapp.com/BDmBe9kZVjz2X9EAZFtvW2";
 export const REGISTRATION_CLOSED = true;
 
 /** When true, the /vote page is live and crowd votes are accepted. */
-export const CROWD_VOTING_OPEN = true;
+export const CROWD_VOTING_OPEN = false;
 
 /** Finalist teams for the crowd vote, grouped by track. team_number keys. */
 export const FINALISTS: Record<
